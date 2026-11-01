@@ -1,5 +1,12 @@
 import type { EventCatalog, EventDefinition, Occurrence, Rarity } from '@/domain/types';
-import { compareDominance, occurrencesOnDay, pickDominant, RARITY_WEIGHT } from '../dominance';
+import {
+  compareDominance,
+  occurrencesOnDay,
+  pickDominant,
+  pickLongestEvent,
+  RARITY_WEIGHT,
+} from '../dominance';
+import { monthRange } from '../time';
 
 const def = (id: string, rarity: Rarity, priority?: number): EventDefinition => ({
   id,
@@ -114,5 +121,47 @@ describe('occurrencesOnDay', () => {
       hallows,
       fishing,
     ]);
+  });
+});
+
+describe('pickLongestEvent', () => {
+  const nov = monthRange('2026-11', 'UTC');
+
+  it('returns null for a month with no events', () => {
+    expect(pickLongestEvent([], nov, catalog)).toBeNull();
+    const october = occ('alpha', '2026-10-01T00:00Z', '2026-10-31T00:00Z');
+    expect(pickLongestEvent([october], nov, catalog)).toBeNull();
+  });
+
+  it('counts only the time inside the month: a spill-over holiday loses to a week-long faire', () => {
+    // Hallow's End runs half of October but only 18h of November.
+    const hallows = occ('alpha', '2026-10-18T17:00Z', '2026-11-01T18:00Z');
+    const dmf = occ('dmf', '2026-11-09T00:00Z', '2026-11-16T00:00Z');
+    expect(pickLongestEvent([hallows, dmf], nov, catalog)).toBe('dmf');
+  });
+
+  it('sums every occurrence of a recurring event, ignoring rarity when durations differ', () => {
+    const weekly = ['01', '08', '15', '22', '29'].map((d) =>
+      occ('fishing', `2026-11-${d}T00:00Z`, `2026-11-${d}T12:00Z`),
+    ); // 60h in total
+    const fireworks = occ('fireworks', '2026-11-04T00:00Z', '2026-11-06T00:00Z'); // 48h
+    expect(pickLongestEvent([...weekly, fireworks], nov, catalog)).toBe('fishing');
+  });
+
+  it('breaks a duration tie by rarity, then priority, then id', () => {
+    const at = (id: string) => occ(id, '2026-11-02T00:00Z', '2026-11-05T00:00Z');
+    expect(pickLongestEvent([at('dmf'), at('midsummer')], nov, catalog)).toBe('midsummer');
+    expect(pickLongestEvent([at('alpha'), at('important')], nov, catalog)).toBe('important');
+    expect(pickLongestEvent([at('beta'), at('alpha')], nov, catalog)).toBe('alpha');
+    expect(pickLongestEvent([at('ghost'), at('fishing')], nov, catalog)).toBe('fishing');
+  });
+
+  it('uses the user time zone for the month boundaries', () => {
+    // 2026-11-30T20:00Z → Dec 1, 06:00 in UTC+10: a December event there, a November one in UTC.
+    const lateNov = occ('alpha', '2026-11-30T20:00Z', '2026-11-30T23:00Z');
+    expect(pickLongestEvent([lateNov], nov, catalog)).toBe('alpha');
+    expect(pickLongestEvent([lateNov], monthRange('2026-11', 'Australia/Brisbane'), catalog)).toBe(
+      null,
+    );
   });
 });

@@ -110,6 +110,14 @@ export function daysRange(from: LocalDate, toInclusive: LocalDate, timeZone: str
   return { start: dayRange(from, timeZone).start, end: dayRange(toInclusive, timeZone).end };
 }
 
+/** Absolute range covering every calendar day of `month` in `timeZone`. */
+export function monthRange(month: LocalMonth, timeZone: string): DateRange {
+  return {
+    start: dayRange(`${month}-01`, timeZone).start,
+    end: dayRange(`${addMonths(month, 1)}-01`, timeZone).start,
+  };
+}
+
 /** Half-open overlap test. */
 export function intersects(a: DateRange, b: DateRange): boolean {
   return a.start < b.end && a.end > b.start;
