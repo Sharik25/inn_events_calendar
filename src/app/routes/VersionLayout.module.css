@@ -72,6 +72,25 @@
   padding: var(--space-2) var(--space-4) var(--space-5);
 }
 
+/* Desktop fits the viewport: the page never scrolls. Week/Month stretch to fill `main`; a view that
+   still can't fit (a long Day, a very short window) scrolls inside `main` instead. */
+@media (min-width: 768px) {
+  .shell {
+    height: 100dvh;
+  }
+
+  .main {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+    /* Full width so the scrollbar sits at the window edge; same 1080px content column as before. */
+    max-width: none;
+    padding-bottom: var(--space-2);
+    padding-inline: max(var(--space-4), calc((100% - 1080px) / 2 + var(--space-4)));
+  }
+}
+
 .footer {
   padding: var(--space-3) var(--space-4) var(--action-bar-space);
   text-align: center;

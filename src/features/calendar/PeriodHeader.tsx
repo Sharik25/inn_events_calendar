@@ -18,11 +18,11 @@ export function PeriodHeader({
   const { nav } = useVersionView();
   return (
     <header className={styles.header}>
-      <Link to={nav.prev} className={styles.arrow} aria-label={prevLabel}>
+      <Link to={nav.prev} className={`${styles.arrow} ${styles.prev}`} aria-label={prevLabel}>
         <Icon name="chevronLeft" />
       </Link>
       <h1 className={styles.title}>{title}</h1>
-      <Link to={nav.next} className={styles.arrow} aria-label={nextLabel}>
+      <Link to={nav.next} className={`${styles.arrow} ${styles.next}`} aria-label={nextLabel}>
         <Icon name="chevronRight" />
       </Link>
       {!nav.isCurrent && (

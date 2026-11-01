@@ -45,3 +45,30 @@
   font-weight: 700;
   color: var(--color-gold);
 }
+
+/* Desktop: "This month" sits beside the arrows instead of on its own row, saving vertical space. */
+@media (min-width: 768px) {
+  .header {
+    grid-template-columns: minmax(0, 1fr) 48px auto 48px minmax(0, 1fr);
+    grid-template-areas: '. prev title next current';
+    max-width: none;
+    margin-bottom: var(--space-3);
+  }
+
+  .prev {
+    grid-area: prev;
+  }
+
+  .title {
+    grid-area: title;
+  }
+
+  .next {
+    grid-area: next;
+  }
+
+  .current {
+    grid-area: current;
+    justify-self: start;
+  }
+}
