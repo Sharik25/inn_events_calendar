@@ -14,7 +14,7 @@ import { switchVersionPath, versionStatus } from '@/engine/version';
 import { MoreSheet } from '@/features/settings/MoreSheet';
 import { LaunchScreen } from '@/features/version-switcher/LaunchScreen';
 import { VersionPicker } from '@/features/version-switcher/VersionPicker';
-import { dominantThemeId } from '@/hooks/useDominantTheme';
+import { dominantThemeId, monthThemeId } from '@/hooks/useDominantTheme';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useNow } from '@/hooks/useNow';
 import { useOccurrences } from '@/hooks/useOccurrences';
@@ -28,6 +28,7 @@ import {
   ActionBarDivider,
   ActionButton,
   AmbientParticles,
+  FestiveGarland,
   Icon,
   ThemeDecorations,
   ThemeScope,
@@ -37,7 +38,10 @@ import type { VersionView } from '../versionView';
 import type { VersionLoaderData } from './loaders';
 import styles from './VersionLayout.module.css';
 
-/** Shell for /:versionId/*: themed by the viewed date's dominant event, with top bar + action bar. */
+/**
+ * Shell for /:versionId/*: themed by the viewed date's dominant event (Month view: by the month's
+ * longest-running event), with top bar + action bar.
+ */
 export function VersionLayout() {
   const { version, versions, catalog } = useLoaderData() as VersionLoaderData;
   const params = useParams();
@@ -75,16 +79,24 @@ export function VersionLayout() {
           : params.date
         : (params.date ?? today);
 
-  const dayOccurrences = useOccurrences(
+  // The shell's theme: the viewed day's dominant event, or in Month view one theme for the whole
+  // month (its longest-running event).
+  const viewMonth = monthOf(viewDate);
+  const themeFrom = mode === 'month' ? `${viewMonth}-01` : viewDate;
+  const themeTo = mode === 'month' ? addDays(`${addMonths(viewMonth, 1)}-01`, -1) : viewDate;
+  const themeOccurrences = useOccurrences(
     version,
     region.id,
-    viewDate,
-    viewDate,
+    themeFrom,
+    themeTo,
     userTz,
     catalog,
     hiddenCategories,
   );
-  const themeId = dominantThemeId(dayOccurrences, viewDate, userTz, catalog, version);
+  const themeId =
+    mode === 'month'
+      ? monthThemeId(themeOccurrences, viewMonth, userTz, catalog, version)
+      : dominantThemeId(themeOccurrences, viewDate, userTz, catalog, version);
   const theme = useTheme(themeId);
   const reducedMotion = useReducedMotion();
 
@@ -168,6 +180,7 @@ export function VersionLayout() {
     <ThemeScope themeId={themeId} withBackground className={styles.shell}>
       <ThemeDecorations decorations={theme.decorations} reducedMotion={reducedMotion} />
       {theme.particles && !reducedMotion && <AmbientParticles kind={theme.particles} />}
+      {themeId === 'winter-veil' && <FestiveGarland reducedMotion={reducedMotion} />}
 
       <header className={styles.topBar}>
         <button
