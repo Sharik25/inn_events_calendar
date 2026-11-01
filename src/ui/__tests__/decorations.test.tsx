@@ -4,6 +4,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { defaultSettings, useSettings } from '@/state/settings';
 import type { Decoration } from '@/themes';
 import { AmbientParticles, MAX_PARTICLES } from '../AmbientParticles/AmbientParticles';
+import { FestiveGarland } from '../FestiveGarland/FestiveGarland';
 import { ThemeDecorations } from '../ThemeDecorations/ThemeDecorations';
 
 const art =
@@ -77,6 +78,21 @@ describe('AmbientParticles', () => {
     const a = render(<AmbientParticles kind="embers" count={3} />).container.innerHTML;
     const b = render(<AmbientParticles kind="embers" count={3} />).container.innerHTML;
     expect(a).toBe(b);
+  });
+});
+
+describe('FestiveGarland', () => {
+  it('is a hidden, non-interactive strip carrying inline SVG art', () => {
+    render(<FestiveGarland />);
+    const garland = screen.getByTestId('festive-garland');
+    expect(garland).toHaveAttribute('aria-hidden', 'true');
+    expect(garland).not.toHaveAttribute('data-motion');
+    expect(garland.style.backgroundImage).toContain('data:image/svg+xml');
+  });
+
+  it('marks reduced motion so its animation can be disabled', () => {
+    render(<FestiveGarland reducedMotion />);
+    expect(screen.getByTestId('festive-garland')).toHaveAttribute('data-motion', 'reduce');
   });
 });
 

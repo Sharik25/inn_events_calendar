@@ -22,6 +22,22 @@ test('Month Oct 2026: cells tinted by the dominant event, today glowing', async 
   expect(tint).not.toBe('transparent');
 });
 
+test('Month view wears one theme: its longest-running event', async ({ page }) => {
+  const shell = page.locator('main').locator('xpath=ancestor::*[@data-theme][1]');
+  for (const [month, themeId] of [
+    ['2026-10', 'hallows-end'],
+    // Hallow's End spills into Nov 1, but the week-long Faire runs longer in November.
+    ['2026-11', 'darkmoon-faire'],
+    ['2026-12', 'winter-veil'],
+  ] as const) {
+    await page.goto(`/anniversary/month/${month}`);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(shell, month).toHaveAttribute('data-theme', themeId);
+  }
+  // Day cells keep their own event's tint.
+  await expect(page.locator('[data-date="2026-12-31"]')).toHaveAttribute('data-theme', 'fireworks');
+});
+
 test('Week and Month have no horizontal scroll at 360px', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 740 });
   for (const path of [
@@ -37,7 +53,10 @@ test('Week and Month have no horizontal scroll at 360px', async ({ page }) => {
 
 test('tapping a month day opens the Day sheet, which links to the day view', async ({ page }) => {
   await page.goto('/anniversary/month/2026-11');
-  await page.getByRole('button', { name: /^Sunday, November 15: Darkmoon Faire/ }).click();
+  // Tap the numeral corner: on desktop, event ribbons cover the rest of the cell.
+  await page
+    .getByRole('button', { name: /^Sunday, November 15: Darkmoon Faire/ })
+    .click({ position: { x: 16, y: 12 } });
   const sheet = page.getByRole('dialog', { name: 'Sunday, November 15' });
   await expect(sheet).toBeVisible();
   await sheet.getByRole('link', { name: 'Open day view' }).click();

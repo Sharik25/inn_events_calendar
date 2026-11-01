@@ -1,0 +1,41 @@
+.garland {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Behind the top bar / content (z-index 1), with the theme decoration layer (z-index 0). */
+  z-index: 0;
+  height: 48px;
+  pointer-events: none;
+  background-repeat: repeat-x;
+  background-position: top center;
+  background-size: auto 100%;
+  transform-origin: top center;
+  animation: garland-bob 6s ease-in-out infinite alternate;
+}
+
+@media (min-width: 768px) {
+  .garland {
+    height: 62px;
+  }
+}
+
+/* Respect the app setting (prop) and the OS preference. */
+.garland[data-motion='reduce'] {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .garland {
+    animation: none;
+  }
+}
+
+@keyframes garland-bob {
+  from {
+    transform: translateY(-2px);
+  }
+  to {
+    transform: translateY(3px);
+  }
+}

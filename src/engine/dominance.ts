@@ -57,3 +57,37 @@ export function occurrencesOnDay(
 ): Occurrence[] {
   return occurrencesIn(occurrences, dayRange(date, timeZone), catalog);
 }
+
+/** Milliseconds of `occurrence` that fall inside `range`. */
+function overlapMs(occurrence: DateRange, range: DateRange): number {
+  const start = Math.max(occurrence.start.getTime(), range.start.getTime());
+  const end = Math.min(occurrence.end.getTime(), range.end.getTime());
+  return Math.max(0, end - start);
+}
+
+/**
+ * The event that runs longest inside `range` (e.g. a month), summing all of its occurrences and
+ * counting only the time inside the range. Ties go to the more dominant event (rarity, priority,
+ * then id). Null when nothing runs in the range (→ version base theme).
+ */
+export function pickLongestEvent(
+  occurrences: Occurrence[],
+  range: DateRange,
+  catalog: EventCatalog,
+): string | null {
+  const totals = new Map<string, number>();
+  for (const o of occurrences) {
+    const ms = overlapMs(o, range);
+    if (ms > 0) totals.set(o.eventId, (totals.get(o.eventId) ?? 0) + ms);
+  }
+  const rank = (id: string) => {
+    const def = catalog[id];
+    return { rarity: def ? RARITY_WEIGHT[def.rarity] : 0, priority: def?.priority ?? 0 };
+  };
+  const [longest] = [...totals].sort(([idA, msA], [idB, msB]) => {
+    const a = rank(idA);
+    const b = rank(idB);
+    return msB - msA || b.rarity - a.rarity || b.priority - a.priority || idA.localeCompare(idB);
+  });
+  return longest?.[0] ?? null;
+}

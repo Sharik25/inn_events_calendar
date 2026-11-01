@@ -9,6 +9,7 @@ import { EventChip } from '@/features/calendar/EventChip';
 import { PeriodHeader } from '@/features/calendar/PeriodHeader';
 import { useDayThemeId } from '@/features/calendar/useDayTheme';
 import { RoutedEventSheet } from '@/features/event-sheet/RoutedEventSheet';
+import { useElementHeight } from '@/hooks/useElementHeight';
 import { DESKTOP_QUERY, useMediaQuery } from '@/hooks/useMediaQuery';
 import { useOccurrences } from '@/hooks/useOccurrences';
 import { formatDayLong, formatMonth, weekdayShort } from '@/lib/format';
@@ -18,6 +19,20 @@ import styles from './MonthView.module.css';
 
 const MAX_LANES = 3;
 const MAX_DOTS = 3;
+/** Ribbon grid sizes in px; keep in sync with `.ribbons` in MonthView.module.css. */
+const NUMERAL_ROW = 28;
+const LANE_HEIGHT = 22;
+const LANE_GAP = 3;
+
+/**
+ * How many ribbon lanes fit under the numeral row of a `height`px week row (at most MAX_LANES).
+ * The row height follows the viewport; unmeasured (`null`) means MAX_LANES.
+ */
+function ribbonLanes(height: number | null): number {
+  if (height === null) return MAX_LANES;
+  const fit = Math.floor((height - NUMERAL_ROW) / (LANE_GAP + LANE_HEIGHT));
+  return Math.max(1, Math.min(MAX_LANES, fit));
+}
 
 /** `/:versionId/month/:month`: day grid tinted by each day's dominant event. */
 export function MonthView() {
@@ -103,10 +118,12 @@ function WeekRow({
 }) {
   const { catalog, userTimeZone, today } = useVersionView();
   const themeFor = useDayThemeId();
+  const [ribbonsRef, ribbonsHeight] = useElementHeight<HTMLDivElement>();
   const ribbons = isDesktop ? layoutRibbons(occurrences, week, userTimeZone, catalog) : [];
+  const lanes = ribbonLanes(ribbonsHeight);
   const hiddenPerDay = week.map(
     (_, col) =>
-      ribbons.filter((s) => s.lane >= MAX_LANES && s.startCol <= col && s.endCol >= col).length,
+      ribbons.filter((s) => s.lane >= lanes && s.startCol <= col && s.endCol >= col).length,
   );
 
   return (
@@ -155,9 +172,9 @@ function WeekRow({
       })}
 
       {isDesktop && (
-        <div className={styles.ribbons}>
+        <div ref={ribbonsRef} className={styles.ribbons}>
           {ribbons
-            .filter((s) => s.lane < MAX_LANES)
+            .filter((s) => s.lane < lanes)
             .map((seg) => (
               <EventChip
                 key={seg.occurrence.key}
@@ -169,7 +186,7 @@ function WeekRow({
                 className={styles.ribbon}
                 style={{
                   gridColumn: `${seg.startCol + 1} / ${seg.endCol + 2}`,
-                  gridRow: seg.lane + 1,
+                  gridRow: seg.lane + 2,
                 }}
               />
             ))}
@@ -180,7 +197,7 @@ function WeekRow({
                   key={date}
                   type="button"
                   className={styles.more}
-                  style={{ gridColumn: col + 1, gridRow: MAX_LANES + 1 }}
+                  style={{ gridColumn: col + 1, gridRow: 1 }}
                   onClick={() => onSelect(date)}
                 >
                   {strings.calendar.moreEvents(hiddenPerDay[col] ?? 0)}

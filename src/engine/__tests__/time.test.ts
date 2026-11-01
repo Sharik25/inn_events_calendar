@@ -10,6 +10,7 @@ import {
   localDateOf,
   localTimeOf,
   monthOf,
+  monthRange,
   monthsBetween,
   nthWeekdayOfMonth,
   wallTimeToInstant,
@@ -110,6 +111,19 @@ describe('day ranges and DST', () => {
     const r = daysRange('2026-10-26', '2026-11-01', 'Europe/Paris');
     expect(iso(r.start)).toBe('2026-10-25T23:00:00.000Z');
     expect(iso(r.end)).toBe('2026-11-01T23:00:00.000Z');
+  });
+});
+
+describe('monthRange', () => {
+  it('covers the whole month in the given zone, across a DST switch', () => {
+    const nov = monthRange('2026-11', 'America/Los_Angeles');
+    expect(iso(nov.start)).toBe('2026-11-01T07:00:00.000Z');
+    expect(iso(nov.end)).toBe('2026-12-01T08:00:00.000Z');
+    expect(hours(nov)).toBe(30 * 24 + 1);
+  });
+
+  it('rolls over the year', () => {
+    expect(iso(monthRange('2026-12', 'UTC').end)).toBe('2027-01-01T00:00:00.000Z');
   });
 });
 
