@@ -63,6 +63,7 @@ Node 22 is required (`nvm use`; see `.nvmrc`). The system default Node 18 is too
 - `src/engine/ics.ts` is our own small RFC 5545 writer, not the `ics` package from PLAN.md. That avoids three runtime dependencies in the bundle. Output is validated in tests by parsing it with `ical.js` (dev dependency).
 - Recurring events are exported as individual VEVENTs, never RRULE, because a UTC RRULE would drift by an hour across DST.
 - UIDs are `Occurrence.key@innkeepers-almanac`, so they are stable across builds and re-imports.
+- "Add to calendar" opens a Sheet. For a long-running event it lists the one-day events (≤ 24h, `oneDayOverlaps` in `engine/agenda.ts`) that run during it. The user can tick any of them to include in the same downloaded .ics. Google gets one link per event because its add-event URL takes a single event.
 - `npm run build-ics` (also run by `dev`, `build` and the Playwright server) writes `public/calendars/<version>-<region>.ics`, covering −1 to +18 months. Set `SITE_URL` (Netlify's `URL` is used automatically) so event descriptions link back to the app.
 
 ## PWA, settings & deploy (Phase 8)

@@ -1,6 +1,6 @@
 import type { EventCatalog, EventCategory, Occurrence } from '@/domain/types';
 import { occurrencesOnDay } from './dominance';
-import { addDays, dayRange, type LocalDate } from './time';
+import { addDays, dayRange, intersects, type LocalDate } from './time';
 
 export interface DayAgenda {
   date: LocalDate;
@@ -45,6 +45,32 @@ export function buildDayAgenda(
     .filter((o) => !seen.has(o.eventId) && seen.add(o.eventId));
 
   return { date, active, dominant: active[0] ?? null, comingSoon };
+}
+
+const ONE_DAY_MS = 86_400_000;
+
+/** Lasts a day or less (a fishing contest, New Year's Eve), as opposed to a multi-day event. */
+export function isOneDay(occurrence: Pick<Occurrence, 'start' | 'end'>): boolean {
+  return occurrence.end.getTime() - occurrence.start.getTime() <= ONE_DAY_MS;
+}
+
+/**
+ * One-day occurrences of other events that run during the long-running `occurrence`, earliest
+ * first: the extras a calendar export can include. Empty when `occurrence` is itself one-day.
+ */
+export function oneDayOverlaps(occurrences: Occurrence[], occurrence: Occurrence): Occurrence[] {
+  if (isOneDay(occurrence)) return [];
+  const seen = new Set<string>();
+  return occurrences
+    .filter(
+      (o) =>
+        o.eventId !== occurrence.eventId &&
+        isOneDay(o) &&
+        intersects(o, occurrence) &&
+        !seen.has(o.key) &&
+        seen.add(o.key),
+    )
+    .sort((a, b) => a.start.getTime() - b.start.getTime() || a.key.localeCompare(b.key));
 }
 
 export type Timing =

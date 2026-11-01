@@ -33,46 +33,99 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe('Add to calendar', () => {
-  it('hero menu: Google link and a single-event .ics', async () => {
-    const user = userEvent.setup();
-    const files = captureDownloads();
-    renderRoute('/anniversary/today');
-    await screen.findByRole('heading', { level: 1, name: "Hallow's End" });
+/** Parses a downloaded .ics into its events. */
+async function parseEvents(file: { text: Promise<string> } | undefined) {
+  const cal = new ICAL.Component(ICAL.parse(await file!.text));
+  return cal.getAllSubcomponents('vevent').map((c) => new ICAL.Event(c));
+}
 
-    const trigger = screen.getByRole('button', { name: 'Add to calendar' });
-    expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    await user.click(trigger);
-    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+async function openExportSheet() {
+  const user = userEvent.setup();
+  renderRoute('/anniversary/today');
+  await screen.findByRole('heading', { level: 1, name: "Hallow's End" });
+  await user.click(screen.getByRole('button', { name: 'Add to calendar' }));
+  return { user, sheet: await screen.findByRole('dialog', { name: 'Add to calendar' }) };
+}
+
+describe('Add to calendar', () => {
+  it('hero sheet: Google link and a single-event .ics by default', async () => {
+    const files = captureDownloads();
+    const { user, sheet } = await openExportSheet();
 
     const google = new URL(
-      screen.getByRole('link', { name: 'Google Calendar' }).getAttribute('href') ?? '',
+      within(sheet).getByRole('link', { name: 'Google Calendar' }).getAttribute('href') ?? '',
     );
     expect(google.searchParams.get('text')).toBe("Hallow's End");
     expect(google.searchParams.get('dates')).toBe('20261018T080000Z/20261101T090000Z');
 
-    await user.click(screen.getByRole('button', { name: 'Apple / Outlook (.ics)' }));
-    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    const ics = within(sheet).getByRole('button', { name: 'Apple / Outlook (.ics)' });
+    expect(ics).toHaveAccessibleDescription('1 event in the file');
+    await user.click(ics);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(files[0]?.name).toBe('hallows-end-2026-10-18.ics');
-    const cal = new ICAL.Component(ICAL.parse(await files[0]!.text));
-    const event = new ICAL.Event(cal.getFirstSubcomponent('vevent')!);
-    expect(event.uid).toBe('anniversary:hallows-end:2026-10-18T08:00:00.000Z@innkeepers-almanac');
-    expect(event.description).toContain(
+    const [event, ...rest] = await parseEvents(files[0]);
+    expect(rest).toHaveLength(0);
+    expect(event?.uid).toBe('anniversary:hallows-end:2026-10-18T08:00:00.000Z@innkeepers-almanac');
+    expect(event?.description).toContain(
       'http://localhost:3000/anniversary/day/2026-10-18?event=hallows-end',
     );
   });
 
-  it('menu closes on Escape and outside clicks', async () => {
-    const user = userEvent.setup();
-    renderRoute('/anniversary/today');
-    await screen.findByRole('heading', { level: 1 });
-    const trigger = screen.getByRole('button', { name: 'Add to calendar' });
-    await user.click(trigger);
+  it('lists the one-day events during a long event and adds the picked ones to the .ics', async () => {
+    const files = captureDownloads();
+    const { user, sheet } = await openExportSheet();
+
+    // Fishing Sundays inside Hallow's End (Oct 18 – Nov 1, 10:00 Paris); Nov 1 starts after it ends.
+    const group = within(sheet).getByRole('group', {
+      name: "One-day events during Hallow's End",
+    });
+    const boxes = within(group).getAllByRole('checkbox');
+    expect(boxes).toHaveLength(2);
+    expect(boxes.every((b) => !(b as HTMLInputElement).checked)).toBe(true);
+    expect(boxes[0]).toHaveAccessibleName(/Stranglethorn Fishing Extravaganza.*Oct 18/);
+    expect(boxes[1]).toHaveAccessibleName(/Stranglethorn Fishing Extravaganza.*Oct 25/);
+
+    await user.click(boxes[1]!);
+    const ics = within(sheet).getByRole('button', { name: 'Apple / Outlook (.ics)' });
+    expect(ics).toHaveAccessibleDescription('2 events in the file');
+    // Google adds one event per link: the picked extra gets its own.
+    const extraLink = within(sheet).getByRole('link', { name: /^Google Calendar: Stranglethorn/ });
+    expect(new URL(extraLink.getAttribute('href') ?? '').searchParams.get('dates')).toBe(
+      '20261025T130000Z/20261025T150000Z',
+    );
+
+    await user.click(ics);
+    const events = await parseEvents(files[0]);
+    expect(events.map((e) => e.uid)).toEqual([
+      'anniversary:hallows-end:2026-10-18T08:00:00.000Z@innkeepers-almanac',
+      'anniversary:stv-fishing:2026-10-25T13:00:00.000Z@innkeepers-almanac',
+    ]);
+  });
+
+  it('select all toggles every one-day event', async () => {
+    const { user, sheet } = await openExportSheet();
+    await user.click(within(sheet).getByRole('button', { name: 'Select all' }));
+    expect(
+      within(sheet)
+        .getAllByRole('checkbox')
+        .every((b) => (b as HTMLInputElement).checked),
+    ).toBe(true);
+    expect(
+      within(sheet).getByRole('button', { name: 'Apple / Outlook (.ics)' }),
+    ).toHaveAccessibleDescription('3 events in the file');
+    await user.click(within(sheet).getByRole('button', { name: 'Clear all' }));
+    expect(
+      within(sheet)
+        .getAllByRole('checkbox')
+        .some((b) => (b as HTMLInputElement).checked),
+    ).toBe(false);
+  });
+
+  it('sheet closes on Escape and restores focus to the button', async () => {
+    const { user } = await openExportSheet();
     await user.keyboard('{Escape}');
-    expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    await user.click(trigger);
-    await user.click(screen.getByRole('heading', { level: 1 }));
-    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Add to calendar' })).toHaveFocus();
   });
 });
 

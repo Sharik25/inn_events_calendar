@@ -1,5 +1,12 @@
 import type { EventCatalog, EventDefinition, Occurrence } from '@/domain/types';
-import { buildDayAgenda, filterByCategory, findOccurrenceForDay, timingAt } from '../agenda';
+import {
+  buildDayAgenda,
+  filterByCategory,
+  findOccurrenceForDay,
+  isOneDay,
+  oneDayOverlaps,
+  timingAt,
+} from '../agenda';
 
 const def = (
   id: string,
@@ -87,5 +94,31 @@ describe('findOccurrenceForDay', () => {
     expect(findOccurrenceForDay(all, 'fishing', '2026-10-27', 'Europe/Paris')).toBe(fishing2);
     expect(findOccurrenceForDay(all, 'fishing', '2026-12-01', 'Europe/Paris')).toBe(fishing3);
     expect(findOccurrenceForDay(all, 'nope', '2026-12-01', 'Europe/Paris')).toBeNull();
+  });
+});
+
+describe('oneDayOverlaps', () => {
+  it('counts anything up to 24 hours as one-day', () => {
+    expect(isOneDay(fishing1)).toBe(true);
+    expect(isOneDay(occ('fireworks', '2026-07-04T08:00Z', '2026-07-05T08:00Z'))).toBe(true);
+    expect(isOneDay(occ('fireworks', '2026-07-04T08:00Z', '2026-07-05T08:01Z'))).toBe(false);
+    expect(isOneDay(dmf)).toBe(false);
+  });
+
+  it('lists one-day events of other events inside the long event, earliest first', () => {
+    // fishing2 starts 4h after Hallow's End ends; DMF is long-running itself.
+    expect(oneDayOverlaps([dmf, fishing2, phase, fishing1, hallows, phase], hallows)).toEqual([
+      fishing1,
+      phase,
+    ]);
+  });
+
+  it('includes one-day events that only partly overlap the long event', () => {
+    const lateNight = occ('phase', '2026-11-01T06:00Z', '2026-11-01T12:00Z');
+    expect(oneDayOverlaps([lateNight], hallows)).toEqual([lateNight]);
+  });
+
+  it('has nothing to add to a one-day event', () => {
+    expect(oneDayOverlaps(all, fishing1)).toEqual([]);
   });
 });
