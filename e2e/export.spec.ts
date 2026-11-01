@@ -10,16 +10,19 @@ function parseEvents(ics: string) {
 test('hero "Add to calendar": Google link and a valid single-event .ics', async ({ page }) => {
   await page.goto('/anniversary/today');
   await page.getByRole('button', { name: 'Add to calendar' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Add to calendar' });
 
   const google = new URL(
-    (await page.getByRole('link', { name: 'Google Calendar' }).getAttribute('href')) ?? '',
+    (await sheet
+      .getByRole('link', { name: 'Google Calendar', exact: true })
+      .getAttribute('href')) ?? '',
   );
   expect(google.hostname).toBe('calendar.google.com');
   expect(google.searchParams.get('dates')).toBe('20261018T080000Z/20261101T090000Z');
 
   const [download] = await Promise.all([
     page.waitForEvent('download'),
-    page.getByRole('button', { name: 'Apple / Outlook (.ics)' }).click(),
+    sheet.getByRole('button', { name: 'Apple / Outlook (.ics)' }).click(),
   ]);
   expect(download.suggestedFilename()).toBe('hallows-end-2026-10-18.ics');
   const { events } = parseEvents(readFileSync((await download.path())!, 'utf8'));
@@ -28,6 +31,40 @@ test('hero "Add to calendar": Google link and a valid single-event .ics', async 
     'anniversary:hallows-end:2026-10-18T08:00:00.000Z@innkeepers-almanac',
   );
   expect(events[0]?.summary).toBe("Hallow's End");
+  await expect(sheet).toBeHidden();
+});
+
+test('one-day events during the long event can be added to the .ics', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.goto('/anniversary/today');
+  await page.getByRole('button', { name: 'Add to calendar' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Add to calendar' });
+  const group = sheet.getByRole('group', { name: "One-day events during Hallow's End" });
+  await expect(group.getByRole('checkbox')).toHaveCount(2);
+
+  // Fits a 360px screen: no horizontal scroll, rows are full tap targets.
+  const overflow = await sheet.evaluate((el) => el.scrollWidth - el.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(0);
+  for (const row of await group.locator('label').all()) {
+    const box = (await row.boundingBox())!;
+    expect(box.height).toBeGreaterThanOrEqual(48);
+    expect(box.x + box.width).toBeLessThanOrEqual(360);
+  }
+
+  // Tapping the row text toggles its checkbox.
+  await group.getByText(/Oct 25/).click();
+  await expect(group.getByRole('checkbox').nth(1)).toBeChecked();
+  await expect(sheet.getByText('2 events in the file')).toBeVisible();
+
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    sheet.getByRole('button', { name: 'Apple / Outlook (.ics)' }).click(),
+  ]);
+  const { events } = parseEvents(readFileSync((await download.path())!, 'utf8'));
+  expect(events.map((e) => e.summary)).toEqual([
+    "Hallow's End",
+    'Stranglethorn Fishing Extravaganza',
+  ]);
 });
 
 test('subscription feeds are served as text/calendar and parse', async ({ request }) => {
