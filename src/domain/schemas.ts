@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type {
   EventDefinition,
+  EventExperience,
   ExplicitOccurrence,
   Region,
   ScheduleFile,
@@ -37,6 +38,34 @@ export const eventCategories = [
   'milestone',
 ] as const;
 
+const levelRange = z
+  .strictObject({ min: z.number().int().min(1), max: z.number().int().min(1).optional() })
+  .refine((r) => r.max === undefined || r.max >= r.min, 'max must be ≥ min');
+
+export const eventExperienceSchema = z
+  .strictObject({
+    xpBonus: z.string().min(1).optional(),
+    levelRange: levelRange.optional(),
+    quests: z
+      .array(
+        z.strictObject({
+          name: z.string().min(1),
+          level: levelRange.optional(),
+          rewards: z.array(z.string().min(1)).min(1).optional(),
+          notes: z.string().min(1).optional(),
+        }),
+      )
+      .min(1)
+      .optional(),
+    rewards: z.array(z.string().min(1)).min(1).optional(),
+    notes: z.string().min(1).optional(),
+    source: url,
+  })
+  .refine(
+    ({ source: _source, ...facts }) => Object.keys(facts).length > 0,
+    'needs at least one fact besides source',
+  );
+
 export const eventDefinitionSchema = z.strictObject({
   id: slug,
   name: z.string().min(1),
@@ -48,6 +77,7 @@ export const eventDefinitionSchema = z.strictObject({
   summary: z.string().min(1),
   highlights: z.array(z.string().min(1)).optional(),
   links: z.array(z.strictObject({ label: z.string().min(1), url })).optional(),
+  experience: z.record(slug, eventExperienceSchema).optional(),
 });
 
 export const explicitOccurrenceSchema = z.strictObject({
@@ -128,6 +158,7 @@ type Equals<A, B> =
 type Assert<T extends true> = T;
 export type SchemaTypeChecks = [
   Assert<Equals<z.infer<typeof eventDefinitionSchema>, EventDefinition>>,
+  Assert<Equals<z.infer<typeof eventExperienceSchema>, EventExperience>>,
   Assert<Equals<z.infer<typeof explicitOccurrenceSchema>, ExplicitOccurrence>>,
   Assert<Equals<z.infer<typeof scheduleRuleSchema>, ScheduleRule>>,
   Assert<Equals<z.infer<typeof regionSchema>, Region>>,

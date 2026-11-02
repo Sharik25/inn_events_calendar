@@ -22,6 +22,26 @@ export interface EventDefinition {
   summary: string; // one sentence
   highlights?: string[]; // rewards / things to do (short bullets)
   links?: { label: string; url: string }[];
+  /** Experience & rewards per version id (they differ between versions). Shown when present. */
+  experience?: Record<VersionId, EventExperience>;
+}
+
+export interface LevelRange {
+  min: number;
+  max?: number;
+}
+
+/**
+ * Experience and rewards of an event in one version. Only facts stated by `source` (never
+ * estimates); every field but `source` is optional, and at least one must be set.
+ */
+export interface EventExperience {
+  xpBonus?: string; // as worded by the source, e.g. "+10% experience from kills"
+  levelRange?: LevelRange;
+  quests?: { name: string; level?: LevelRange; rewards?: string[]; notes?: string }[];
+  rewards?: string[];
+  notes?: string;
+  source: string; // URL
 }
 
 export type EventCatalog = Record<EventId, EventDefinition>;

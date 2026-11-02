@@ -62,6 +62,13 @@ export function validateData({ events, versions, themeIds }: DataSet): string[] 
     issues.push(`duplicate version id "${id}"`);
 
   const eventIds = new Set(events.map((e) => e.id));
+  const versionIds = new Set(versions.map((v) => v.id));
+  for (const event of events) {
+    for (const versionId of Object.keys(event.experience ?? {})) {
+      if (!versionIds.has(versionId))
+        issues.push(`event "${event.id}": experience for unknown version "${versionId}"`);
+    }
+  }
 
   for (const version of versions) {
     const where = `version "${version.id}"`;
