@@ -39,3 +39,8 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* Development-only placeholder (no SUPPORT_URL yet): same look, dashed rim. */
+.link[data-placeholder] {
+  border-style: dashed;
+}

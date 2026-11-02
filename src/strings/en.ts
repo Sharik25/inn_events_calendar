@@ -145,6 +145,7 @@ export const strings = {
   },
   support: {
     beer: 'Buy me a beer 🍺',
+    notConfigured: 'Placeholder: set SUPPORT_URL in src/config.ts',
   },
   legal: {
     disclaimer:
