@@ -15,7 +15,9 @@ export type ThemeToken =
   | '--particle-color'
   | '--font-display';
 
-export type ParticleKind = 'embers' | 'snow' | 'petals' | 'sparkles' | 'bubbles';
+/** Theme particle kinds, plus `sparks` / `splinters` for the quiet-day hearth's side bands. */
+export type ParticleKind =
+  'embers' | 'snow' | 'petals' | 'sparkles' | 'bubbles' | 'sparks' | 'splinters';
 
 /** Where a decoration sits: a viewport corner, or a full-width repeating strip along an edge. */
 export type DecorationAnchor =

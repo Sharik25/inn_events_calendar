@@ -83,8 +83,27 @@ test('a quiet day shows a fireplace that never blocks taps and stills with reduc
   );
   expect(hit).toBe(false);
 
+  // Side sparks and splinters: click-through, at the screen edges, animating.
+  const sparks = page.locator('[data-kind="sparks"][data-placement="sides"]');
+  const splinters = page.locator('[data-kind="splinters"][data-placement="sides"]');
+  await expect(sparks).toHaveCSS('pointer-events', 'none');
+  expect(
+    await sparks
+      .locator('span')
+      .first()
+      .evaluate((el) => getComputedStyle(el).animationName),
+  ).toMatch(/spark/); // CSS Modules hash keyframe names
+
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(hearth).toHaveAttribute('data-motion', 'reduce');
+  await expect(sparks).toHaveAttribute('data-still');
+  expect(
+    await sparks
+      .locator('span')
+      .first()
+      .evaluate((el) => getComputedStyle(el).animationName),
+  ).toBe('none');
+  await expect(splinters).toBeHidden();
   expect(await flame.evaluate((el) => getComputedStyle(el).animationName)).toBe('none');
   await expect(hearth.locator('[class*="ember"]').first()).toBeHidden();
 });

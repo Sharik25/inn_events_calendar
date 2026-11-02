@@ -75,6 +75,21 @@ describe('AmbientParticles', () => {
     hidden.mockRestore();
   });
 
+  it('keeps side particles to the outer bands and can stand still', () => {
+    const { container } = render(
+      <AmbientParticles kind="sparks" placement="sides" count={20} still />,
+    );
+    const layer = container.firstElementChild as HTMLElement;
+    expect(layer).toHaveAttribute('data-placement', 'sides');
+    expect(layer).toHaveAttribute('data-still');
+    expect(layer).toHaveAttribute('aria-hidden', 'true');
+    const xs = [...layer.children].map((p) =>
+      parseFloat((p as HTMLElement).style.getPropertyValue('--px')),
+    );
+    expect(xs.every((x) => x <= 12 || x >= 88)).toBe(true);
+    expect(xs.some((x) => x <= 12) && xs.some((x) => x >= 88)).toBe(true);
+  });
+
   it('is deterministic between renders', () => {
     const a = render(<AmbientParticles kind="embers" count={3} />).container.innerHTML;
     const b = render(<AmbientParticles kind="embers" count={3} />).container.innerHTML;

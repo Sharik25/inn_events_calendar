@@ -11,7 +11,7 @@ import { useOccurrences } from '@/hooks/useOccurrences';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { formatDistance, formatRange } from '@/lib/format';
 import { strings } from '@/strings/en';
-import { Fireplace, Icon, ParchmentCard } from '@/ui';
+import { AmbientParticles, Fireplace, Icon, ParchmentCard } from '@/ui';
 import { AddToCalendar } from '@/features/calendar-export/AddToCalendar';
 import { DateNumeral } from './DateNumeral';
 import { EventCard } from './EventCard';
@@ -126,6 +126,8 @@ export function TodayView() {
               {strings.today.quietDay}
             </h1>
             <Fireplace reducedMotion={reducedMotion} className={styles.hearth} />
+            <AmbientParticles kind="sparks" placement="sides" count={14} still={reducedMotion} />
+            <AmbientParticles kind="splinters" placement="sides" count={6} still={reducedMotion} />
           </>
         )}
       </section>

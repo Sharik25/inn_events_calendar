@@ -77,6 +77,108 @@
   animation-name: rise;
 }
 
+/* Quiet-day hearth, side bands only (fewer on small screens). */
+@media (max-width: 767px) {
+  .layer[data-placement='sides'] .particle:nth-child(n + 9) {
+    display: none;
+  }
+}
+
+/* Fire sparks: flicker on like the faire's twinkling stars, then drift up and out. */
+.layer[data-kind='sparks'] .particle {
+  top: calc(35% + var(--py) * 0.6);
+  width: calc(var(--size) * 0.75);
+  height: calc(var(--size) * 0.75);
+  background: #ffc35c;
+  box-shadow: 0 0 6px 1px rgb(255 128 32 / 0.85);
+  animation-name: spark;
+  animation-duration: calc(var(--duration) / 4);
+  animation-timing-function: ease-out;
+}
+
+/* Wood splinters: now and then one pops up from the fire's side, spins and drops away. */
+.layer[data-kind='splinters'] .particle {
+  top: calc(55% + var(--py) * 0.35);
+  width: 3px;
+  height: calc(var(--size) * 0.9);
+  background: linear-gradient(#a8743f, #5a3519);
+  border-radius: 1px;
+  animation-name: pop;
+  animation-duration: calc(var(--duration) / 2.5);
+  animation-timing-function: cubic-bezier(0.25, 0.6, 0.5, 1);
+}
+
+/* Standing still (reduced motion): sparks glow in place, splinters are left out. */
+.layer[data-still] .particle {
+  animation: none;
+}
+
+.layer[data-still][data-kind='sparks'] .particle {
+  opacity: 0.55;
+}
+
+.layer[data-still][data-kind='splinters'] {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layer[data-placement='sides'] .particle {
+    animation: none;
+  }
+
+  .layer[data-placement='sides'][data-kind='sparks'] .particle {
+    opacity: 0.55;
+  }
+
+  .layer[data-placement='sides'][data-kind='splinters'] {
+    display: none;
+  }
+}
+
+@keyframes spark {
+  0% {
+    transform: translate(0, 0) scale(0.3);
+    opacity: 0;
+  }
+  15% {
+    transform: translate(0, -6px) scale(1);
+    opacity: 1;
+  }
+  35% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(calc(var(--drift) / 4), -70px) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* The pop and fall take the first third; the rest of the cycle is a pause. */
+@keyframes pop {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  14% {
+    transform: translate(calc(var(--drift) / 5), -34px) rotate(calc(var(--spin) / 2));
+  }
+  32% {
+    transform: translate(calc(var(--drift) / 3), 26px) rotate(var(--spin));
+    opacity: 0.9;
+  }
+  36%,
+  100% {
+    transform: translate(calc(var(--drift) / 3), 30px) rotate(var(--spin));
+    opacity: 0;
+  }
+}
+
 @keyframes rise {
   0% {
     transform: translate(0, 0);
