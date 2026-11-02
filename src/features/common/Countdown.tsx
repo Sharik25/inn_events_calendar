@@ -1,7 +1,7 @@
 import type { Occurrence } from '@/domain/types';
 import { timingAt } from '@/engine/agenda';
 import { formatDateTime, formatDuration, formatTime } from '@/lib/format';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 
 const DAY_MS = 86_400_000;
 

@@ -1,10 +1,20 @@
-import type { VersionConfig } from '@/domain/types';
+import type { ScheduleFile, VersionConfig } from '@/domain/types';
+import { explicitBindingsFromSchedules, scheduleFilesFromGlob } from '../../schedules';
+import { weeklyResetBindings } from '../../weekly-reset';
+import { WEEKLY_RESET } from './weekly-reset';
+
+const scheduleFiles = scheduleFilesFromGlob(
+  import.meta.glob<ScheduleFile>('./schedule-*.json', { eager: true, import: 'default' }),
+);
 
 /**
  * WoW: Forever. Launch: Nov 4, 2026, 3:00 pm PT (worldwide), per
  * https://www.techspot.com/news/113832-world-warcraft-forever-launches-november-4-new-race.html
  * and https://www.warcrafttavern.com/forever/news/warcraft-forever-classic-announced-at-blizzcon-2026/
- * Events stay empty until the post-launch calendar is verified (PLAN.md §14).
+ *
+ * Dated events live in `schedule-<year>.json` next to this file: editing one on GitHub redeploys
+ * the site, no code change needed. They stay empty until the post-launch calendar is verified
+ * (PLAN.md §14). Weekly/monthly events go in `events` below as rules.
  */
 export const forever: VersionConfig = {
   id: 'forever',
@@ -18,5 +28,5 @@ export const forever: VersionConfig = {
   regions: [{ id: 'global', label: 'All realms', timeZone: 'America/Los_Angeles' }],
   defaultRegionId: 'global',
   baseThemeId: 'forever',
-  events: [],
+  events: [...explicitBindingsFromSchedules(scheduleFiles), ...weeklyResetBindings(WEEKLY_RESET)],
 };

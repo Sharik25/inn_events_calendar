@@ -13,7 +13,7 @@ import { localDateOf } from '@/engine/time';
 import { useOccurrences } from '@/hooks/useOccurrences';
 import { appBaseUrl } from '@/lib/base';
 import { downloadText } from '@/lib/download';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 
 /**
  * Export actions for one occurrence, plus the one-day events running during it (when it is a
@@ -52,10 +52,12 @@ export function useCalendarExport(occurrence: Occurrence) {
       const e = toIcs(o);
       return e ? googleCalendarUrl(e) : '';
     },
-    /** Saves this occurrence, plus `extras`, as one .ics file. */
-    download(extras: Occurrence[] = []) {
+    /** Saves this occurrence, plus `extras`, as one .ics file; each with a reminder if given. */
+    download(extras: Occurrence[] = [], alarmMinutes: number | null = null) {
       if (!event || !def) return;
-      const events = [event, ...extras.flatMap((o) => toIcs(o) ?? [])];
+      const events = [event, ...extras.flatMap((o) => toIcs(o) ?? [])].map((e) =>
+        alarmMinutes === null ? e : { ...e, alarmMinutes },
+      );
       downloadText(`${def.id}-${localDateOf(occurrence.start, 'UTC')}.ics`, buildIcs({ events }));
     },
   };

@@ -5,8 +5,10 @@ import { expandOccurrences } from '@/engine/expand';
 import { addDays, daysRange } from '@/engine/time';
 import { Countdown } from '@/features/common/Countdown';
 import { UnconfirmedMarker } from '@/features/common/UnconfirmedMarker';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { Badge, Icon, Sheet, ThemeScope } from '@/ui';
+import { ChecklistSection } from '@/features/checklist/ChecklistSection';
+import { ExperienceSection } from './ExperienceSection';
 import styles from './EventSheet.module.css';
 
 /** Event details for `?event=<id>`, styled with that event's theme. `date` picks the occurrence. */
@@ -36,6 +38,7 @@ export function EventSheet({
 
   if (!def) return null;
   const binding = version.events.find((b) => b.eventId === def.id);
+  const experience = def.experience?.[version.id];
   const notes = [binding?.notes, occurrence?.note].filter(Boolean);
   const links = [
     ...(def.links ?? []),
@@ -80,6 +83,10 @@ export function EventSheet({
             </ul>
           </section>
         )}
+
+        {experience && <ExperienceSection experience={experience} />}
+
+        {occurrence && <ChecklistSection def={def} occurrence={occurrence} />}
 
         {notes.length > 0 && (
           <section>

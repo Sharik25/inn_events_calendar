@@ -12,6 +12,7 @@ import { winterVeil } from './winter-veil';
 import { newYear } from './new-year';
 import { darkmoonFaire } from './darkmoon-faire';
 import { stvFishing } from './stv-fishing';
+import { weeklyReset } from './weekly-reset';
 
 /** All known events. Add a new event: create its file, then add it to this list. */
 export const eventDefinitions: EventDefinition[] = [
@@ -28,6 +29,7 @@ export const eventDefinitions: EventDefinition[] = [
   newYear,
   darkmoonFaire,
   stvFishing,
+  weeklyReset,
 ];
 
 export const eventCatalog: EventCatalog = Object.fromEntries(

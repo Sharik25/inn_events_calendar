@@ -133,54 +133,9 @@
   border-color: color-mix(in srgb, var(--color-gold) 70%, transparent);
 }
 
-.extra:has(.checkbox:checked) {
+.extra:has(input:checked) {
   background: color-mix(in srgb, var(--color-gold) 14%, transparent);
   border-color: color-mix(in srgb, var(--color-gold) 70%, transparent);
-}
-
-.checkbox {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  margin: 0;
-  appearance: none;
-  background: var(--color-surface);
-  border: 2px solid color-mix(in srgb, var(--color-ink) 60%, transparent);
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* Tick drawn in CSS: a rotated L. */
-.checkbox::after {
-  content: '';
-  width: 6px;
-  height: 12px;
-  margin-top: -2px;
-  border: solid var(--color-surface);
-  border-width: 0 3px 3px 0;
-  transform: rotate(45deg) scale(0);
-}
-
-.checkbox:checked {
-  background: var(--color-accent);
-  border-color: color-mix(in srgb, var(--color-accent) 70%, black);
-}
-
-.checkbox:checked::after {
-  transform: rotate(45deg) scale(1);
-}
-
-.checkbox:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .checkbox::after {
-    transition: transform 120ms ease;
-  }
 }
 
 .actions {
@@ -250,4 +205,13 @@
 .option:hover {
   background: color-mix(in srgb, var(--color-gold) 20%, transparent);
   border-color: color-mix(in srgb, var(--color-gold) 60%, transparent);
+}
+
+/* Reminder choice for the .ics file. */
+.reminder {
+  margin-top: var(--space-4);
+}
+
+.reminder .hint {
+  margin-top: var(--space-2);
 }

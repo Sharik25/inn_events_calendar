@@ -50,7 +50,7 @@ describe('settings store', () => {
     expect(useSettings.getState().regionByVersion).toEqual({ anniversary: 'us' });
 
     const persisted = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) ?? '{}');
-    expect(persisted.version).toBe(1);
+    expect(persisted.version).toBe(2);
     expect(persisted.state.regionByVersion).toEqual({ anniversary: 'us' });
     expect(persisted.state).not.toHaveProperty('setRegion');
   });
@@ -58,14 +58,14 @@ describe('settings store', () => {
   it('updates the other settings', () => {
     const s = useSettings.getState();
     act(() => {
-      s.setVersion('forever');
+      s.chooseVersion('forever');
       s.setTimeDisplay('server');
       s.setWeekStartsOn(0);
       s.setHiddenCategories([]);
       s.setReducedMotion('on');
     });
     expect(useSettings.getState()).toMatchObject({
-      versionId: 'forever',
+      chosenVersionId: 'forever',
       timeDisplay: 'server',
       weekStartsOn: 0,
       hiddenCategories: [],
@@ -81,6 +81,12 @@ describe('migrateSettings', () => {
       regionByVersion: { anniversary: 'us' },
     });
     expect(migrateSettings(null, 0)).toEqual(defaultSettings());
+  });
+
+  it('v1 → v2: drops the visit-tracked versionId, so the default version applies', () => {
+    const v1 = { versionId: 'anniversary', timeDisplay: 'server' };
+    expect(migrateSettings(v1, 1)).toEqual({ ...defaultSettings(), timeDisplay: 'server' });
+    expect(migrateSettings(v1, 1).chosenVersionId).toBeNull();
   });
 });
 

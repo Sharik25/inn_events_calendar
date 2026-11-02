@@ -6,7 +6,7 @@ import type { Occurrence } from '@/domain/types';
 import { isShortEvent } from '@/engine/calendar';
 import type { LocalDate } from '@/engine/time';
 import { formatTime } from '@/lib/format';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { cx, ThemeScope } from '@/ui';
 import styles from './EventChip.module.css';
 

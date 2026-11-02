@@ -21,11 +21,25 @@ test('version picker switches to Forever keeping view and date, and back', async
   await expect(page.getByRole('heading', { level: 1, name: 'November 2026' })).toBeVisible();
 });
 
-test('the start page opens the last used version', async ({ page }) => {
-  await page.goto('/forever/today');
-  await expect(page.getByRole('heading', { level: 1, name: 'WoW: Forever' })).toBeVisible();
+test('the start page opens Forever, then the version picked in the switcher', async ({ page }) => {
   await page.goto('/');
   await expect(page).toHaveURL(/\/forever\/today$/);
+
+  // Visiting another version is not a choice…
+  await page.goto('/anniversary/today');
+  await expect(page.getByRole('heading', { level: 1, name: "Hallow's End" })).toBeVisible();
+  await page.goto('/');
+  await expect(page).toHaveURL(/\/forever\/today$/);
+
+  // …picking it in the switcher is, and survives a reload.
+  await page.getByRole('button', { name: 'Version' }).click();
+  await page
+    .getByRole('dialog', { name: 'Choose version' })
+    .getByRole('button', { name: /Anniversary/ })
+    .click();
+  await expect(page).toHaveURL(/\/anniversary\/today$/);
+  await page.goto('/');
+  await expect(page).toHaveURL(/\/anniversary\/today$/);
 });
 
 test('V opens the picker and Escape closes it', async ({ page, isMobile }) => {

@@ -2,10 +2,11 @@ import type { EventCatalog, VersionConfig } from '@/domain/types';
 import { findRegion } from '@/engine/expand';
 import { SubscribeSection } from '@/features/calendar-export/SubscribeSection';
 import { useRegionId } from '@/state/settings';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { Sheet } from '@/ui';
 import { CategoryFilter } from './CategoryFilter';
 import { DisplaySettings } from './DisplaySettings';
+import { LanguagePicker } from './LanguagePicker';
 import { RegionSwitcher } from './RegionSwitcher';
 import { ServerClock } from './ServerClock';
 import styles from './MoreSheet.module.css';
@@ -33,6 +34,7 @@ export function MoreSheet({
 
       <section className={styles.section}>
         <h3 className={styles.heading}>{strings.settings.display}</h3>
+        <LanguagePicker />
         <DisplaySettings />
         <CategoryFilter version={version} catalog={catalog} />
       </section>

@@ -26,6 +26,7 @@ export function expandOccurrences(
   const byKey = new Map<string, Occurrence>();
 
   for (const binding of version.events) {
+    if (binding.regions && !binding.regions.includes(regionId)) continue;
     const rule = binding.regionRules?.[regionId] ?? binding.rule;
     for (const raw of expandRule(rule, { timeZone: region.timeZone, range })) {
       const key = occurrenceKey(version.id, binding.eventId, raw.start);

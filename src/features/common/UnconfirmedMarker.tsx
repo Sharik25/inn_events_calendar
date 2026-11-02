@@ -1,4 +1,4 @@
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { Badge, cx, Icon, Tooltip } from '@/ui';
 import styles from './UnconfirmedMarker.module.css';
 

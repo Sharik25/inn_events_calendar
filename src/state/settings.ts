@@ -2,29 +2,37 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import type { EventCategory, VersionConfig, VersionId } from '@/domain/types';
 import { guessRegionId } from '@/engine/time';
+import { detectLanguage, isLanguage, type Language } from '@/strings';
 
 export interface Settings {
-  versionId: VersionId; // last used
+  /** Version picked in the version switcher; null until the user picks one (→ default version). */
+  chosenVersionId: VersionId | null;
   regionByVersion: Record<VersionId, string>; // only explicit user choices; otherwise guessed
   timeDisplay: 'local' | 'server';
   weekStartsOn: 0 | 1;
   hiddenCategories: EventCategory[];
   reducedMotion: 'system' | 'on' | 'off';
+  /** Reminder for downloaded .ics events, in minutes before the start; null = none. */
+  reminderMinutes: number | null;
+  /** UI language picked by the user; null = the browser's language (English if unsupported). */
+  language: Language | null;
 }
 
 interface SettingsActions {
-  setVersion(versionId: VersionId): void;
+  chooseVersion(versionId: VersionId): void;
   setRegion(versionId: VersionId, regionId: string): void;
   setTimeDisplay(timeDisplay: Settings['timeDisplay']): void;
   setWeekStartsOn(weekStartsOn: Settings['weekStartsOn']): void;
   setHiddenCategories(hiddenCategories: EventCategory[]): void;
   setReducedMotion(reducedMotion: Settings['reducedMotion']): void;
+  setReminderMinutes(reminderMinutes: Settings['reminderMinutes']): void;
+  setLanguage(language: Language): void;
 }
 
 export type SettingsStore = Settings & SettingsActions;
 
 export const SETTINGS_STORAGE_KEY = 'almanac-settings-v1';
-const SETTINGS_VERSION = 1;
+const SETTINGS_VERSION = 2;
 
 export function userTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -48,33 +56,44 @@ export function localeWeekStart(locale = navigator.language): 0 | 1 {
 
 export function defaultSettings(): Settings {
   return {
-    versionId: 'anniversary',
+    chosenVersionId: null,
     regionByVersion: {},
     timeDisplay: 'local',
     weekStartsOn: localeWeekStart(),
     hiddenCategories: ['milestone'],
     reducedMotion: 'system',
+    reminderMinutes: 60,
+    language: null,
   };
 }
 
-/** Upgrades persisted settings from older schema versions; unknown fields fall back to defaults. */
+/**
+ * Upgrades persisted settings from older schema versions; unknown fields fall back to defaults.
+ * v1 → v2: v1's `versionId` was recorded on every visit, so it is not an explicit choice and is
+ * dropped (those users now start on the default version until they pick one).
+ */
 export function migrateSettings(persisted: unknown, _fromVersion: number): Settings {
   const base = defaultSettings();
   if (!persisted || typeof persisted !== 'object') return base;
-  return { ...base, ...(persisted as Partial<Settings>) };
+  const { versionId: _lastVisited, ...rest } = persisted as Partial<Settings> & {
+    versionId?: unknown;
+  };
+  return { ...base, ...rest };
 }
 
 export const useSettings = create<SettingsStore>()(
   persist(
     (set) => ({
       ...defaultSettings(),
-      setVersion: (versionId) => set({ versionId }),
+      chooseVersion: (chosenVersionId) => set({ chosenVersionId }),
       setRegion: (versionId, regionId) =>
         set((s) => ({ regionByVersion: { ...s.regionByVersion, [versionId]: regionId } })),
       setTimeDisplay: (timeDisplay) => set({ timeDisplay }),
       setWeekStartsOn: (weekStartsOn) => set({ weekStartsOn }),
       setHiddenCategories: (hiddenCategories) => set({ hiddenCategories }),
       setReducedMotion: (reducedMotion) => set({ reducedMotion }),
+      setReminderMinutes: (reminderMinutes) => set({ reminderMinutes }),
+      setLanguage: (language) => set({ language }),
     }),
     {
       name: SETTINGS_STORAGE_KEY,
@@ -82,23 +101,36 @@ export const useSettings = create<SettingsStore>()(
       storage: createJSONStorage(() => localStorage),
       migrate: migrateSettings,
       partialize: ({
-        versionId,
+        chosenVersionId,
         regionByVersion,
         timeDisplay,
         weekStartsOn,
         hiddenCategories,
         reducedMotion,
+        reminderMinutes,
+        language,
       }): Settings => ({
-        versionId,
+        chosenVersionId,
         regionByVersion,
         timeDisplay,
         weekStartsOn,
         hiddenCategories,
         reducedMotion,
+        reminderMinutes,
+        language,
       }),
     },
   ),
 );
+
+/** The UI language to use: the user's pick, else the browser's language, else English. */
+export function resolveLanguage(picked: unknown, preferred?: readonly string[]): Language {
+  return isLanguage(picked) ? picked : detectLanguage(preferred);
+}
+
+export function useLanguage(): Language {
+  return resolveLanguage(useSettings((s) => s.language));
+}
 
 /** The region chosen for a version, or a guess from the user's time zone (PLAN.md §7). */
 export function resolveRegionId(

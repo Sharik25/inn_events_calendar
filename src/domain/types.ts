@@ -22,6 +22,41 @@ export interface EventDefinition {
   summary: string; // one sentence
   highlights?: string[]; // rewards / things to do (short bullets)
   links?: { label: string; url: string }[];
+  /** Experience & rewards per version id (they differ between versions). Shown when present. */
+  experience?: Record<VersionId, EventExperience>;
+  /**
+   * Extra checklist items per version id (achievements, tasks). Quests from `experience` are
+   * added automatically; see engine/checklist.ts.
+   */
+  checklist?: Record<VersionId, ChecklistItem[]>;
+}
+
+export type ChecklistItemKind = 'quest' | 'achievement' | 'task';
+
+/** One thing to tick off during an event. `id` must stay stable: saved progress refers to it. */
+export interface ChecklistItem {
+  id: string;
+  kind: ChecklistItemKind;
+  name: string;
+  source?: string; // URL
+}
+
+export interface LevelRange {
+  min: number;
+  max?: number;
+}
+
+/**
+ * Experience and rewards of an event in one version. Only facts stated by `source` (never
+ * estimates); every field but `source` is optional, and at least one must be set.
+ */
+export interface EventExperience {
+  xpBonus?: string; // as worded by the source, e.g. "+10% experience from kills"
+  levelRange?: LevelRange;
+  quests?: { name: string; level?: LevelRange; rewards?: string[]; notes?: string }[];
+  rewards?: string[];
+  notes?: string;
+  source: string; // URL
 }
 
 export type EventCatalog = Record<EventId, EventDefinition>;
@@ -74,6 +109,8 @@ export interface VersionEventBinding {
   rule: ScheduleRule;
   /** Per-region overrides when regions differ (optional). */
   regionRules?: Record<string, ScheduleRule>;
+  /** Only these regions have the event (e.g. a reset time verified for one region only). */
+  regions?: string[];
   notes?: string; // version-specific nuance, e.g. "includes Ahune"
 }
 

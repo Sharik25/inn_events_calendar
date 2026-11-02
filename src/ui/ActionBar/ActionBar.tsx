@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import styles from './ActionBar.module.css';
 
 /** Fixed bottom bar of action slots, styled like a classic action bar. */

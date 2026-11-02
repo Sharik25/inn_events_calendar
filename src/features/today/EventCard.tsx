@@ -2,10 +2,12 @@ import { useId } from 'react';
 import { Link } from 'react-router';
 import type { VersionView } from '@/app/versionView';
 import type { Occurrence } from '@/domain/types';
+import { checklistItems } from '@/engine/checklist';
+import { ChecklistProgress } from '@/features/checklist/ChecklistProgress';
 import { Countdown } from '@/features/common/Countdown';
 import { useTheme } from '@/hooks/useTheme';
 import { formatRange } from '@/lib/format';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { uniqueSvgIds } from '@/themes/art/helpers';
 import { Icon, ThemeScope } from '@/ui';
 import styles from './EventCard.module.css';
@@ -53,8 +55,11 @@ export function EventCard({
             {formatRange(occurrence.start, occurrence.end, displayTimeZone)}
           </time>
         </p>
-        {(isToday || !occurrence.verified) && (
+        {(isToday ||
+          !occurrence.verified ||
+          checklistItems(def, occurrence.versionId).length > 0) && (
           <p className={styles.tags}>
+            <ChecklistProgress def={def} occurrence={occurrence} />
             {isToday && (
               <Countdown
                 occurrence={occurrence}

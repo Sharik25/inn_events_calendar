@@ -113,6 +113,21 @@ describe('occurrence export', () => {
     expect(e?.description).toContain('Trick-or-treat; costumes, and the Headless Horseman.');
   });
 
+  it('adds a reminder as a VALARM that parsers read back', () => {
+    const event = { ...occurrenceToIcsEvent(occ, def, opts), alarmMinutes: 60 };
+    const ics = buildIcs({ events: [event], stamp: new Date('2026-10-27T00:00:00Z') });
+    expect(ics).toContain(
+      "BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:Hallow's End\r\nTRIGGER:-PT60M\r\nEND:VALARM\r\nEND:VEVENT",
+    );
+    const vevent = new ICAL.Component(ICAL.parse(ics)).getFirstSubcomponent('vevent')!;
+    const alarm = vevent.getFirstSubcomponent('valarm')!;
+    expect(alarm.getFirstPropertyValue('action')).toBe('DISPLAY');
+    expect((alarm.getFirstPropertyValue('trigger') as ICAL.Duration).toSeconds()).toBe(-3600);
+
+    const quiet = buildIcs({ events: [occurrenceToIcsEvent(occ, def, opts)] });
+    expect(quiet).not.toContain('VALARM');
+  });
+
   it('builds a Google Calendar template link', () => {
     const url = new URL(
       googleCalendarUrl(occurrenceToIcsEvent({ ...occ, location: 'Inn' }, def, opts)),

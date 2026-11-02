@@ -1,5 +1,22 @@
-/** All UI copy lives here so localization is cheap later. */
-export const strings = {
+/**
+ * English UI copy: the reference language. de/fr/ru must match this shape (`Strings`); components
+ * read the active language through `strings` from `@/strings`, never from this file directly.
+ */
+export const en = {
+  meta: {
+    /** BCP 47 locale for dates and numbers. */
+    locale: 'en-US',
+    /** The language's own name, for the language picker. */
+    name: 'English',
+  },
+  /** Compact durations: "4d 22h", "3h 12m". */
+  units: {
+    d: (n: number) => `${n}d`,
+    h: (n: number) => `${n}h`,
+    m: (n: number) => `${n}m`,
+    lessThanMinute: '<1m',
+    lessThanHour: '<1h',
+  },
   app: {
     name: "Innkeeper's Almanac",
     tagline: 'What is happening in Azeroth today — pull up a chair by the hearth.',
@@ -21,7 +38,6 @@ export const strings = {
   today: {
     title: 'Today',
     quietDay: 'A quiet day at the inn',
-    quietDayHint: 'No events are running. Pull up a chair and rest by the hearth.',
     startsIn: (d: string) => `Starts in ${d}`,
     endsIn: (d: string) => `Ends in ${d}`,
     ended: (time: string) => `Ended at ${time}`,
@@ -55,8 +71,27 @@ export const strings = {
     notes: 'Notes',
     links: 'Learn more',
     dateSource: 'Date source',
+    experience: 'Experience & rewards',
+    xpBonus: 'Experience bonus',
+    levels: 'Levels',
+    levelRange: (min: number, max?: number) =>
+      max === undefined ? `${min}+` : min === max ? `${min}` : `${min}–${max}`,
+    quests: 'Quests',
+    rewards: 'Rewards',
+    experienceSource: 'Rewards source',
     notFound: 'This event has no dates in this version.',
     opensInNewTab: '(opens in a new tab)',
+  },
+  checklist: {
+    title: 'Checklist',
+    progress: (done: number, total: number) => `${done}/${total}`,
+    progressLabel: (done: number, total: number) => `${done} of ${total} done`,
+    hint: 'Saved on this device. Starts fresh each time the event comes around.',
+    kinds: {
+      quest: 'Quest',
+      achievement: 'Achievement',
+      task: 'Task',
+    },
   },
   categories: {
     holiday: 'Holiday',
@@ -79,6 +114,13 @@ export const strings = {
     eventCount: (n: number) => (n === 1 ? '1 event in the file' : `${n} events in the file`),
     googleOnePerLink: 'Google Calendar adds one event per link, or import the .ics file there.',
     googleFor: (name: string, day: string) => `Google Calendar: ${name}, ${day}`,
+    reminder: 'Reminder',
+    reminderOff: 'None',
+    reminder15: '15 min',
+    reminder60: '1 hour',
+    reminder1440: '1 day',
+    reminderHint:
+      'Apple Calendar and Outlook alert you before each event. Google Calendar uses your own default notifications instead.',
     subscribe: 'Subscribe to all events',
     subscribeHint: (version: string, region: string) =>
       `A live calendar of every ${version} event in ${region} server time. Your calendar app keeps it up to date.`,
@@ -134,6 +176,11 @@ export const strings = {
     motionFull: 'Full',
     eventsShown: 'Events shown',
     eventsShownHint: 'Hidden kinds of events disappear from every view.',
+    language: 'Language',
+  },
+  support: {
+    beer: 'Buy me a beer 🍺',
+    notConfigured: 'Placeholder: set SUPPORT_URL in src/config.ts',
   },
   legal: {
     disclaimer:
@@ -141,4 +188,11 @@ export const strings = {
   },
 } as const;
 
-export type Strings = typeof strings;
+/** Deep shape of `en` with literal strings widened, so other languages can fill it in. */
+type Widen<T> = T extends string
+  ? string
+  : T extends (...args: infer A) => infer R
+    ? (...args: A) => Widen<R>
+    : { readonly [K in keyof T]: Widen<T[K]> };
+
+export type Strings = Widen<typeof en>;

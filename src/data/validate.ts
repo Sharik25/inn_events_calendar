@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import { eventDefinitionSchema, versionConfigSchema } from '@/domain/schemas';
 import type { EventDefinition, ScheduleRule, VersionConfig } from '@/domain/types';
+import { checklistItems } from '@/engine/checklist';
 import { isValidTimeZone, wallTimeToInstant } from '@/engine/time';
 
 export interface DataSet {
@@ -62,6 +63,19 @@ export function validateData({ events, versions, themeIds }: DataSet): string[] 
     issues.push(`duplicate version id "${id}"`);
 
   const eventIds = new Set(events.map((e) => e.id));
+  const versionIds = new Set(versions.map((v) => v.id));
+  for (const event of events) {
+    for (const versionId of Object.keys(event.experience ?? {})) {
+      if (!versionIds.has(versionId))
+        issues.push(`event "${event.id}": experience for unknown version "${versionId}"`);
+    }
+    for (const versionId of Object.keys(event.checklist ?? {})) {
+      if (!versionIds.has(versionId))
+        issues.push(`event "${event.id}": checklist for unknown version "${versionId}"`);
+      for (const id of duplicates(checklistItems(event, versionId).map((i) => i.id)))
+        issues.push(`event "${event.id}": checklist item id "${id}" is used twice`);
+    }
+  }
 
   for (const version of versions) {
     const where = `version "${version.id}"`;
@@ -91,6 +105,10 @@ export function validateData({ events, versions, themeIds }: DataSet): string[] 
       if (!eventIds.has(binding.eventId)) issues.push(`${bw}: not in the event catalog`);
       for (const region of version.regions) {
         issues.push(...ruleIssues(`${bw} [${region.id}]`, binding.rule, region.timeZone));
+      }
+      for (const regionId of binding.regions ?? []) {
+        if (!regionIds.includes(regionId))
+          issues.push(`${bw}: regions lists unknown "${regionId}"`);
       }
       for (const [regionId, rule] of Object.entries(binding.regionRules ?? {})) {
         const region = version.regions.find((r) => r.id === regionId);

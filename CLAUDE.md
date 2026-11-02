@@ -31,7 +31,7 @@ Node 22 is required (`nvm use`; see `.nvmrc`). The system default Node 18 is too
 - `src/data/events/`: one file per event (version-agnostic). `src/data/versions/<id>/`: `version.ts` + `schedule-<year>.json`.
 - `src/themes/<id>/`: one folder per theme; registry in `src/themes/index.ts` (lazy loaders, `base` bundled).
 - `src/features/<feature>/`: views and feature components. `src/ui/`: design-system primitives.
-- `src/strings/en.ts`: **all UI copy**. Don't hardcode user-facing strings in components.
+- `src/strings/`: **all UI copy**, in `en.ts` (reference) plus `de.ts`, `fr.ts`, `ru.ts` typed against it (`Strings`), so a missing key fails `tsc`. Import `strings` from `@/strings` (a live binding for the active language), never from a language file. Don't hardcode user-facing strings or locales in components; dates go through `src/lib/format.ts`. Event content in `src/data/**` stays English.
 - Styling: CSS Modules + CSS custom properties (tokens in `src/styles/tokens.css`). No CSS-in-JS. CSS-only animation, always respect `prefers-reduced-motion`.
 - Imports: use the `@/` alias for `src/`. Use `import type` for type-only imports.
 
@@ -44,6 +44,9 @@ Node 22 is required (`nvm use`; see `.nvmrc`). The system default Node 18 is too
 ## Data notes
 
 - Explicit dates live in `src/data/versions/<id>/schedule-<year>.json`. `version.ts` globs them, so adding a year only means adding a file.
+- **Forever is the default version.** `/` opens the version picked in the switcher (`chosenVersionId` in settings), else `defaultVersionId` (`forever`). Visiting a version is not a choice.
+- **Auto-update:** Forever's dates are JSON too (`forever/schedule-<year>.json`, empty until the in-game calendar is verified). Editing one on `main` redeploys. `deploy.yml` also rebuilds daily so the `.ics` feed window rolls forward. `useNow` ticks every minute and on tab focus, so "today" never needs a deploy. There is no scraper on purpose: no official calendar API, and scraped dates can't be `verified`.
+- Experience & rewards: optional `experience[<versionId>]` on an event (xp bonus, level range, quests, rewards, notes, required `source`). The event sheet shows it only when present. Same rule as dates: only facts the version-specific source states, never estimated numbers.
 - Set `verified: true` only with a source specific to that version. Every unverified date needs a `note` saying what's unconfirmed (a test enforces this).
 - Anniversary assumptions to re-check in-game: US event clock = Pacific time; holiday start/end time = 10:00 server; Darkmoon Faire opens 00:00 Monday after the first Friday, location rotation unknown.
 - Swipe navigation uses a small touch-event hook (`src/hooks/useSwipeNav.ts`) instead of `@use-gesture/react` from PLAN.md. The library's click handling blocked link taps inside the swipe area.
@@ -56,6 +59,7 @@ Node 22 is required (`nvm use`; see `.nvmrc`). The system default Node 18 is too
 - Art lives in `src/themes/art/*.ts` as original SVG strings (chunky outlines, painted gradients). Never copy or trace game art.
 - Several copies of the same art can be on a page: always render through `uniqueSvgIds()`, or gradients break when the first copy is hidden.
 - Mobile: bottom-corner art moves from the fixed layer into the end-of-page scene so it never sits behind text.
+- Quiet days (no events) show `<Fireplace>` (`src/ui/Fireplace`): inline SVG, so its parts can be CSS-animated, with `useId` gradient ids. Stone, wood and trim come from theme tokens, and it stands still under reduced motion.
 - `src/themes/__tests__/contrast.test.ts` enforces WCAG AA per theme and the 150 KB budget. Fix a failing theme by adjusting its tokens, not the test.
 
 ## Calendar export (Phase 6)
@@ -70,7 +74,8 @@ Node 22 is required (`nvm use`; see `.nvmrc`). The system default Node 18 is too
 
 - `vite-plugin-pwa` precaches the shell, bundled data, lazy theme chunks and fonts, so the app works offline. Feeds (`/calendars/*`) use NetworkFirst and are excluded from the SPA fallback.
 - Icons, favicon and the social image are generated from original SVG art: `npm run assets` (`scripts/generate-assets.ts`, art in `src/themes/art/appIcon.ts`). Re-run it after changing the art.
+- Support link: `SUPPORT_URL` in `src/config.ts` drives the footer's "Buy me a beer 🍺" button (new tab, `noopener noreferrer`). It stays hidden while the URL is empty or not https. No ads, tracking or paywalls.
 - Settings live in the settings sheet: region, time display, week start, animations, event categories, subscribe, About.
 - Deploy target is Netlify (`netlify.toml`: Node 22, `.ics` served as `text/calendar`, no-cache service worker, security headers, SPA fallback). `SITE_URL` (or Netlify's `URL`) makes feed links and `og:image` absolute.
 - CI: `.github/workflows/ci.yml` runs every gate. Lighthouse (mobile) at the end of Phase 8: Performance 96, Accessibility 100, Best Practices 100, SEO 100.
-- **Live deploy: GitHub Pages** via `.github/workflows/deploy.yml` on every push to `main`, at https://sharik25.github.io/world_of_warcraft_event_calendar/. The app supports a base path: `BASE_PATH=/<repo>/` at build time. Use `publicPath()` / `appBaseUrl()` from `src/lib/base.ts` for files in `public/` and absolute app links; router paths are relative to the basename automatically. `404.html` (a copy of `index.html`) makes deep links work.
+- **Live deploy: GitHub Pages** via `.github/workflows/deploy.yml` on every push to `main`, at https://sharik25.github.io/world_of_warcraft_event_calendar/ until a custom domain is set. **One setting decides where it is served:** the repo variable `CUSTOM_DOMAIN`. `scripts/lib/site.ts` (run as `scripts/site-env.ts` in the deploy) turns it into `BASE_PATH` (`/` for a domain, `/<repo>/` otherwise) and `SITE_URL`. Never hardcode a host or the repo path; steps in `docs/custom-domain.md`. Use `publicPath()` / `appBaseUrl()` from `src/lib/base.ts` for files in `public/` and absolute app links; router paths are relative to the basename automatically. `404.html` (a copy of `index.html`) makes deep links work.

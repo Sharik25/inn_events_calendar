@@ -68,6 +68,34 @@ describe('validateData', () => {
     );
   });
 
+  it('checks experience data: known version, at least one fact, sane levels', () => {
+    const source = 'https://example.com/quest';
+    const withXp = (experience: EventDefinition['experience']) => ({ ...event, experience });
+    expect(
+      validateData({
+        ...valid,
+        events: [
+          withXp({ test: { quests: [{ name: 'Q', level: { min: 10, max: 20 } }], source } }),
+        ],
+      }),
+    ).toEqual([]);
+    const issues = validateData({
+      ...valid,
+      events: [
+        withXp({ retail: { notes: 'x', source } }),
+        { ...withXp({ test: { source } }), id: 'empty' },
+        { ...withXp({ test: { levelRange: { min: 30, max: 20 }, source } }), id: 'levels' },
+      ],
+    });
+    expect(issues).toEqual(
+      expect.arrayContaining([
+        'event "test-event": experience for unknown version "retail"',
+        expect.stringMatching(/"empty".*at least one fact/),
+        expect.stringMatching(/"levels".*max must be ≥ min/),
+      ]),
+    );
+  });
+
   it('reports version-level reference errors', () => {
     const issues = validateData({
       ...valid,

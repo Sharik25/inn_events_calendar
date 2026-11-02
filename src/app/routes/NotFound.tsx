@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { ParchmentCard, ThemeScope } from '@/ui';
 import styles from './NotFound.module.css';
 

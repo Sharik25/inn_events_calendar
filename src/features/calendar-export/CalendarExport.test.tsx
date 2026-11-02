@@ -1,6 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ICAL from 'ical.js';
+import { useSettings } from '@/state/settings';
 import { renderRoute } from '@/test/renderRoute';
 import { feedUrls } from './feedUrls';
 
@@ -100,6 +101,27 @@ describe('Add to calendar', () => {
       'anniversary:hallows-end:2026-10-18T08:00:00.000Z@innkeepers-almanac',
       'anniversary:stv-fishing:2026-10-25T13:00:00.000Z@innkeepers-almanac',
     ]);
+  });
+
+  it('adds a 1-hour reminder by default; the choice is remembered and can be turned off', async () => {
+    const files = captureDownloads();
+    const { user, sheet } = await openExportSheet();
+    const reminder = within(sheet).getByRole('group', { name: 'Reminder' });
+    expect(within(reminder).getByRole('radio', { name: '1 hour' })).toBeChecked();
+
+    await user.click(within(sheet).getByRole('button', { name: 'Apple / Outlook (.ics)' }));
+    const [withAlarm] = await parseEvents(files[0]);
+    const alarm = withAlarm!.component.getFirstSubcomponent('valarm');
+    expect(alarm?.getFirstPropertyValue('action')).toBe('DISPLAY');
+    expect((alarm?.getFirstPropertyValue('trigger') as ICAL.Duration).toSeconds()).toBe(-3600);
+
+    await user.click(screen.getByRole('button', { name: 'Add to calendar' }));
+    const again = await screen.findByRole('dialog', { name: 'Add to calendar' });
+    await user.click(within(again).getByRole('radio', { name: 'None' }));
+    expect(useSettings.getState().reminderMinutes).toBeNull();
+    await user.click(within(again).getByRole('button', { name: 'Apple / Outlook (.ics)' }));
+    const [noAlarm] = await parseEvents(files[1]);
+    expect(noAlarm!.component.getFirstSubcomponent('valarm')).toBeNull();
   });
 
   it('select all toggles every one-day event', async () => {

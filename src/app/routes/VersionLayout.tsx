@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Outlet,
   useLoaderData,
@@ -12,6 +12,8 @@ import { findRegion } from '@/engine/expand';
 import { addDays, addMonths, localDateOf, monthOf, type LocalDate } from '@/engine/time';
 import { switchVersionPath, versionStatus } from '@/engine/version';
 import { MoreSheet } from '@/features/settings/MoreSheet';
+import { takeReopenSettings } from '@/features/settings/reopen';
+import { SupportLink } from '@/features/support/SupportLink';
 import { LaunchScreen } from '@/features/version-switcher/LaunchScreen';
 import { VersionPicker } from '@/features/version-switcher/VersionPicker';
 import { dominantThemeId, monthThemeId } from '@/hooks/useDominantTheme';
@@ -22,7 +24,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useSwipeNav } from '@/hooks/useSwipeNav';
 import { useTheme } from '@/hooks/useTheme';
 import { useRegionId, userTimeZone, useSettings } from '@/state/settings';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import {
   ActionBar,
   ActionBarDivider,
@@ -49,17 +51,16 @@ export function VersionLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const now = useNow();
-  const [moreOpen, setMoreOpen] = useState(false);
+  // Reopens after a language switch remounted the app (the picker lives in this sheet).
+  const [moreOpen, setMoreOpen] = useState(takeReopenSettings);
   const [pickerOpen, setPickerOpen] = useState(false);
   const status = versionStatus(version, now);
 
-  const setVersion = useSettings((s) => s.setVersion);
+  const chooseVersion = useSettings((s) => s.chooseVersion);
   const hiddenCategories = useSettings((s) => s.hiddenCategories);
   const timeDisplay = useSettings((s) => s.timeDisplay);
   const weekStartsOn = useSettings((s) => s.weekStartsOn);
   const region = findRegion(version, useRegionId(version));
-
-  useEffect(() => setVersion(version.id), [setVersion, version.id]);
 
   const userTz = userTimeZone();
   const today = localDateOf(now, userTz);
@@ -167,7 +168,9 @@ export function VersionLayout() {
     () => navigate(view.nav.next),
   );
 
+  // Picking in the switcher is the user's explicit choice: `/` opens it from now on.
   const switchTo = (versionId: string) => {
+    chooseVersion(versionId);
     setPickerOpen(false);
     if (versionId !== version.id)
       navigate(switchVersionPath(location.pathname, version.id, versionId));
@@ -217,7 +220,10 @@ export function VersionLayout() {
           variant="scene"
           reducedMotion={reducedMotion}
         />
-        <small>{strings.legal.disclaimer}</small>
+        <div className={styles.footerLine}>
+          <SupportLink />
+          <small>{strings.legal.disclaimer}</small>
+        </div>
       </footer>
 
       <ActionBar>

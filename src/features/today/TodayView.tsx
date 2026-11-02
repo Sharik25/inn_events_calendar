@@ -4,13 +4,15 @@ import { paths, withEvent } from '@/app/paths';
 import { useVersionView } from '@/app/versionView';
 import { buildDayAgenda } from '@/engine/agenda';
 import { addDays, dayRange } from '@/engine/time';
+import { ChecklistProgress } from '@/features/checklist/ChecklistProgress';
 import { Countdown } from '@/features/common/Countdown';
 import { UnconfirmedMarker } from '@/features/common/UnconfirmedMarker';
 import { RoutedEventSheet } from '@/features/event-sheet/RoutedEventSheet';
 import { useOccurrences } from '@/hooks/useOccurrences';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { formatDistance, formatRange } from '@/lib/format';
-import { strings } from '@/strings/en';
-import { Icon, ParchmentCard } from '@/ui';
+import { strings } from '@/strings';
+import { AmbientParticles, Fireplace, Icon, ParchmentCard } from '@/ui';
 import { AddToCalendar } from '@/features/calendar-export/AddToCalendar';
 import { DateNumeral } from './DateNumeral';
 import { EventCard } from './EventCard';
@@ -24,6 +26,7 @@ export function TodayView() {
   const { version, catalog, region, userTimeZone, displayTimeZone, now, today, viewDate, isToday } =
     view;
   const location = useLocation();
+  const reducedMotion = useReducedMotion();
 
   const occurrences = useOccurrences(
     version,
@@ -91,6 +94,7 @@ export function TodayView() {
                 />
               )}
               {!dominant.verified && <UnconfirmedMarker onDark />}
+              <ChecklistProgress def={dominantDef} occurrence={dominant} />
             </p>
             <p className={styles.range}>
               <time dateTime={dominant.start.toISOString()}>
@@ -123,7 +127,9 @@ export function TodayView() {
             <h1 id="day-title" className={styles.title}>
               {strings.today.quietDay}
             </h1>
-            <p className={styles.quiet}>{strings.today.quietDayHint}</p>
+            <Fireplace reducedMotion={reducedMotion} className={styles.hearth} />
+            <AmbientParticles kind="sparks" placement="sides" count={14} still={reducedMotion} />
+            <AmbientParticles kind="splinters" placement="sides" count={6} still={reducedMotion} />
           </>
         )}
       </section>

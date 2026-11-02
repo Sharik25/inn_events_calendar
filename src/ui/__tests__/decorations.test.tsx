@@ -5,6 +5,7 @@ import { defaultSettings, useSettings } from '@/state/settings';
 import type { Decoration } from '@/themes';
 import { AmbientParticles, MAX_PARTICLES } from '../AmbientParticles/AmbientParticles';
 import { FestiveGarland } from '../FestiveGarland/FestiveGarland';
+import { Fireplace } from '../Fireplace/Fireplace';
 import { ThemeDecorations } from '../ThemeDecorations/ThemeDecorations';
 
 const art =
@@ -74,6 +75,21 @@ describe('AmbientParticles', () => {
     hidden.mockRestore();
   });
 
+  it('keeps side particles to the outer bands and can stand still', () => {
+    const { container } = render(
+      <AmbientParticles kind="sparks" placement="sides" count={20} still />,
+    );
+    const layer = container.firstElementChild as HTMLElement;
+    expect(layer).toHaveAttribute('data-placement', 'sides');
+    expect(layer).toHaveAttribute('data-still');
+    expect(layer).toHaveAttribute('aria-hidden', 'true');
+    const xs = [...layer.children].map((p) =>
+      parseFloat((p as HTMLElement).style.getPropertyValue('--px')),
+    );
+    expect(xs.every((x) => x <= 12 || x >= 88)).toBe(true);
+    expect(xs.some((x) => x <= 12) && xs.some((x) => x >= 88)).toBe(true);
+  });
+
   it('is deterministic between renders', () => {
     const a = render(<AmbientParticles kind="embers" count={3} />).container.innerHTML;
     const b = render(<AmbientParticles kind="embers" count={3} />).container.innerHTML;
@@ -93,6 +109,29 @@ describe('FestiveGarland', () => {
   it('marks reduced motion so its animation can be disabled', () => {
     render(<FestiveGarland reducedMotion />);
     expect(screen.getByTestId('festive-garland')).toHaveAttribute('data-motion', 'reduce');
+  });
+});
+
+describe('Fireplace', () => {
+  it('is hidden, non-interactive art with gradients unique to each copy', () => {
+    render(
+      <>
+        <Fireplace />
+        <Fireplace />
+      </>,
+    );
+    const [first, second] = screen.getAllByTestId('fireplace');
+    expect(first).toHaveAttribute('aria-hidden', 'true');
+    expect(first).not.toHaveAttribute('data-motion');
+    const ids = (el: HTMLElement | undefined) =>
+      [...(el?.querySelectorAll('[id]') ?? [])].map((n) => n.id);
+    expect(ids(first).length).toBeGreaterThan(0);
+    expect(ids(first).filter((id) => ids(second).includes(id))).toEqual([]);
+  });
+
+  it('marks reduced motion so the fire stands still', () => {
+    render(<Fireplace reducedMotion />);
+    expect(screen.getByTestId('fireplace')).toHaveAttribute('data-motion', 'reduce');
   });
 });
 

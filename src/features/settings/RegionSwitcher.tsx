@@ -1,6 +1,6 @@
 import type { VersionConfig } from '@/domain/types';
 import { useRegionId, useSettings } from '@/state/settings';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { Segmented } from '@/ui';
 
 /** Which region's server time a version's events follow. Hidden for single-region versions. */

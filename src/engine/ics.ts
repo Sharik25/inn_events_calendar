@@ -15,6 +15,8 @@ export interface IcsEvent {
   url?: string;
   location?: string;
   categories?: string[];
+  /** Reminder this many minutes before the start (a VALARM); none when omitted. */
+  alarmMinutes?: number;
 }
 
 export interface IcsCalendar {
@@ -74,6 +76,21 @@ function prop(name: string, value: string): string {
   return foldLine(`${name}:${value}`);
 }
 
+/**
+ * A display reminder `minutes` before the start (RFC 5545 §3.6.6). Apple Calendar and Outlook
+ * keep it on import; Google Calendar ignores alarms in imported files and applies the user's
+ * default notifications instead.
+ */
+export function valarm(title: string, minutes: number): string[] {
+  return [
+    'BEGIN:VALARM',
+    'ACTION:DISPLAY',
+    prop('DESCRIPTION', escapeText(title)),
+    `TRIGGER:-PT${Math.max(0, Math.round(minutes))}M`,
+    'END:VALARM',
+  ];
+}
+
 export function buildIcs(calendar: IcsCalendar): string {
   const stamp = icsDate(calendar.stamp ?? new Date());
   const lines = [
@@ -110,7 +127,9 @@ export function buildIcs(calendar: IcsCalendar): string {
     if (e.url) lines.push(prop('URL', e.url));
     if (e.categories?.length)
       lines.push(prop('CATEGORIES', e.categories.map(escapeText).join(',')));
-    lines.push('TRANSP:TRANSPARENT', 'END:VEVENT');
+    lines.push('TRANSP:TRANSPARENT');
+    if (e.alarmMinutes !== undefined) lines.push(...valarm(e.title, e.alarmMinutes));
+    lines.push('END:VEVENT');
   }
   lines.push('END:VCALENDAR');
   return `${lines.join('\r\n')}\r\n`;

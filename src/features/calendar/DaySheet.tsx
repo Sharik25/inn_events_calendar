@@ -4,7 +4,7 @@ import { useVersionView } from '@/app/versionView';
 import type { Occurrence } from '@/domain/types';
 import type { LocalDate } from '@/engine/time';
 import { formatDayLong, formatRange } from '@/lib/format';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { Sheet } from '@/ui';
 import styles from './DaySheet.module.css';
 

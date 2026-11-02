@@ -1,0 +1,46 @@
+/* A small carved-wood tavern sign with a gold rim. */
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 48px;
+  padding: 0 var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--color-ink-on-dark);
+  text-decoration: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-frame) 80%, #fff 8%),
+    var(--color-frame)
+  );
+  border: 1px solid color-mix(in srgb, var(--color-gold) 70%, transparent);
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.35);
+}
+
+.link:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}
+
+.link:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Development-only placeholder (no SUPPORT_URL yet): same look, dashed rim. */
+.link[data-placeholder] {
+  border-style: dashed;
+}
