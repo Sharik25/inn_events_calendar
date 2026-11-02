@@ -21,7 +21,6 @@ export const strings = {
   today: {
     title: 'Today',
     quietDay: 'A quiet day at the inn',
-    quietDayHint: 'No events are running. Pull up a chair and rest by the hearth.',
     startsIn: (d: string) => `Starts in ${d}`,
     endsIn: (d: string) => `Ends in ${d}`,
     ended: (time: string) => `Ended at ${time}`,

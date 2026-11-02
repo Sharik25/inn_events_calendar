@@ -125,7 +125,6 @@ export function TodayView() {
             <h1 id="day-title" className={styles.title}>
               {strings.today.quietDay}
             </h1>
-            <p className={styles.quiet}>{strings.today.quietDayHint}</p>
             <Fireplace reducedMotion={reducedMotion} className={styles.hearth} />
           </>
         )}

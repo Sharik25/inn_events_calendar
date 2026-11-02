@@ -69,6 +69,8 @@ test('a quiet day shows a fireplace that never blocks taps and stills with reduc
   ).toBeVisible();
   const hearth = page.getByTestId('fireplace');
   await expect(hearth).toBeVisible();
+  // Just the title and the scene: no hint line under the title.
+  await expect(page.getByText(/Pull up a chair/)).toHaveCount(0);
   await expect(hearth).toHaveAttribute('aria-hidden', 'true');
 
   const flame = hearth.locator('[class*="core"]');
