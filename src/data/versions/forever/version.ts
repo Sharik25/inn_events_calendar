@@ -1,5 +1,7 @@
 import type { ScheduleFile, VersionConfig } from '@/domain/types';
 import { explicitBindingsFromSchedules, scheduleFilesFromGlob } from '../../schedules';
+import { weeklyResetBindings } from '../../weekly-reset';
+import { WEEKLY_RESET } from './weekly-reset';
 
 const scheduleFiles = scheduleFilesFromGlob(
   import.meta.glob<ScheduleFile>('./schedule-*.json', { eager: true, import: 'default' }),
@@ -26,5 +28,5 @@ export const forever: VersionConfig = {
   regions: [{ id: 'global', label: 'All realms', timeZone: 'America/Los_Angeles' }],
   defaultRegionId: 'global',
   baseThemeId: 'forever',
-  events: [...explicitBindingsFromSchedules(scheduleFiles)],
+  events: [...explicitBindingsFromSchedules(scheduleFiles), ...weeklyResetBindings(WEEKLY_RESET)],
 };

@@ -74,6 +74,8 @@ export function formatTime(instant: Date, timeZone: string): string {
 
 /** "Sun, Oct 25, 14:00–16:00" on one day, otherwise "Sun, Oct 18, 10:00 – Sun, Nov 1, 10:00". */
 export function formatRange(start: Date, end: Date, timeZone: string): string {
+  // A moment rather than a span (e.g. the weekly reset): "Wed, Nov 4, 08:00".
+  if (end.getTime() - start.getTime() <= MINUTE_MS) return formatDateTime(start, timeZone);
   const day = fmt(timeZone, { year: 'numeric', month: 'numeric', day: 'numeric' });
   if (day.format(start) === day.format(end)) {
     return `${formatDateTime(start, timeZone)}–${formatTime(end, timeZone)}`;

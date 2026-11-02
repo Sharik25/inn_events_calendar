@@ -41,6 +41,10 @@ describe('format', () => {
 
   it('formats ranges on one day and across days', () => {
     const start = new Date('2026-10-25T13:00:00Z');
+    // A moment (≤ 1 min), like the weekly reset, is a single time.
+    expect(formatRange(start, new Date(start.getTime() + 60_000), 'Europe/Paris')).toBe(
+      formatDateTime(start, 'Europe/Paris'),
+    );
     expect(formatRange(start, new Date('2026-10-25T15:00:00Z'), 'Europe/Paris')).toBe(
       'Sun, Oct 25, 14:00–16:00',
     );

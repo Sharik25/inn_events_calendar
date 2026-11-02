@@ -130,6 +130,7 @@ export const versionEventBindingSchema = z.strictObject({
   eventId: slug,
   rule: scheduleRuleSchema,
   regionRules: z.record(z.string(), scheduleRuleSchema).optional(),
+  regions: z.array(z.string()).min(1).optional(),
   notes: z.string().min(1).optional(),
 });
 

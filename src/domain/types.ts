@@ -94,6 +94,8 @@ export interface VersionEventBinding {
   rule: ScheduleRule;
   /** Per-region overrides when regions differ (optional). */
   regionRules?: Record<string, ScheduleRule>;
+  /** Only these regions have the event (e.g. a reset time verified for one region only). */
+  regions?: string[];
   notes?: string; // version-specific nuance, e.g. "includes Ahune"
 }
 

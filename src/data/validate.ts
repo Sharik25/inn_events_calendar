@@ -99,6 +99,10 @@ export function validateData({ events, versions, themeIds }: DataSet): string[] 
       for (const region of version.regions) {
         issues.push(...ruleIssues(`${bw} [${region.id}]`, binding.rule, region.timeZone));
       }
+      for (const regionId of binding.regions ?? []) {
+        if (!regionIds.includes(regionId))
+          issues.push(`${bw}: regions lists unknown "${regionId}"`);
+      }
       for (const [regionId, rule] of Object.entries(binding.regionRules ?? {})) {
         const region = version.regions.find((r) => r.id === regionId);
         if (!region) issues.push(`${bw}: regionRules for unknown region "${regionId}"`);
