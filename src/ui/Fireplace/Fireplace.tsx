@@ -48,9 +48,16 @@ const EMBERS = [
   [144, 2, 3.2, 4, 3],
 ] as const;
 
+/** Books on the mantel: [x, width, height, tone, band offset]; they stand on the shelf (y = 28). */
+const BOOKS = [
+  [52, 10, 18, 'crimson', 4],
+  [62, 12, 22, 'navy', 5],
+  [74, 9, 16, 'forest', 3],
+] as const;
+
 /**
  * A cozy stone hearth with a crackling fire (original SVG, no game art), for the "quiet day at the
- * inn" screen. Stone, wood and trim take the current theme's colors; the fire is always warm.
+ * inn" screen: books on the mantel, a sword left lying on the hearthstone. Stone, wood and trim take the current theme's colors; the fire is always warm.
  * Purely decorative: hidden from assistive tech and never captures clicks. Flames flicker, embers
  * rise and the light breathes, all in CSS; with reduced motion (`reducedMotion`, which folds in
  * the OS preference, or the OS preference directly) it is a still, lit fire.
@@ -73,7 +80,7 @@ export function Fireplace({
       data-motion={reducedMotion ? 'reduce' : undefined}
     >
       <div className={styles.light} />
-      <svg viewBox="0 0 280 222" className={styles.art} focusable="false">
+      <svg viewBox="-24 0 328 222" className={styles.art} focusable="false">
         <defs>
           <clipPath id={`face-${id}`}>
             <rect x="16" y="46" width="248" height="156" />
@@ -98,6 +105,11 @@ export function Fireplace({
           <linearGradient id={`core-${id}`} x1="0" y1="1" x2="0" y2="0">
             <stop offset="0" stopColor="#fffbe0" />
             <stop offset="1" stopColor="#ffe07a" />
+          </linearGradient>
+          <linearGradient id={`steel-${id}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#f1f4f6" />
+            <stop offset="0.5" stopColor="#b7c0c8" />
+            <stop offset="1" stopColor="#6d7780" />
           </linearGradient>
           <linearGradient id={`log-${id}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor="#8a5530" />
@@ -244,6 +256,71 @@ export function Fireplace({
           strokeWidth="3"
         />
         <line x1="12" y1="43" x2="268" y2="43" className={styles.trim} strokeWidth="2.5" />
+
+        {/* Books: three upright, one leaning on them; a small stack lying on the right. */}
+        <g stroke={INK} strokeWidth="2" strokeLinejoin="round">
+          {BOOKS.map(([x, w, h, tone, band]) => (
+            <g key={x}>
+              <rect x={x} y={28 - h} width={w} height={h} rx="1.5" className={styles[tone]} />
+              <rect
+                x={x}
+                y={28 - h + band}
+                width={w}
+                height="2.5"
+                className={styles.bookBand}
+                strokeWidth="0"
+              />
+              <rect
+                x={x}
+                y={28 - band - 2.5}
+                width={w}
+                height="2.5"
+                className={styles.bookBand}
+                strokeWidth="0"
+              />
+            </g>
+          ))}
+          <g transform="rotate(22 92 28)">
+            <rect x="83" y="9" width="10" height="19" rx="1.5" className={styles.tan} />
+            <rect
+              x="83"
+              y="13"
+              width="10"
+              height="2.5"
+              className={styles.bookBand}
+              strokeWidth="0"
+            />
+          </g>
+          <rect x="198" y="22" width="34" height="6" rx="1.5" className={styles.navy} />
+          <rect x="201" y="16" width="29" height="6" rx="1.5" className={styles.crimson} />
+          <line x1="203" y1="19" x2="228" y2="19" stroke="#f2e3c0" strokeWidth="1.2" />
+          <line x1="200" y1="25" x2="230" y2="25" stroke="#f2e3c0" strokeWidth="1.2" />
+        </g>
+        {/* A sword left lying on the hearthstone, hilt to the left. */}
+        <g
+          className={styles.sword}
+          stroke={INK}
+          strokeWidth="2"
+          strokeLinejoin="round"
+          transform="rotate(-3 30 209)"
+        >
+          <path d="M13 205 H80 L91 209 L80 213 H13 Z" fill={ref('steel')} />
+          <line x1="17" y1="209" x2="74" y2="209" stroke="#5d666e" strokeWidth="1.5" />
+          <rect x="-9" y="206" width="19" height="6" rx="2" className={styles.grip} />
+          <path
+            d="M-5 206 L-1 212 M1 206 L5 212 M7 206 L10 210"
+            stroke={INK}
+            strokeWidth="1.2"
+            fill="none"
+          />
+          <path
+            d="M10 198 C14 198 14 201 13 203 V215 C14 217 14 220 10 220 C8 220 8 217 9 215 V203 C8 201 8 198 10 198 Z"
+            className={styles.guard}
+          />
+          <circle cx="-13" cy="209" r="4.8" className={styles.guard} />
+          <circle cx="-13" cy="209" r="1.8" fill="#c0392b" strokeWidth="1" />
+        </g>
+
         {[34, 246].map((x) => (
           <g key={x}>
             <rect

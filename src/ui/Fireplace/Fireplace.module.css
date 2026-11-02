@@ -1,7 +1,7 @@
 /* The hearth sits in normal flow; its warm light spills a little past it, under the art. */
 .fireplace {
   position: relative;
-  width: min(300px, 82vw);
+  width: min(330px, 88vw);
   margin-inline: auto;
   pointer-events: none;
   user-select: none;
@@ -9,7 +9,7 @@
 
 @media (min-width: 768px) {
   .fireplace {
-    width: 340px;
+    width: 390px;
   }
 
   .light {
@@ -27,10 +27,10 @@
 }
 
 /* Firelight on the wall around the hearth, tinted by the theme's accent. On mobile it spills only
-   a little past the art (82vw wide), so it never causes horizontal scroll at 360px. */
+   a little past the art (88vw wide), so it never causes horizontal scroll at 360px. */
 .light {
   position: absolute;
-  inset: 10% -8% -6%;
+  inset: 10% -5% -6%;
   background: radial-gradient(
     ellipse 50% 55% at 50% 72%,
     color-mix(in srgb, var(--color-accent) 42%, transparent),
@@ -74,6 +74,40 @@
 
 .trim {
   stroke: var(--color-gold);
+}
+
+/* Books: leather tones, gold-tooled bands from the theme. */
+.crimson {
+  fill: #8e2b25;
+}
+
+.navy {
+  fill: #2c3f73;
+}
+
+.forest {
+  fill: #2f5b37;
+}
+
+.tan {
+  fill: #9a6a3a;
+}
+
+.bookBand {
+  fill: var(--color-gold);
+}
+
+/* Sword: steel blade, leather grip, guard and pommel in the theme's gold. */
+.grip {
+  fill: #5a3519;
+}
+
+.guard {
+  fill: color-mix(in srgb, var(--color-gold) 85%, #fff);
+}
+
+.sword {
+  filter: drop-shadow(0 2px 1px rgb(0 0 0 / 0.45));
 }
 
 /* Fire. Each flame scales from its base, out of step with the others. */
