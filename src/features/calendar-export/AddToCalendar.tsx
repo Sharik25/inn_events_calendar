@@ -4,9 +4,19 @@ import type { Occurrence } from '@/domain/types';
 import { localDateOf } from '@/engine/time';
 import { formatDay, formatRange } from '@/lib/format';
 import { strings } from '@/strings/en';
-import { Badge, Icon, Sheet } from '@/ui';
+import { useSettings } from '@/state/settings';
+import { Badge, Icon, Segmented, Sheet } from '@/ui';
 import { useCalendarExport } from './useCalendarExport';
 import styles from './AddToCalendar.module.css';
+
+/** Reminder choices for the .ics download, in minutes before the start. */
+const REMINDERS = [
+  { value: 'off', label: () => strings.calendarExport.reminderOff },
+  { value: '15', label: () => strings.calendarExport.reminder15 },
+  { value: '60', label: () => strings.calendarExport.reminder60 },
+  { value: '1440', label: () => strings.calendarExport.reminder1440 },
+] as const;
+type ReminderValue = (typeof REMINDERS)[number]['value'];
 
 /** One event in the sheet: name, time range, and an unconfirmed tag when its date is unverified. */
 function EventLine({ occurrence }: { occurrence: Occurrence }) {
@@ -32,6 +42,8 @@ function ExportSheet({ occurrence, onClose }: { occurrence: Occurrence; onClose:
   const exp = useCalendarExport(occurrence);
   const [picked, setPicked] = useState<ReadonlySet<string>>(() => new Set());
   const countId = useId();
+  const reminderMinutes = useSettings((s) => s.reminderMinutes);
+  const setReminderMinutes = useSettings((s) => s.setReminderMinutes);
   const def = catalog[occurrence.eventId];
   const selected = exp.overlaps.filter((o) => picked.has(o.key));
   const allPicked = selected.length === exp.overlaps.length;
@@ -84,13 +96,23 @@ function ExportSheet({ occurrence, onClose }: { occurrence: Occurrence; onClose:
         </fieldset>
       )}
 
+      <div className={styles.reminder}>
+        <Segmented
+          legend={strings.calendarExport.reminder}
+          options={REMINDERS.map(({ value, label }) => ({ value, label: label() }))}
+          value={String(reminderMinutes ?? 'off') as ReminderValue}
+          onChange={(v) => setReminderMinutes(v === 'off' ? null : Number(v))}
+        />
+        <p className={styles.hint}>{strings.calendarExport.reminderHint}</p>
+      </div>
+
       <div className={styles.download}>
         <button
           type="button"
           className={styles.primary}
           aria-describedby={countId}
           onClick={() => {
-            exp.download(selected);
+            exp.download(selected, reminderMinutes);
             onClose();
           }}
         >

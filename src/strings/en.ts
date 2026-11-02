@@ -86,6 +86,13 @@ export const strings = {
     eventCount: (n: number) => (n === 1 ? '1 event in the file' : `${n} events in the file`),
     googleOnePerLink: 'Google Calendar adds one event per link, or import the .ics file there.',
     googleFor: (name: string, day: string) => `Google Calendar: ${name}, ${day}`,
+    reminder: 'Reminder',
+    reminderOff: 'None',
+    reminder15: '15 min',
+    reminder60: '1 hour',
+    reminder1440: '1 day',
+    reminderHint:
+      'Apple Calendar and Outlook alert you before each event. Google Calendar uses your own default notifications instead.',
     subscribe: 'Subscribe to all events',
     subscribeHint: (version: string, region: string) =>
       `A live calendar of every ${version} event in ${region} server time. Your calendar app keeps it up to date.`,

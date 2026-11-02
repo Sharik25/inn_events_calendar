@@ -52,10 +52,12 @@ export function useCalendarExport(occurrence: Occurrence) {
       const e = toIcs(o);
       return e ? googleCalendarUrl(e) : '';
     },
-    /** Saves this occurrence, plus `extras`, as one .ics file. */
-    download(extras: Occurrence[] = []) {
+    /** Saves this occurrence, plus `extras`, as one .ics file; each with a reminder if given. */
+    download(extras: Occurrence[] = [], alarmMinutes: number | null = null) {
       if (!event || !def) return;
-      const events = [event, ...extras.flatMap((o) => toIcs(o) ?? [])];
+      const events = [event, ...extras.flatMap((o) => toIcs(o) ?? [])].map((e) =>
+        alarmMinutes === null ? e : { ...e, alarmMinutes },
+      );
       downloadText(`${def.id}-${localDateOf(occurrence.start, 'UTC')}.ics`, buildIcs({ events }));
     },
   };

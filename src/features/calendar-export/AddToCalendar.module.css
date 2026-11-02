@@ -251,3 +251,12 @@
   background: color-mix(in srgb, var(--color-gold) 20%, transparent);
   border-color: color-mix(in srgb, var(--color-gold) 60%, transparent);
 }
+
+/* Reminder choice for the .ics file. */
+.reminder {
+  margin-top: var(--space-4);
+}
+
+.reminder .hint {
+  margin-top: var(--space-2);
+}

@@ -11,6 +11,8 @@ export interface Settings {
   weekStartsOn: 0 | 1;
   hiddenCategories: EventCategory[];
   reducedMotion: 'system' | 'on' | 'off';
+  /** Reminder for downloaded .ics events, in minutes before the start; null = none. */
+  reminderMinutes: number | null;
 }
 
 interface SettingsActions {
@@ -20,6 +22,7 @@ interface SettingsActions {
   setWeekStartsOn(weekStartsOn: Settings['weekStartsOn']): void;
   setHiddenCategories(hiddenCategories: EventCategory[]): void;
   setReducedMotion(reducedMotion: Settings['reducedMotion']): void;
+  setReminderMinutes(reminderMinutes: Settings['reminderMinutes']): void;
 }
 
 export type SettingsStore = Settings & SettingsActions;
@@ -55,6 +58,7 @@ export function defaultSettings(): Settings {
     weekStartsOn: localeWeekStart(),
     hiddenCategories: ['milestone'],
     reducedMotion: 'system',
+    reminderMinutes: 60,
   };
 }
 
@@ -83,6 +87,7 @@ export const useSettings = create<SettingsStore>()(
       setWeekStartsOn: (weekStartsOn) => set({ weekStartsOn }),
       setHiddenCategories: (hiddenCategories) => set({ hiddenCategories }),
       setReducedMotion: (reducedMotion) => set({ reducedMotion }),
+      setReminderMinutes: (reminderMinutes) => set({ reminderMinutes }),
     }),
     {
       name: SETTINGS_STORAGE_KEY,
@@ -96,6 +101,7 @@ export const useSettings = create<SettingsStore>()(
         weekStartsOn,
         hiddenCategories,
         reducedMotion,
+        reminderMinutes,
       }): Settings => ({
         chosenVersionId,
         regionByVersion,
@@ -103,6 +109,7 @@ export const useSettings = create<SettingsStore>()(
         weekStartsOn,
         hiddenCategories,
         reducedMotion,
+        reminderMinutes,
       }),
     },
   ),
