@@ -1,5 +1,6 @@
 import type { ScheduleFile, VersionConfig } from '@/domain/types';
 import { explicitBindingsFromSchedules, scheduleFilesFromGlob } from '../../schedules';
+import { DARKMOON_ROTATION } from './darkmoon-rotation';
 
 const scheduleFiles = scheduleFilesFromGlob(
   import.meta.glob<ScheduleFile>('./schedule-*.json', { eager: true, import: 'default' }),
@@ -33,6 +34,11 @@ export const anniversary: VersionConfig = {
         verified: false,
         source:
           'https://www.warcrafttavern.com/tbc/news/darkmoon-faire-hotfixed-will-open-next-week-in-tbc-anniversary/',
+        // Locations: see darkmoon-rotation.ts (TODO: verified order still needed).
+        ...(DARKMOON_ROTATION && {
+          rotation: DARKMOON_ROTATION.order,
+          rotationAnchor: DARKMOON_ROTATION.anchorMonth,
+        }),
       },
       notes: 'Rotates between Elwynn Forest, Mulgore and Terokkar Forest; order unconfirmed.',
     },

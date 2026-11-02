@@ -1,5 +1,6 @@
 import { dayRange, expandOccurrences, occurrencesOnDay, pickDominant } from '@/engine';
 import { eventCatalog } from '../events';
+import { DARKMOON_ROTATION } from '../versions/anniversary/darkmoon-rotation';
 import { anniversary } from '../versions/anniversary/version';
 
 const year = {
@@ -30,6 +31,18 @@ describe('Anniversary data through the engine', () => {
   it('shows fishing on a quiet Sunday and nothing on a quiet weekday', () => {
     expect(dominantOn('2026-11-22', 'eu', 'Europe/Paris')?.eventId).toBe('stv-fishing');
     expect(dominantOn('2026-11-24', 'eu', 'Europe/Paris')).toBeNull();
+  });
+
+  it('shows Darkmoon Faire locations only from the verified rotation constant', () => {
+    const faires = expandOccurrences(anniversary, 'eu', year).filter(
+      (o) => o.eventId === 'darkmoon-faire',
+    );
+    if (!DARKMOON_ROTATION) {
+      expect(faires.every((o) => o.location === undefined)).toBe(true);
+      return;
+    }
+    const { order } = DARKMOON_ROTATION;
+    for (const faire of faires) expect(order).toContain(faire.location);
   });
 
   it('expands a full year in every region', () => {
