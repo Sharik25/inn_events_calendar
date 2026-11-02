@@ -5,7 +5,7 @@ import { localDateOf } from '@/engine/time';
 import { formatDay, formatRange } from '@/lib/format';
 import { strings } from '@/strings/en';
 import { useSettings } from '@/state/settings';
-import { Badge, Icon, Segmented, Sheet } from '@/ui';
+import { Badge, Checkbox, Icon, Segmented, Sheet } from '@/ui';
 import { useCalendarExport } from './useCalendarExport';
 import styles from './AddToCalendar.module.css';
 
@@ -82,9 +82,7 @@ function ExportSheet({ occurrence, onClose }: { occurrence: Occurrence; onClose:
             {exp.overlaps.map((o) => (
               <li key={o.key}>
                 <label className={styles.extra}>
-                  <input
-                    type="checkbox"
-                    className={styles.checkbox}
+                  <Checkbox
                     checked={picked.has(o.key)}
                     onChange={(e) => toggle(o.key, e.currentTarget.checked)}
                   />

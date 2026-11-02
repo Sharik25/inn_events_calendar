@@ -2,6 +2,7 @@ export { ActionBar, ActionBarDivider } from './ActionBar/ActionBar';
 export { ActionButton } from './ActionButton/ActionButton';
 export { AmbientParticles } from './AmbientParticles/AmbientParticles';
 export { Badge } from './Badge/Badge';
+export { Checkbox } from './Checkbox/Checkbox';
 export { FestiveGarland } from './FestiveGarland/FestiveGarland';
 export { Fireplace } from './Fireplace/Fireplace';
 export { Frame } from './Frame/Frame';

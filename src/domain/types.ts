@@ -24,6 +24,21 @@ export interface EventDefinition {
   links?: { label: string; url: string }[];
   /** Experience & rewards per version id (they differ between versions). Shown when present. */
   experience?: Record<VersionId, EventExperience>;
+  /**
+   * Extra checklist items per version id (achievements, tasks). Quests from `experience` are
+   * added automatically; see engine/checklist.ts.
+   */
+  checklist?: Record<VersionId, ChecklistItem[]>;
+}
+
+export type ChecklistItemKind = 'quest' | 'achievement' | 'task';
+
+/** One thing to tick off during an event. `id` must stay stable: saved progress refers to it. */
+export interface ChecklistItem {
+  id: string;
+  kind: ChecklistItemKind;
+  name: string;
+  source?: string; // URL
 }
 
 export interface LevelRange {

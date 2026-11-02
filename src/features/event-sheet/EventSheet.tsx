@@ -7,6 +7,7 @@ import { Countdown } from '@/features/common/Countdown';
 import { UnconfirmedMarker } from '@/features/common/UnconfirmedMarker';
 import { strings } from '@/strings/en';
 import { Badge, Icon, Sheet, ThemeScope } from '@/ui';
+import { ChecklistSection } from '@/features/checklist/ChecklistSection';
 import { ExperienceSection } from './ExperienceSection';
 import styles from './EventSheet.module.css';
 
@@ -84,6 +85,8 @@ export function EventSheet({
         )}
 
         {experience && <ExperienceSection experience={experience} />}
+
+        {occurrence && <ChecklistSection def={def} occurrence={occurrence} />}
 
         {notes.length > 0 && (
           <section>

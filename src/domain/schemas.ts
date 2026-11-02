@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type {
+  ChecklistItem,
   EventDefinition,
   EventExperience,
   ExplicitOccurrence,
@@ -66,6 +67,13 @@ export const eventExperienceSchema = z
     'needs at least one fact besides source',
   );
 
+export const checklistItemSchema = z.strictObject({
+  id: slug,
+  kind: z.enum(['quest', 'achievement', 'task']),
+  name: z.string().min(1),
+  source: url.optional(),
+});
+
 export const eventDefinitionSchema = z.strictObject({
   id: slug,
   name: z.string().min(1),
@@ -78,6 +86,7 @@ export const eventDefinitionSchema = z.strictObject({
   highlights: z.array(z.string().min(1)).optional(),
   links: z.array(z.strictObject({ label: z.string().min(1), url })).optional(),
   experience: z.record(slug, eventExperienceSchema).optional(),
+  checklist: z.record(slug, z.array(checklistItemSchema).min(1)).optional(),
 });
 
 export const explicitOccurrenceSchema = z.strictObject({
@@ -160,6 +169,7 @@ type Assert<T extends true> = T;
 export type SchemaTypeChecks = [
   Assert<Equals<z.infer<typeof eventDefinitionSchema>, EventDefinition>>,
   Assert<Equals<z.infer<typeof eventExperienceSchema>, EventExperience>>,
+  Assert<Equals<z.infer<typeof checklistItemSchema>, ChecklistItem>>,
   Assert<Equals<z.infer<typeof explicitOccurrenceSchema>, ExplicitOccurrence>>,
   Assert<Equals<z.infer<typeof scheduleRuleSchema>, ScheduleRule>>,
   Assert<Equals<z.infer<typeof regionSchema>, Region>>,

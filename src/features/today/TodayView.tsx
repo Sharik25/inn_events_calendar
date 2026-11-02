@@ -4,6 +4,7 @@ import { paths, withEvent } from '@/app/paths';
 import { useVersionView } from '@/app/versionView';
 import { buildDayAgenda } from '@/engine/agenda';
 import { addDays, dayRange } from '@/engine/time';
+import { ChecklistProgress } from '@/features/checklist/ChecklistProgress';
 import { Countdown } from '@/features/common/Countdown';
 import { UnconfirmedMarker } from '@/features/common/UnconfirmedMarker';
 import { RoutedEventSheet } from '@/features/event-sheet/RoutedEventSheet';
@@ -93,6 +94,7 @@ export function TodayView() {
                 />
               )}
               {!dominant.verified && <UnconfirmedMarker onDark />}
+              <ChecklistProgress def={dominantDef} occurrence={dominant} />
             </p>
             <p className={styles.range}>
               <time dateTime={dominant.start.toISOString()}>
