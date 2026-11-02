@@ -4,7 +4,7 @@ const overflowX = () => document.documentElement.scrollWidth - document.document
 
 test('/ opens Today with the disclaimer and no horizontal scroll', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveURL(/\/anniversary\/today$/);
+  await expect(page).toHaveURL(/\/forever\/today$/);
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await expect(page.getByText(/Not affiliated with or endorsed by Blizzard/).first()).toBeVisible();
   expect(await page.evaluate(overflowX)).toBeLessThanOrEqual(0);

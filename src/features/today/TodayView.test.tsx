@@ -16,12 +16,25 @@ afterEach(() => {
 });
 
 describe('routing', () => {
-  it('redirects / to the last-used version Today', async () => {
-    const { router } = renderRoute('/');
+  it('redirects / to Forever by default, and to the version picked in the switcher', async () => {
+    const { router, unmount } = renderRoute('/');
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'WoW: Forever' }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/forever/today');
+    unmount();
+
+    const picked = renderRoute('/', { chosenVersionId: 'anniversary' });
     expect(
       await screen.findByRole('heading', { level: 1, name: "Hallow's End" }),
     ).toBeInTheDocument();
-    expect(router.state.location.pathname).toBe('/anniversary/today');
+    expect(picked.router.state.location.pathname).toBe('/anniversary/today');
+  });
+
+  it('ignores a picked version that no longer exists', async () => {
+    const { router } = renderRoute('/', { chosenVersionId: 'retired-long-ago' });
+    await screen.findByRole('heading', { level: 1, name: 'WoW: Forever' });
+    expect(router.state.location.pathname).toBe('/forever/today');
   });
 
   it('shows Not Found for an unknown version or path', async () => {

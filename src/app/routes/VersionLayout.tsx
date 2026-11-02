@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Outlet,
   useLoaderData,
@@ -53,13 +53,11 @@ export function VersionLayout() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const status = versionStatus(version, now);
 
-  const setVersion = useSettings((s) => s.setVersion);
+  const chooseVersion = useSettings((s) => s.chooseVersion);
   const hiddenCategories = useSettings((s) => s.hiddenCategories);
   const timeDisplay = useSettings((s) => s.timeDisplay);
   const weekStartsOn = useSettings((s) => s.weekStartsOn);
   const region = findRegion(version, useRegionId(version));
-
-  useEffect(() => setVersion(version.id), [setVersion, version.id]);
 
   const userTz = userTimeZone();
   const today = localDateOf(now, userTz);
@@ -167,7 +165,9 @@ export function VersionLayout() {
     () => navigate(view.nav.next),
   );
 
+  // Picking in the switcher is the user's explicit choice: `/` opens it from now on.
   const switchTo = (versionId: string) => {
+    chooseVersion(versionId);
     setPickerOpen(false);
     if (versionId !== version.id)
       navigate(switchVersionPath(location.pathname, version.id, versionId));

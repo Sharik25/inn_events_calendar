@@ -38,7 +38,7 @@ describe('version picker', () => {
     await user.click(forever);
     expect(router.state.location.pathname).toBe('/forever/week/2026-10-26');
     expect(screen.queryByRole('dialog', { name: 'Choose version' })).not.toBeInTheDocument();
-    await waitFor(() => expect(useSettings.getState().versionId).toBe('forever'));
+    expect(useSettings.getState().chosenVersionId).toBe('forever');
   });
 
   it('opens from the top-bar chip and the V key; Escape closes and arrows move focus', async () => {
@@ -105,9 +105,14 @@ describe('WoW: Forever before and after launch', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('remembers the last version for the start page', async () => {
-    renderRoute('/forever/today');
-    await screen.findByRole('heading', { level: 1, name: 'WoW: Forever' });
-    await waitFor(() => expect(useSettings.getState().versionId).toBe('forever'));
+  it('remembers only a version picked in the switcher, not one just visited', async () => {
+    const user = userEvent.setup();
+    renderRoute('/anniversary/today');
+    await screen.findByRole('heading', { level: 1, name: "Hallow's End" });
+    expect(useSettings.getState().chosenVersionId).toBeNull();
+
+    await user.click(screen.getByRole('button', { name: 'Version' }));
+    await user.click(screen.getByRole('button', { name: /Anniversary \(TBC Classic\)/ }));
+    expect(useSettings.getState().chosenVersionId).toBe('anniversary');
   });
 });

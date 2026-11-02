@@ -4,7 +4,8 @@ import type { EventCategory, VersionConfig, VersionId } from '@/domain/types';
 import { guessRegionId } from '@/engine/time';
 
 export interface Settings {
-  versionId: VersionId; // last used
+  /** Version picked in the version switcher; null until the user picks one (→ default version). */
+  chosenVersionId: VersionId | null;
   regionByVersion: Record<VersionId, string>; // only explicit user choices; otherwise guessed
   timeDisplay: 'local' | 'server';
   weekStartsOn: 0 | 1;
@@ -13,7 +14,7 @@ export interface Settings {
 }
 
 interface SettingsActions {
-  setVersion(versionId: VersionId): void;
+  chooseVersion(versionId: VersionId): void;
   setRegion(versionId: VersionId, regionId: string): void;
   setTimeDisplay(timeDisplay: Settings['timeDisplay']): void;
   setWeekStartsOn(weekStartsOn: Settings['weekStartsOn']): void;
@@ -24,7 +25,7 @@ interface SettingsActions {
 export type SettingsStore = Settings & SettingsActions;
 
 export const SETTINGS_STORAGE_KEY = 'almanac-settings-v1';
-const SETTINGS_VERSION = 1;
+const SETTINGS_VERSION = 2;
 
 export function userTimeZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -48,7 +49,7 @@ export function localeWeekStart(locale = navigator.language): 0 | 1 {
 
 export function defaultSettings(): Settings {
   return {
-    versionId: 'anniversary',
+    chosenVersionId: null,
     regionByVersion: {},
     timeDisplay: 'local',
     weekStartsOn: localeWeekStart(),
@@ -57,18 +58,25 @@ export function defaultSettings(): Settings {
   };
 }
 
-/** Upgrades persisted settings from older schema versions; unknown fields fall back to defaults. */
+/**
+ * Upgrades persisted settings from older schema versions; unknown fields fall back to defaults.
+ * v1 → v2: v1's `versionId` was recorded on every visit, so it is not an explicit choice and is
+ * dropped (those users now start on the default version until they pick one).
+ */
 export function migrateSettings(persisted: unknown, _fromVersion: number): Settings {
   const base = defaultSettings();
   if (!persisted || typeof persisted !== 'object') return base;
-  return { ...base, ...(persisted as Partial<Settings>) };
+  const { versionId: _lastVisited, ...rest } = persisted as Partial<Settings> & {
+    versionId?: unknown;
+  };
+  return { ...base, ...rest };
 }
 
 export const useSettings = create<SettingsStore>()(
   persist(
     (set) => ({
       ...defaultSettings(),
-      setVersion: (versionId) => set({ versionId }),
+      chooseVersion: (chosenVersionId) => set({ chosenVersionId }),
       setRegion: (versionId, regionId) =>
         set((s) => ({ regionByVersion: { ...s.regionByVersion, [versionId]: regionId } })),
       setTimeDisplay: (timeDisplay) => set({ timeDisplay }),
@@ -82,14 +90,14 @@ export const useSettings = create<SettingsStore>()(
       storage: createJSONStorage(() => localStorage),
       migrate: migrateSettings,
       partialize: ({
-        versionId,
+        chosenVersionId,
         regionByVersion,
         timeDisplay,
         weekStartsOn,
         hiddenCategories,
         reducedMotion,
       }): Settings => ({
-        versionId,
+        chosenVersionId,
         regionByVersion,
         timeDisplay,
         weekStartsOn,

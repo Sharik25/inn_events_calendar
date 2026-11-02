@@ -15,11 +15,11 @@ export interface VersionLoaderData {
   catalog: EventCatalog;
 }
 
-/** `/` → last used version's Today. */
+/** `/` → Today of the version picked in the switcher, or of the default version. */
 export async function rootLoader() {
   const versions = await repository.getVersions();
-  const last = useSettings.getState().versionId;
-  const id = versions.some((v) => v.id === last) ? last : defaultVersionId;
+  const chosen = useSettings.getState().chosenVersionId;
+  const id = chosen && versions.some((v) => v.id === chosen) ? chosen : defaultVersionId;
   return redirect(paths.today(id));
 }
 

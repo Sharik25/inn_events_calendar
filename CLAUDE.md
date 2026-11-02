@@ -44,6 +44,8 @@ Node 22 is required (`nvm use`; see `.nvmrc`). The system default Node 18 is too
 ## Data notes
 
 - Explicit dates live in `src/data/versions/<id>/schedule-<year>.json`. `version.ts` globs them, so adding a year only means adding a file.
+- **Forever is the default version.** `/` opens the version picked in the switcher (`chosenVersionId` in settings), else `defaultVersionId` (`forever`). Visiting a version is not a choice.
+- **Auto-update:** Forever's dates are JSON too (`forever/schedule-<year>.json`, empty until the in-game calendar is verified). Editing one on `main` redeploys. `deploy.yml` also rebuilds daily so the `.ics` feed window rolls forward. `useNow` ticks every minute and on tab focus, so "today" never needs a deploy. There is no scraper on purpose: no official calendar API, and scraped dates can't be `verified`.
 - Set `verified: true` only with a source specific to that version. Every unverified date needs a `note` saying what's unconfirmed (a test enforces this).
 - Anniversary assumptions to re-check in-game: US event clock = Pacific time; holiday start/end time = 10:00 server; Darkmoon Faire opens 00:00 Monday after the first Friday, location rotation unknown.
 - Swipe navigation uses a small touch-event hook (`src/hooks/useSwipeNav.ts`) instead of `@use-gesture/react` from PLAN.md. The library's click handling blocked link taps inside the swipe area.
