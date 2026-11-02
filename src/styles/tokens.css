@@ -15,7 +15,8 @@
   --particle-color: #e8823a;
 
   /* Type */
-  --font-display: 'Cinzel', 'Times New Roman', serif;
+  /* Cinzel has no Cyrillic: Russian headings fall back glyph by glyph to Alegreya, not Times. */
+  --font-display: 'Cinzel', 'Alegreya', 'Times New Roman', serif;
   --font-body: 'Alegreya', Georgia, serif;
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;

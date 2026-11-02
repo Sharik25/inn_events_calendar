@@ -31,7 +31,7 @@ Node 22 is required (`nvm use`; see `.nvmrc`). The system default Node 18 is too
 - `src/data/events/`: one file per event (version-agnostic). `src/data/versions/<id>/`: `version.ts` + `schedule-<year>.json`.
 - `src/themes/<id>/`: one folder per theme; registry in `src/themes/index.ts` (lazy loaders, `base` bundled).
 - `src/features/<feature>/`: views and feature components. `src/ui/`: design-system primitives.
-- `src/strings/en.ts`: **all UI copy**. Don't hardcode user-facing strings in components.
+- `src/strings/`: **all UI copy**, in `en.ts` (reference) plus `de.ts`, `fr.ts`, `ru.ts` typed against it (`Strings`), so a missing key fails `tsc`. Import `strings` from `@/strings` (a live binding for the active language), never from a language file. Don't hardcode user-facing strings or locales in components; dates go through `src/lib/format.ts`. Event content in `src/data/**` stays English.
 - Styling: CSS Modules + CSS custom properties (tokens in `src/styles/tokens.css`). No CSS-in-JS. CSS-only animation, always respect `prefers-reduced-motion`.
 - Imports: use the `@/` alias for `src/`. Use `import type` for type-only imports.
 

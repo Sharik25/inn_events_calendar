@@ -11,7 +11,7 @@ import { RoutedEventSheet } from '@/features/event-sheet/RoutedEventSheet';
 import { DESKTOP_QUERY, useMediaQuery } from '@/hooks/useMediaQuery';
 import { useOccurrences } from '@/hooks/useOccurrences';
 import { formatDateSpan, formatDayLong, weekdayShort } from '@/lib/format';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { ThemeScope } from '@/ui';
 import styles from './WeekView.module.css';
 

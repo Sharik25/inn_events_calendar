@@ -2,7 +2,7 @@ import { useId } from 'react';
 import type { EventDefinition, Occurrence } from '@/domain/types';
 import { checklistItems, checklistProgress } from '@/engine/checklist';
 import { useChecklist, useChecklistDone } from '@/state/checklist';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { Checkbox } from '@/ui';
 import styles from './Checklist.module.css';
 

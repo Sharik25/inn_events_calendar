@@ -13,7 +13,7 @@ import { localDateOf } from '@/engine/time';
 import { useOccurrences } from '@/hooks/useOccurrences';
 import { appBaseUrl } from '@/lib/base';
 import { downloadText } from '@/lib/download';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 
 /**
  * Export actions for one occurrence, plus the one-day events running during it (when it is a

@@ -7,7 +7,7 @@ import { ChecklistProgress } from '@/features/checklist/ChecklistProgress';
 import { Countdown } from '@/features/common/Countdown';
 import { useTheme } from '@/hooks/useTheme';
 import { formatRange } from '@/lib/format';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { uniqueSvgIds } from '@/themes/art/helpers';
 import { Icon, ThemeScope } from '@/ui';
 import styles from './EventCard.module.css';

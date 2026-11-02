@@ -1,5 +1,5 @@
 import { SUPPORT_URL } from '@/config';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import styles from './SupportLink.module.css';
 
 /**

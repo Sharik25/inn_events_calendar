@@ -1,7 +1,7 @@
 import type { EventDefinition, Occurrence } from '@/domain/types';
 import { checklistItems, checklistProgress } from '@/engine/checklist';
 import { useChecklistDone } from '@/state/checklist';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { cx } from '@/ui';
 import styles from './Checklist.module.css';
 

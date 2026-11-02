@@ -1,0 +1,33 @@
+.field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+/* Same look as the Segmented legends above and below it. */
+.label {
+  justify-self: center;
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--color-ink-on-dark);
+  background: var(--color-frame);
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.select:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}

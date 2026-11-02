@@ -5,7 +5,7 @@ import { expandOccurrences } from '@/engine/expand';
 import { addDays, daysRange } from '@/engine/time';
 import { Countdown } from '@/features/common/Countdown';
 import { UnconfirmedMarker } from '@/features/common/UnconfirmedMarker';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { Badge, Icon, Sheet, ThemeScope } from '@/ui';
 import { ChecklistSection } from '@/features/checklist/ChecklistSection';
 import { ExperienceSection } from './ExperienceSection';

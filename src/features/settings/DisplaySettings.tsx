@@ -1,5 +1,5 @@
 import { useSettings } from '@/state/settings';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { Segmented } from '@/ui';
 
 /** Time display, week start and animation preferences (PLAN.md §15). */

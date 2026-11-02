@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState, type PointerEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { Icon } from '../Icon/Icon';
 import { ThemeScope } from '../ThemeScope/ThemeScope';
 import { useScopeThemeId } from '../ThemeScope/themeContext';

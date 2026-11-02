@@ -4,7 +4,7 @@
  */
 import { useState } from 'react';
 import type { ThemeId } from '@/domain/types';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import {
   ActionBar,
   ActionBarDivider,

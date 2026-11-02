@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import type { EventCategory, VersionConfig, VersionId } from '@/domain/types';
 import { guessRegionId } from '@/engine/time';
+import { detectLanguage, isLanguage, type Language } from '@/strings';
 
 export interface Settings {
   /** Version picked in the version switcher; null until the user picks one (→ default version). */
@@ -13,6 +14,8 @@ export interface Settings {
   reducedMotion: 'system' | 'on' | 'off';
   /** Reminder for downloaded .ics events, in minutes before the start; null = none. */
   reminderMinutes: number | null;
+  /** UI language picked by the user; null = the browser's language (English if unsupported). */
+  language: Language | null;
 }
 
 interface SettingsActions {
@@ -23,6 +26,7 @@ interface SettingsActions {
   setHiddenCategories(hiddenCategories: EventCategory[]): void;
   setReducedMotion(reducedMotion: Settings['reducedMotion']): void;
   setReminderMinutes(reminderMinutes: Settings['reminderMinutes']): void;
+  setLanguage(language: Language): void;
 }
 
 export type SettingsStore = Settings & SettingsActions;
@@ -59,6 +63,7 @@ export function defaultSettings(): Settings {
     hiddenCategories: ['milestone'],
     reducedMotion: 'system',
     reminderMinutes: 60,
+    language: null,
   };
 }
 
@@ -88,6 +93,7 @@ export const useSettings = create<SettingsStore>()(
       setHiddenCategories: (hiddenCategories) => set({ hiddenCategories }),
       setReducedMotion: (reducedMotion) => set({ reducedMotion }),
       setReminderMinutes: (reminderMinutes) => set({ reminderMinutes }),
+      setLanguage: (language) => set({ language }),
     }),
     {
       name: SETTINGS_STORAGE_KEY,
@@ -102,6 +108,7 @@ export const useSettings = create<SettingsStore>()(
         hiddenCategories,
         reducedMotion,
         reminderMinutes,
+        language,
       }): Settings => ({
         chosenVersionId,
         regionByVersion,
@@ -110,10 +117,20 @@ export const useSettings = create<SettingsStore>()(
         hiddenCategories,
         reducedMotion,
         reminderMinutes,
+        language,
       }),
     },
   ),
 );
+
+/** The UI language to use: the user's pick, else the browser's language, else English. */
+export function resolveLanguage(picked: unknown, preferred?: readonly string[]): Language {
+  return isLanguage(picked) ? picked : detectLanguage(preferred);
+}
+
+export function useLanguage(): Language {
+  return resolveLanguage(useSettings((s) => s.language));
+}
 
 /** The region chosen for a version, or a guess from the user's time zone (PLAN.md §7). */
 export function resolveRegionId(

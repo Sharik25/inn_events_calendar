@@ -1,5 +1,5 @@
 import type { EventExperience, LevelRange } from '@/domain/types';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { Icon } from '@/ui';
 import styles from './EventSheet.module.css';
 

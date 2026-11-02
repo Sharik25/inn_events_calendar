@@ -12,6 +12,7 @@ import { findRegion } from '@/engine/expand';
 import { addDays, addMonths, localDateOf, monthOf, type LocalDate } from '@/engine/time';
 import { switchVersionPath, versionStatus } from '@/engine/version';
 import { MoreSheet } from '@/features/settings/MoreSheet';
+import { takeReopenSettings } from '@/features/settings/reopen';
 import { SupportLink } from '@/features/support/SupportLink';
 import { LaunchScreen } from '@/features/version-switcher/LaunchScreen';
 import { VersionPicker } from '@/features/version-switcher/VersionPicker';
@@ -23,7 +24,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useSwipeNav } from '@/hooks/useSwipeNav';
 import { useTheme } from '@/hooks/useTheme';
 import { useRegionId, userTimeZone, useSettings } from '@/state/settings';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import {
   ActionBar,
   ActionBarDivider,
@@ -50,7 +51,8 @@ export function VersionLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const now = useNow();
-  const [moreOpen, setMoreOpen] = useState(false);
+  // Reopens after a language switch remounted the app (the picker lives in this sheet).
+  const [moreOpen, setMoreOpen] = useState(takeReopenSettings);
   const [pickerOpen, setPickerOpen] = useState(false);
   const status = versionStatus(version, now);
 

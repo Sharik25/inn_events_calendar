@@ -1,6 +1,6 @@
 import type { EventCatalog, EventCategory, VersionConfig } from '@/domain/types';
 import { useSettings } from '@/state/settings';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import styles from './CategoryFilter.module.css';
 
 /** Toggle which kinds of events appear (holidays, faire, fishing, …) for the current version. */

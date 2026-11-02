@@ -4,7 +4,7 @@ import type { VersionConfig } from '@/domain/types';
 import { launchInstant, switchVersionPath } from '@/engine/version';
 import { useTheme } from '@/hooks/useTheme';
 import { formatDateTime, formatDuration } from '@/lib/format';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { uniqueSvgIds } from '@/themes/art/helpers';
 import { Frame, ParchmentCard } from '@/ui';
 import styles from './LaunchScreen.module.css';

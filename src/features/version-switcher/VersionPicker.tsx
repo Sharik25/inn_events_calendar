@@ -3,7 +3,7 @@ import type { VersionConfig } from '@/domain/types';
 import { launchInstant, versionStatus } from '@/engine/version';
 import { useTheme } from '@/hooks/useTheme';
 import { formatDateTime } from '@/lib/format';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { uniqueSvgIds } from '@/themes/art/helpers';
 import { Icon, ThemeScope } from '@/ui';
 import styles from './VersionPicker.module.css';

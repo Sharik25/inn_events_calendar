@@ -11,7 +11,7 @@ import { RoutedEventSheet } from '@/features/event-sheet/RoutedEventSheet';
 import { useOccurrences } from '@/hooks/useOccurrences';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { formatDistance, formatRange } from '@/lib/format';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { AmbientParticles, Fireplace, Icon, ParchmentCard } from '@/ui';
 import { AddToCalendar } from '@/features/calendar-export/AddToCalendar';
 import { DateNumeral } from './DateNumeral';

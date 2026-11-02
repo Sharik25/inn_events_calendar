@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
 import type { Region, VersionConfig } from '@/domain/types';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { Icon } from '@/ui';
 import { feedUrls } from './feedUrls';
 import styles from './SubscribeSection.module.css';

@@ -3,7 +3,7 @@ import { useVersionView } from '@/app/versionView';
 import type { Occurrence } from '@/domain/types';
 import { localDateOf } from '@/engine/time';
 import { formatDay, formatRange } from '@/lib/format';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { useSettings } from '@/state/settings';
 import { Badge, Checkbox, Icon, Segmented, Sheet } from '@/ui';
 import { useCalendarExport } from './useCalendarExport';

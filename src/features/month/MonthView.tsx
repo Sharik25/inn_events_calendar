@@ -13,7 +13,7 @@ import { useElementHeight } from '@/hooks/useElementHeight';
 import { DESKTOP_QUERY, useMediaQuery } from '@/hooks/useMediaQuery';
 import { useOccurrences } from '@/hooks/useOccurrences';
 import { formatDayLong, formatMonth, weekdayShort } from '@/lib/format';
-import { strings } from '@/strings/en';
+import { strings } from '@/strings';
 import { ThemeScope } from '@/ui';
 import styles from './MonthView.module.css';
 

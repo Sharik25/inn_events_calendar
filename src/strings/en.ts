@@ -1,5 +1,22 @@
-/** All UI copy lives here so localization is cheap later. */
-export const strings = {
+/**
+ * English UI copy: the reference language. de/fr/ru must match this shape (`Strings`); components
+ * read the active language through `strings` from `@/strings`, never from this file directly.
+ */
+export const en = {
+  meta: {
+    /** BCP 47 locale for dates and numbers. */
+    locale: 'en-US',
+    /** The language's own name, for the language picker. */
+    name: 'English',
+  },
+  /** Compact durations: "4d 22h", "3h 12m". */
+  units: {
+    d: (n: number) => `${n}d`,
+    h: (n: number) => `${n}h`,
+    m: (n: number) => `${n}m`,
+    lessThanMinute: '<1m',
+    lessThanHour: '<1h',
+  },
   app: {
     name: "Innkeeper's Almanac",
     tagline: 'What is happening in Azeroth today — pull up a chair by the hearth.',
@@ -159,6 +176,7 @@ export const strings = {
     motionFull: 'Full',
     eventsShown: 'Events shown',
     eventsShownHint: 'Hidden kinds of events disappear from every view.',
+    language: 'Language',
   },
   support: {
     beer: 'Buy me a beer 🍺',
@@ -170,4 +188,11 @@ export const strings = {
   },
 } as const;
 
-export type Strings = typeof strings;
+/** Deep shape of `en` with literal strings widened, so other languages can fill it in. */
+type Widen<T> = T extends string
+  ? string
+  : T extends (...args: infer A) => infer R
+    ? (...args: A) => Widen<R>
+    : { readonly [K in keyof T]: Widen<T[K]> };
+
+export type Strings = Widen<typeof en>;

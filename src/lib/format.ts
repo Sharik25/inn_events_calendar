@@ -1,17 +1,17 @@
-/** Display formatting. English UI with 24-hour times (matching in-game server clocks). */
+/** Display formatting in the active UI language, with 24-hour times (as in-game server clocks). */
 import type { LocalDate } from '@/engine/time';
-
-const LOCALE = 'en-US';
+import { strings } from '@/strings';
 const DAY_MS = 86_400_000;
 const HOUR_MS = 3_600_000;
 const MINUTE_MS = 60_000;
 
 const cache = new Map<string, Intl.DateTimeFormat>();
 function fmt(timeZone: string, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
-  const key = timeZone + JSON.stringify(options);
+  const locale = strings.meta.locale;
+  const key = locale + timeZone + JSON.stringify(options);
   let f = cache.get(key);
   if (!f) {
-    f = new Intl.DateTimeFormat(LOCALE, { timeZone, hourCycle: 'h23', ...options });
+    f = new Intl.DateTimeFormat(locale, { timeZone, hourCycle: 'h23', ...options });
     cache.set(key, f);
   }
   return f;
@@ -61,10 +61,14 @@ function utcDate(date: LocalDate): Date {
   return new Date(`${date}T00:00:00Z`);
 }
 
+/** "Sun, Oct 18" for an instant in `timeZone`. */
+export function formatDate(instant: Date, timeZone: string): string {
+  return fmt(timeZone, { weekday: 'short', month: 'short', day: 'numeric' }).format(instant);
+}
+
 /** "Sun, Oct 18, 10:00". Date and time are formatted separately: engines join them differently. */
 export function formatDateTime(instant: Date, timeZone: string): string {
-  const date = fmt(timeZone, { weekday: 'short', month: 'short', day: 'numeric' }).format(instant);
-  return `${date}, ${formatTime(instant, timeZone)}`;
+  return `${formatDate(instant, timeZone)}, ${formatTime(instant, timeZone)}`;
 }
 
 /** "14:00" */
@@ -92,26 +96,29 @@ export function zoneLabel(instant: Date, timeZone: string): string {
   );
 }
 
+/** Duration units of the active language. */
+const u = () => strings.units;
+
 /** Compact duration: "4d 22h", "3h 12m", "12m", "<1m". */
 export function formatDuration(ms: number): string {
   const abs = Math.max(0, ms);
   if (abs >= DAY_MS) {
     const d = Math.floor(abs / DAY_MS);
     const h = Math.floor((abs % DAY_MS) / HOUR_MS);
-    return h ? `${d}d ${h}h` : `${d}d`;
+    return h ? `${u().d(d)} ${u().h(h)}` : u().d(d);
   }
   if (abs >= HOUR_MS) {
     const h = Math.floor(abs / HOUR_MS);
     const m = Math.floor((abs % HOUR_MS) / MINUTE_MS);
-    return m ? `${h}h ${m}m` : `${h}h`;
+    return m ? `${u().h(h)} ${u().m(m)}` : u().h(h);
   }
-  if (abs >= MINUTE_MS) return `${Math.floor(abs / MINUTE_MS)}m`;
-  return '<1m';
+  if (abs >= MINUTE_MS) return u().m(Math.floor(abs / MINUTE_MS));
+  return u().lessThanMinute;
 }
 
 /** Coarse distance for "Coming soon": "6d", "5h", "<1h". */
 export function formatDistance(ms: number): string {
-  if (ms >= DAY_MS) return `${Math.floor(ms / DAY_MS)}d`;
-  if (ms >= HOUR_MS) return `${Math.floor(ms / HOUR_MS)}h`;
-  return '<1h';
+  if (ms >= DAY_MS) return u().d(Math.floor(ms / DAY_MS));
+  if (ms >= HOUR_MS) return u().h(Math.floor(ms / HOUR_MS));
+  return u().lessThanHour;
 }
