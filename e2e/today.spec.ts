@@ -58,3 +58,37 @@ test('keyboard shortcuts move between days', async ({ page, isMobile }) => {
   await page.keyboard.press('t');
   await expect(page).toHaveURL(/\/today$/);
 });
+
+test('a quiet day shows a fireplace that never blocks taps and stills with reduced motion', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/anniversary/day/2026-11-24');
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'A quiet day at the inn' }),
+  ).toBeVisible();
+  const hearth = page.getByTestId('fireplace');
+  await expect(hearth).toBeVisible();
+  await expect(hearth).toHaveAttribute('aria-hidden', 'true');
+
+  const flame = hearth.locator('[class*="core"]');
+  expect(await flame.evaluate((el) => getComputedStyle(el).animationName)).not.toBe('none');
+  // Taps fall through: the topmost element at the hearth's center is not part of it.
+  const box = (await hearth.boundingBox())!;
+  const hit = await page.evaluate(
+    ([x, y]) => !!document.elementFromPoint(x!, y!)?.closest('[data-testid="fireplace"]'),
+    [box.x + box.width / 2, box.y + box.height / 2],
+  );
+  expect(hit).toBe(false);
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(hearth).toHaveAttribute('data-motion', 'reduce');
+  expect(await flame.evaluate((el) => getComputedStyle(el).animationName)).toBe('none');
+  await expect(hearth.locator('[class*="ember"]').first()).toBeHidden();
+});
+
+test('event days show no fireplace', async ({ page }) => {
+  await page.goto('/anniversary/today');
+  await expect(page.getByRole('heading', { level: 1, name: "Hallow's End" })).toBeVisible();
+  await expect(page.getByTestId('fireplace')).toHaveCount(0);
+});

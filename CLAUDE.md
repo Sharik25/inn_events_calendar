@@ -58,6 +58,7 @@ Node 22 is required (`nvm use`; see `.nvmrc`). The system default Node 18 is too
 - Art lives in `src/themes/art/*.ts` as original SVG strings (chunky outlines, painted gradients). Never copy or trace game art.
 - Several copies of the same art can be on a page: always render through `uniqueSvgIds()`, or gradients break when the first copy is hidden.
 - Mobile: bottom-corner art moves from the fixed layer into the end-of-page scene so it never sits behind text.
+- Quiet days (no events) show `<Fireplace>` (`src/ui/Fireplace`): inline SVG, so its parts can be CSS-animated, with `useId` gradient ids. Stone, wood and trim come from theme tokens, and it stands still under reduced motion.
 - `src/themes/__tests__/contrast.test.ts` enforces WCAG AA per theme and the 150 KB budget. Fix a failing theme by adjusting its tokens, not the test.
 
 ## Calendar export (Phase 6)

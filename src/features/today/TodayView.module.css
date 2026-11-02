@@ -137,6 +137,10 @@
   color: var(--color-ink-on-dark-muted);
 }
 
+.hearth {
+  margin-top: var(--space-5);
+}
+
 /* Side column */
 .side {
   display: grid;

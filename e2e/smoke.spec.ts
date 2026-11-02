@@ -16,6 +16,7 @@ test('narrowest supported width (360px) has no horizontal scroll', async ({ page
     '/anniversary/today',
     '/anniversary/day/2026-07-04',
     '/anniversary/day/2026-11-15',
+    '/anniversary/day/2026-11-24', // quiet day: the fireplace and its firelight
   ]) {
     await page.goto(path);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();

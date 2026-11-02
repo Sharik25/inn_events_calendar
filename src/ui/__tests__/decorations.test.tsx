@@ -5,6 +5,7 @@ import { defaultSettings, useSettings } from '@/state/settings';
 import type { Decoration } from '@/themes';
 import { AmbientParticles, MAX_PARTICLES } from '../AmbientParticles/AmbientParticles';
 import { FestiveGarland } from '../FestiveGarland/FestiveGarland';
+import { Fireplace } from '../Fireplace/Fireplace';
 import { ThemeDecorations } from '../ThemeDecorations/ThemeDecorations';
 
 const art =
@@ -93,6 +94,29 @@ describe('FestiveGarland', () => {
   it('marks reduced motion so its animation can be disabled', () => {
     render(<FestiveGarland reducedMotion />);
     expect(screen.getByTestId('festive-garland')).toHaveAttribute('data-motion', 'reduce');
+  });
+});
+
+describe('Fireplace', () => {
+  it('is hidden, non-interactive art with gradients unique to each copy', () => {
+    render(
+      <>
+        <Fireplace />
+        <Fireplace />
+      </>,
+    );
+    const [first, second] = screen.getAllByTestId('fireplace');
+    expect(first).toHaveAttribute('aria-hidden', 'true');
+    expect(first).not.toHaveAttribute('data-motion');
+    const ids = (el: HTMLElement | undefined) =>
+      [...(el?.querySelectorAll('[id]') ?? [])].map((n) => n.id);
+    expect(ids(first).length).toBeGreaterThan(0);
+    expect(ids(first).filter((id) => ids(second).includes(id))).toEqual([]);
+  });
+
+  it('marks reduced motion so the fire stands still', () => {
+    render(<Fireplace reducedMotion />);
+    expect(screen.getByTestId('fireplace')).toHaveAttribute('data-motion', 'reduce');
   });
 });
 

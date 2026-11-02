@@ -8,9 +8,10 @@ import { Countdown } from '@/features/common/Countdown';
 import { UnconfirmedMarker } from '@/features/common/UnconfirmedMarker';
 import { RoutedEventSheet } from '@/features/event-sheet/RoutedEventSheet';
 import { useOccurrences } from '@/hooks/useOccurrences';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { formatDistance, formatRange } from '@/lib/format';
 import { strings } from '@/strings/en';
-import { Icon, ParchmentCard } from '@/ui';
+import { Fireplace, Icon, ParchmentCard } from '@/ui';
 import { AddToCalendar } from '@/features/calendar-export/AddToCalendar';
 import { DateNumeral } from './DateNumeral';
 import { EventCard } from './EventCard';
@@ -24,6 +25,7 @@ export function TodayView() {
   const { version, catalog, region, userTimeZone, displayTimeZone, now, today, viewDate, isToday } =
     view;
   const location = useLocation();
+  const reducedMotion = useReducedMotion();
 
   const occurrences = useOccurrences(
     version,
@@ -124,6 +126,7 @@ export function TodayView() {
               {strings.today.quietDay}
             </h1>
             <p className={styles.quiet}>{strings.today.quietDayHint}</p>
+            <Fireplace reducedMotion={reducedMotion} className={styles.hearth} />
           </>
         )}
       </section>
