@@ -143,6 +143,9 @@ export const strings = {
     eventsShown: 'Events shown',
     eventsShownHint: 'Hidden kinds of events disappear from every view.',
   },
+  support: {
+    beer: 'Buy me a beer 🍺',
+  },
   legal: {
     disclaimer:
       'Fan-made. Not affiliated with or endorsed by Blizzard Entertainment. World of Warcraft is a trademark of Blizzard Entertainment, Inc.',

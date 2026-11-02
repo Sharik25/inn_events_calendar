@@ -74,6 +74,7 @@ Node 22 is required (`nvm use`; see `.nvmrc`). The system default Node 18 is too
 
 - `vite-plugin-pwa` precaches the shell, bundled data, lazy theme chunks and fonts, so the app works offline. Feeds (`/calendars/*`) use NetworkFirst and are excluded from the SPA fallback.
 - Icons, favicon and the social image are generated from original SVG art: `npm run assets` (`scripts/generate-assets.ts`, art in `src/themes/art/appIcon.ts`). Re-run it after changing the art.
+- Support link: `SUPPORT_URL` in `src/config.ts` drives the footer's "Buy me a beer 🍺" button (new tab, `noopener noreferrer`). It stays hidden while the URL is empty or not https. No ads, tracking or paywalls.
 - Settings live in the settings sheet: region, time display, week start, animations, event categories, subscribe, About.
 - Deploy target is Netlify (`netlify.toml`: Node 22, `.ics` served as `text/calendar`, no-cache service worker, security headers, SPA fallback). `SITE_URL` (or Netlify's `URL`) makes feed links and `og:image` absolute.
 - CI: `.github/workflows/ci.yml` runs every gate. Lighthouse (mobile) at the end of Phase 8: Performance 96, Accessibility 100, Best Practices 100, SEO 100.

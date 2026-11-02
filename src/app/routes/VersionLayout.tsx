@@ -12,6 +12,7 @@ import { findRegion } from '@/engine/expand';
 import { addDays, addMonths, localDateOf, monthOf, type LocalDate } from '@/engine/time';
 import { switchVersionPath, versionStatus } from '@/engine/version';
 import { MoreSheet } from '@/features/settings/MoreSheet';
+import { SupportLink } from '@/features/support/SupportLink';
 import { LaunchScreen } from '@/features/version-switcher/LaunchScreen';
 import { VersionPicker } from '@/features/version-switcher/VersionPicker';
 import { dominantThemeId, monthThemeId } from '@/hooks/useDominantTheme';
@@ -217,7 +218,10 @@ export function VersionLayout() {
           variant="scene"
           reducedMotion={reducedMotion}
         />
-        <small>{strings.legal.disclaimer}</small>
+        <div className={styles.footerLine}>
+          <SupportLink />
+          <small>{strings.legal.disclaimer}</small>
+        </div>
       </footer>
 
       <ActionBar>
