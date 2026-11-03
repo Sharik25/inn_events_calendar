@@ -2,7 +2,9 @@ import { buildFeeds, expandOccurrences } from '@/engine';
 import { eventDefinitions } from '../events';
 import { anniversary } from '../versions/anniversary/version';
 import { forever } from '../versions/forever/version';
+import { launchBindings, launchEvents } from '../launches';
 import { ESTIMATED_NOTE, ESTIMATED_WEEKLY_NOTE } from '../schedules';
+import { FOREVER_LAUNCHES } from '../versions/forever/launches';
 
 const span = { start: new Date('2026-01-01T00:00Z'), end: new Date('2028-01-01T00:00Z') };
 const occurrences = expandOccurrences(forever, 'global', span);
@@ -122,28 +124,55 @@ describe('fishing', () => {
 describe('launch', () => {
   const catalog = Object.fromEntries(eventDefinitions.map((d) => [d.id, d]));
 
-  it('is one event per part of the world, at the one worldwide moment', () => {
+  it('is one event for Europe and America, which open at the same moment', () => {
     const launches = occurrences.filter((o) => catalog[o.eventId]?.category === 'launch');
     expect(
       launches.map((o) => [o.eventId, o.start.toISOString(), o.end.toISOString(), o.verified]),
     ).toEqual([
-      ['forever-launch-eu', '2026-11-04T23:00:00.000Z', '2026-11-04T23:01:00.000Z', true],
-      ['forever-launch-na', '2026-11-04T23:00:00.000Z', '2026-11-04T23:01:00.000Z', true],
+      ['forever-launch-eu-na', '2026-11-04T23:00:00.000Z', '2026-11-04T23:01:00.000Z', true],
     ]);
-    expect(catalog['forever-launch-eu']).toMatchObject({
-      name: 'WoW: Forever launch (Europe)',
-      shortName: 'Europe launch',
+    expect(catalog['forever-launch-eu-na']).toMatchObject({
+      name: 'WoW: Forever launch (Europe & America)',
+      shortName: 'Europe & America launch',
       themeId: 'forever-launch',
-      summary: 'Servers open in Europe on Thu, Nov 5, 2026, 00:00 (GMT+1).',
+      summary:
+        'Servers open at the same moment in Europe (Thu, Nov 5, 2026, 00:00 GMT+1) and America (Wed, Nov 4, 2026, 15:00 GMT-8).',
     });
-    expect(catalog['forever-launch-na']).toMatchObject({
-      name: 'WoW: Forever launch (America)',
-      summary: 'Servers open in America on Wed, Nov 4, 2026, 15:00 (GMT-8).',
-    });
+    expect(catalog['forever-launch-eu-na']?.links?.map((l) => l.label)).toEqual([
+      'Launch announcement (Europe)',
+      'Launch announcement (America)',
+    ]);
     expect(forever.launches?.map((l) => l.id)).toEqual(['eu', 'na']);
   });
 
-  it('is exported to calendars like every other event', () => {
+  it('splits into one event per moment if the launch is staggered', () => {
+    const [eu, na] = FOREVER_LAUNCHES;
+    const staggered = [{ ...eu!, at: '2026-11-05T15:00:00+01:00' }, na!];
+    const defs = launchEvents({
+      versionId: 'v',
+      title: 'Launch',
+      themeId: 'base',
+      launches: staggered,
+    });
+    expect(defs.map((d) => [d.id, d.name, d.summary])).toEqual([
+      [
+        'v-launch-eu',
+        'Launch (Europe)',
+        'Servers open in Europe on Thu, Nov 5, 2026, 15:00 (GMT+1).',
+      ],
+      [
+        'v-launch-na',
+        'Launch (America)',
+        'Servers open in America on Wed, Nov 4, 2026, 15:00 (GMT-8).',
+      ],
+    ]);
+    expect(launchBindings('v', staggered).map((b) => [b.eventId, b.rule.kind])).toEqual([
+      ['v-launch-eu', 'moment'],
+      ['v-launch-na', 'moment'],
+    ]);
+  });
+
+  it('is exported to calendars as one entry, like every other event', () => {
     const [feed] = buildFeeds([forever], catalog, span, {
       appName: 'Test',
       appUrl: 'https://example.test/app',
@@ -151,10 +180,10 @@ describe('launch', () => {
       locationLabel: 'Location',
     });
     const vevents = (feed?.content ?? '').split('BEGIN:VEVENT').slice(1);
-    const europe = vevents.find((v) => v.includes('SUMMARY:WoW: Forever launch (Europe)'));
-    expect(europe).toContain('DTSTART:20261104T230000Z');
-    expect(europe).toContain('UID:forever:forever-launch-eu:2026-11-04T23:00:00.000Z');
-    expect(europe).toMatch(/DESCRIPTION:Servers open in Europe on Thu\\, Nov 5\\, 2026\\, 00:00/);
-    expect(vevents.some((v) => v.includes('SUMMARY:WoW: Forever launch (America)'))).toBe(true);
+    const launch = vevents.filter((v) => v.includes('SUMMARY:WoW: Forever launch'));
+    expect(launch).toHaveLength(1);
+    expect(launch[0]).toContain('SUMMARY:WoW: Forever launch (Europe & America)');
+    expect(launch[0]).toContain('DTSTART:20261104T230000Z');
+    expect(launch[0]).toContain('UID:forever:forever-launch-eu-na:2026-11-04T23:00:00.000Z');
   });
 });

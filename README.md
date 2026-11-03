@@ -115,9 +115,10 @@ A version's launch is data: `launches` in its config, one entry per part of the 
 (`{ id, label, at, timeZone, verified, source }`; Forever's are in
 `src/data/versions/forever/launches.ts`). From that list:
 
-- each launch becomes its own event ("WoW: Forever launch (Europe)") via `launchEvents` /
-  `launchBindings` (`src/data/launches.ts`), with a festive day in Day, Week and Month (theme
-  `forever-launch`) and a calendar entry like any other event;
+- each launch moment becomes one event (`launchEvents` / `launchBindings` in
+  `src/data/launches.ts`): regions that open together share it ("WoW: Forever launch (Europe &
+  America)"), a staggered launch gets one per moment ("… (Europe)"). It has a festive day in Day,
+  Week and Month (theme `forever-launch`) and a calendar entry like any other event;
 - the launch countdown under the version switcher counts down to the launches still ahead, and
   each region's line disappears at its own moment (no redeploy);
 - the version turns live at the first launch, and events that ended before it are left out.
