@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type {
+  CalendarExportConfig,
   ChecklistItem,
   WeeklySchedule,
   EventDefinition,
@@ -207,6 +208,11 @@ export const versionLaunchSchema = z.strictObject({
   note: z.string().min(1).optional(),
 });
 
+export const calendarExportConfigSchema = z.strictObject({
+  scopes: z.array(z.enum(['event', 'day'])).min(1),
+  onEveryEvent: z.boolean(),
+});
+
 export const versionConfigSchema = z.strictObject({
   id: slug,
   name: z.string().min(1),
@@ -226,6 +232,7 @@ export const versionConfigSchema = z.strictObject({
     })
     .optional(),
   uiStyle: z.enum(['classic', 'modern']).optional(),
+  calendarExport: calendarExportConfigSchema.optional(),
 });
 
 export const scheduleFileSchema = z.strictObject({
@@ -248,6 +255,7 @@ export type SchemaTypeChecks = [
   Assert<Equals<z.infer<typeof regionSchema>, Region>>,
   Assert<Equals<z.infer<typeof versionEventBindingSchema>, VersionEventBinding>>,
   Assert<Equals<z.infer<typeof versionLaunchSchema>, VersionLaunch>>,
+  Assert<Equals<z.infer<typeof calendarExportConfigSchema>, CalendarExportConfig>>,
   Assert<Equals<z.infer<typeof versionConfigSchema>, VersionConfig>>,
   Assert<Equals<z.infer<typeof scheduleFileSchema>, ScheduleFile>>,
 ];

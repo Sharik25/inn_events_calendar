@@ -138,3 +138,8 @@
   font-size: var(--text-sm);
   font-weight: 700;
 }
+
+/* "Add to calendar" for any event (versions with calendarExport.onEveryEvent). */
+.export {
+  margin: var(--space-3) 0 var(--space-4);
+}

@@ -1,4 +1,15 @@
-import type { VersionConfig, VersionLaunch } from '@/domain/types';
+import type { CalendarExportConfig, VersionConfig, VersionLaunch } from '@/domain/types';
+
+/** Calendar export for versions that don't set `calendarExport`: whole events, Day view only. */
+export const DEFAULT_CALENDAR_EXPORT: CalendarExportConfig = {
+  scopes: ['event'],
+  onEveryEvent: false,
+};
+
+/** The version's calendar export options (its own, else the default). */
+export function calendarExportOf(version: Pick<VersionConfig, 'calendarExport'>) {
+  return version.calendarExport ?? DEFAULT_CALENDAR_EXPORT;
+}
 
 /** A launch with its moment parsed. */
 export interface LaunchMoment {

@@ -167,7 +167,7 @@ export function TodayView() {
                 >
                   {strings.today.details}
                 </Link>
-                <AddToCalendar occurrence={dominant} />
+                <AddToCalendar occurrence={dominant} day={viewDate} />
               </div>
             </ParchmentCard>
           </>

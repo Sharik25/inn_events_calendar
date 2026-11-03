@@ -132,3 +132,68 @@ describe('WoW: Forever launch day', () => {
     expect(screen.queryByTestId('launch-countdown')).not.toBeInTheDocument();
   });
 });
+
+describe('Add to calendar: the whole event or one day of it', () => {
+  it('adds only the viewed day of a multi-day holiday when asked', async () => {
+    const files = captureDownloads();
+    const user = userEvent.setup();
+    renderRoute('/forever/today'); // Dec 20: Winter Veil, Dec 15 – Jan 2
+    await screen.findByRole('heading', { level: 1, name: 'Feast of Winter Veil' });
+    await user.click(screen.getByRole('button', { name: 'Add to calendar' }));
+    const sheet = await screen.findByRole('dialog', { name: 'Add to calendar' });
+    const scope = within(sheet).getByRole('group', { name: 'Add' });
+    expect(within(scope).getByRole('radio', { name: 'Whole event' })).toBeChecked();
+    await user.click(within(scope).getByRole('radio', { name: 'Only Sun, Dec 20' }));
+    const google = new URL(
+      within(sheet).getByRole('link', { name: 'Google Calendar' }).getAttribute('href')!,
+    );
+    expect(google.searchParams.get('text')).toBe('(tentative) Feast of Winter Veil (Sun, Dec 20)');
+    expect(google.searchParams.get('dates')).toBe('20261219T230000Z/20261220T230000Z');
+    await user.click(within(sheet).getByRole('button', { name: 'Apple / Outlook (.ics)' }));
+
+    const cal = new ICAL.Component(ICAL.parse(await files[0]!));
+    const events = cal.getAllSubcomponents('vevent').map((v) => new ICAL.Event(v));
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe('(tentative) Feast of Winter Veil (Sun, Dec 20)');
+    expect(events[0]!.startDate.toJSDate().toISOString()).toBe('2026-12-19T23:00:00.000Z'); // 00:00 Paris
+    expect(events[0]!.endDate.toJSDate().toISOString()).toBe('2026-12-20T23:00:00.000Z');
+    expect(events[0]!.uid).toMatch(/^forever:winter-veil:2026-12-15T.*\/2026-12-20@/);
+  });
+
+  it("offers it from every event's details, and Escape closes only the export sheet", async () => {
+    const user = userEvent.setup();
+    renderRoute('/forever/day/2026-12-20?event=winter-veil&on=2026-12-20');
+    const details = await screen.findByRole('dialog', { name: 'Feast of Winter Veil' });
+    await user.click(within(details).getByRole('button', { name: 'Add to calendar' }));
+    const sheet = await screen.findByRole('dialog', { name: 'Add to calendar' });
+    expect(within(sheet).getByRole('radio', { name: 'Only Sun, Dec 20' })).toBeInTheDocument();
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('dialog', { name: 'Add to calendar' })).not.toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'Feast of Winter Veil' })).toBeInTheDocument();
+  });
+
+  it('offers no day choice for a one-day event', async () => {
+    const user = userEvent.setup();
+    vi.setSystemTime(new Date('2026-11-04T22:30:00Z')); // the launch: a single moment
+    renderRoute('/forever/day/2026-11-05');
+    await screen.findByRole('heading', {
+      level: 1,
+      name: 'WoW: Forever launch (Europe & America)',
+    });
+    await user.click(screen.getByRole('button', { name: 'Add to calendar' }));
+    const sheet = await screen.findByRole('dialog', { name: 'Add to calendar' });
+    expect(within(sheet).queryByRole('group', { name: 'Add' })).not.toBeInTheDocument();
+  });
+
+  it('leaves Anniversary as it was: whole events, from the Day view only', async () => {
+    const user = userEvent.setup();
+    vi.setSystemTime(new Date('2026-10-27T11:00:00Z')); // Hallow's End
+    renderRoute('/anniversary/today?event=hallows-end&on=2026-10-27');
+    const details = await screen.findByRole('dialog', { name: "Hallow's End" });
+    expect(within(details).queryByRole('button', { name: 'Add to calendar' })).toBeNull();
+    await user.keyboard('{Escape}');
+    await user.click(screen.getByRole('button', { name: 'Add to calendar' }));
+    const sheet = await screen.findByRole('dialog', { name: 'Add to calendar' });
+    expect(within(sheet).queryByRole('group', { name: 'Add' })).not.toBeInTheDocument();
+  });
+});

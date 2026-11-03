@@ -107,6 +107,10 @@ export const de: Strings = {
   },
   calendarExport: {
     addToCalendar: 'Zum Kalender hinzufügen',
+    scope: 'Hinzufügen',
+    scopeEvent: 'Ganzes Event',
+    scopeDay: (day) => `Nur ${day}`,
+    dayTitle: (name, day) => `${name} (${day})`,
     google: 'Google Kalender',
     appleOutlook: 'Apple / Outlook (.ics)',
     tentative: 'vorläufig',

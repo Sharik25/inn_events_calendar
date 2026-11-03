@@ -72,6 +72,7 @@ Node 22 is required (`nvm use`; see `.nvmrc`). The system default Node 18 is too
 - Recurring events are exported as individual VEVENTs, never RRULE, because a UTC RRULE would drift by an hour across DST.
 - UIDs are `Occurrence.key@innkeepers-almanac`, so they are stable across builds and re-imports.
 - "Add to calendar" opens a Sheet. For a long-running event it lists the one-day events (≤ 24h, `oneDayOverlaps` in `engine/agenda.ts`) that run during it. The user can tick any of them to include in the same downloaded .ics. Google gets one link per event because its add-event URL takes a single event.
+- Export options are per version: `calendarExport: { scopes, onEveryEvent }` (default `{ scopes: ['event'], onEveryEvent: false }`, `calendarExportOf` in engine/version.ts). `scopes: ['event', 'day']` lets the user add the whole event or only the viewed day of a multi-day one (`occurrenceOnDay` in engine/ics.ts: clipped to that day, key/UID `<key>/<date>`, title "Name (Tue, Oct 27)"); the first scope is preselected. `onEveryEvent` puts "Add to calendar" in every event's details. Forever: both on; Anniversary: default.
 - `npm run build-ics` (also run by `dev`, `build` and the Playwright server) writes `public/calendars/<version>-<region>.ics`, covering −1 to +18 months. Set `SITE_URL` (Netlify's `URL` is used automatically) so event descriptions link back to the app.
 
 ## PWA, settings & deploy (Phase 8)

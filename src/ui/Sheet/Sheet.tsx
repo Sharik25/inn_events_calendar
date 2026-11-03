@@ -19,9 +19,13 @@ const FOCUSABLE =
 /** Distance (px) the sheet must be dragged down to close. */
 const DRAG_CLOSE_DISTANCE = 100;
 
+/** Open sheets, last on top: only the top one handles Escape and Tab (e.g. export over details). */
+const openSheets: object[] = [];
+
 /**
  * Modal panel: bottom sheet on mobile (drag the handle down to close), right side panel on
  * desktop. Traps focus, closes on Escape / backdrop, restores focus on close, locks page scroll.
+ * Sheets can stack (a sheet opened from a sheet): Escape and the focus trap belong to the top one.
  */
 export function Sheet({ open, onClose, title, children }: SheetProps) {
   const titleId = useId();
@@ -42,10 +46,12 @@ export function Sheet({ open, onClose, title, children }: SheetProps) {
     const { overflow } = document.body.style;
     document.body.style.overflow = 'hidden';
     panelRef.current?.focus();
+    const token = {};
+    openSheets.push(token);
 
     const onKeyDown = (e: KeyboardEvent) => {
       const panel = panelRef.current;
-      if (!panel) return;
+      if (!panel || openSheets.at(-1) !== token) return;
       if (e.key === 'Escape') {
         e.stopPropagation();
         onCloseRef.current();
@@ -71,6 +77,7 @@ export function Sheet({ open, onClose, title, children }: SheetProps) {
     document.addEventListener('keydown', onKeyDown);
 
     return () => {
+      openSheets.splice(openSheets.indexOf(token), 1);
       document.removeEventListener('keydown', onKeyDown);
       document.body.style.overflow = overflow;
       previouslyFocused?.focus?.();

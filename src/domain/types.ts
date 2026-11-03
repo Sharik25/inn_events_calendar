@@ -196,6 +196,20 @@ export interface VersionLaunch {
   note?: string;
 }
 
+/** What "Add to calendar" can add: the whole event, or only the viewed day of it. */
+export type CalendarExportScope = 'event' | 'day';
+
+/**
+ * A version's calendar export options. Default (unset): whole events only, from the Day view's
+ * main event. See engine/version.ts `calendarExportOf`.
+ */
+export interface CalendarExportConfig {
+  /** Choices offered for an event that spans several days; the first is preselected. */
+  scopes: CalendarExportScope[];
+  /** Offer "Add to calendar" in every event's details (any view), not only on the Day view. */
+  onEveryEvent: boolean;
+}
+
 export interface VersionConfig {
   id: VersionId;
   name: string; // "Anniversary (TBC Classic)"
@@ -213,6 +227,7 @@ export interface VersionConfig {
   quietDay?: QuietDayStyle;
   /** Shape/depth/motion tokens for this version (src/styles/version-styles.css); default classic. */
   uiStyle?: 'classic' | 'modern';
+  calendarExport?: CalendarExportConfig;
 }
 
 /** A `schedule-<year>.json` file: explicit dates for one version and one year. */

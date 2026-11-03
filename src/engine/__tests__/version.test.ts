@@ -1,5 +1,12 @@
 import type { VersionConfig } from '@/domain/types';
-import { launchInstant, pendingLaunches, switchVersionPath, versionStatus } from '../version';
+import {
+  calendarExportOf,
+  DEFAULT_CALENDAR_EXPORT,
+  launchInstant,
+  pendingLaunches,
+  switchVersionPath,
+  versionStatus,
+} from '../version';
 
 const forever: VersionConfig = {
   id: 'forever',
@@ -68,6 +75,18 @@ describe('version status', () => {
     expect(versionStatus({ ...forever, status: 'retired' }, new Date('2030-01-01'))).toBe(
       'retired',
     );
+  });
+});
+
+describe('calendar export options', () => {
+  it("are the version's own, else whole events from the Day view", () => {
+    expect(calendarExportOf(forever)).toBe(DEFAULT_CALENDAR_EXPORT);
+    expect(DEFAULT_CALENDAR_EXPORT).toEqual({ scopes: ['event'], onEveryEvent: false });
+    const own = { scopes: ['event', 'day'] as const, onEveryEvent: true };
+    expect(calendarExportOf({ calendarExport: { ...own, scopes: [...own.scopes] } })).toEqual({
+      scopes: ['event', 'day'],
+      onEveryEvent: true,
+    });
   });
 });
 

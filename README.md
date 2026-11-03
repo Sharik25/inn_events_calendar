@@ -106,7 +106,8 @@ Recurring events (weekly contests, a monthly faire) are rules in the version's `
    `{ eventId, rule: standardWeeklyRule(event, { verified: true, source }) }` (Anniversary does this
    for the fishing contest).
 
-3. Optional: `launches` (see below), `uiStyle: 'modern'` (shape and motion tokens in
+3. Optional: `calendarExport: { scopes: ['event', 'day'], onEveryEvent: true }` ("Add to calendar"
+   for the whole event or only the viewed day, from every event's details; Forever has it), `launches` (see below), `uiStyle: 'modern'` (shape and motion tokens in
    `src/styles/version-styles.css`), `baseThemeId` for quiet days.
 
 ### Launch dates

@@ -45,6 +45,10 @@
 }
 
 /* The long event: always in the file. */
+.scope {
+  margin-bottom: var(--space-4);
+}
+
 .main {
   display: flex;
   flex-wrap: wrap;

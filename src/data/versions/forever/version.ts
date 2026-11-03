@@ -40,6 +40,8 @@ export const forever: VersionConfig = {
   quietDay: { themeId: 'base', uiStyle: 'classic', ambientThemeId: 'forever' },
   // Same design, slightly more modern: tune it in src/styles/version-styles.css.
   uiStyle: 'modern',
+  // Calendar export: the whole event or only the viewed day of it, from any event's details.
+  calendarExport: { scopes: ['event', 'day'], onEveryEvent: true },
   events: [
     // Every yearly holiday and weekly event (the fishing contest), estimated from the standard
     // schedule until Forever's own dates are known; a date added to schedule-<year>.json

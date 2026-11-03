@@ -111,6 +111,10 @@ export const ru: Strings = {
   },
   calendarExport: {
     addToCalendar: 'Добавить в календарь',
+    scope: 'Добавить',
+    scopeEvent: 'Всё событие',
+    scopeDay: (day) => `Только ${day}`,
+    dayTitle: (name, day) => `${name} (${day})`,
     google: 'Google Календарь',
     appleOutlook: 'Apple / Outlook (.ics)',
     tentative: 'предварительно',

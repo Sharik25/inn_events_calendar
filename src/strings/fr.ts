@@ -108,6 +108,10 @@ export const fr: Strings = {
   },
   calendarExport: {
     addToCalendar: 'Ajouter au calendrier',
+    scope: 'Ajouter',
+    scopeEvent: 'Tout l’évènement',
+    scopeDay: (day) => `Uniquement ${day}`,
+    dayTitle: (name, day) => `${name} (${day})`,
     google: 'Google Agenda',
     appleOutlook: 'Apple / Outlook (.ics)',
     tentative: 'provisoire',
