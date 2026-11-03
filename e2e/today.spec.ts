@@ -131,18 +131,16 @@ test('"Coming soon" sits under the version chip: left column on desktop, on top 
   else expect(soon.x + soon.width).toBeLessThan(title.x); // its own column, left of the day
 });
 
-test('event highlights under the date are a plain list: no markers, no indent', async ({
-  page,
-}) => {
+test('event block shows no highlight lines; the details sheet still has them', async ({ page }) => {
   await page.goto('/anniversary/today');
-  const list = page.getByRole('list').filter({ hasText: 'Defeat the Headless Horseman' });
-  await expect(list.getByRole('listitem')).toHaveCount(3);
-  const first = list.getByRole('listitem').first();
-  expect(await first.evaluate((li) => getComputedStyle(li, '::marker').content || 'none')).toMatch(
-    /none|normal|""/,
-  );
-  expect(await list.evaluate((ul) => getComputedStyle(ul).paddingLeft)).toBe('0px');
-  // Aligned with the summary paragraph above it.
-  const summary = (await page.getByText(/^Trick-or-treat at the inns/).boundingBox())!;
-  expect(Math.abs((await first.boundingBox())!.x - summary.x)).toBeLessThanOrEqual(1);
+  const card = page.locator('[class*="heroCard"]');
+  await expect(card).toContainText('Trick-or-treat at the inns'); // the one-line summary stays
+  for (const line of ['Trick-or-treat at innkeepers', 'Defeat the Headless Horseman']) {
+    await expect(card.getByText(line)).toHaveCount(0);
+  }
+  await card.getByRole('link', { name: "Details for Hallow's End" }).click();
+  const sheet = page.getByRole('dialog', { name: "Hallow's End" });
+  for (const line of ['Trick-or-treat at innkeepers', 'Defeat the Headless Horseman']) {
+    await expect(sheet.getByText(line)).toBeVisible();
+  }
 });

@@ -135,15 +135,6 @@ export function TodayView() {
             </p>
             <ParchmentCard className={styles.heroCard}>
               <p className={styles.summary}>{dominantDef.summary}</p>
-              {dominantDef.highlights && (
-                // role="list": Safari drops list semantics once the bullets are gone.
-                // eslint-disable-next-line jsx-a11y/no-redundant-roles
-                <ul className={styles.highlights} role="list">
-                  {dominantDef.highlights.map((h) => (
-                    <li key={h}>{h}</li>
-                  ))}
-                </ul>
-              )}
               <div className={styles.actions}>
                 <Link
                   to={eventHref(dominantDef.id)}

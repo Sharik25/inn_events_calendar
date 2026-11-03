@@ -77,7 +77,8 @@ describe('Today view', () => {
     // EU ends Nov 1 10:00 CET = 09:00Z → 4d 22h from 11:00Z Oct 27.
     expect(screen.getByText('Ends in 4d 22h')).toBeInTheDocument();
     expect(screen.queryByText('Unconfirmed')).not.toBeInTheDocument(); // verified date
-    expect(screen.getByText('Trick-or-treat at innkeepers')).toBeInTheDocument();
+    expect(screen.getByText(/^Trick-or-treat at the inns/)).toBeInTheDocument(); // summary
+    expect(screen.queryByText('Trick-or-treat at innkeepers')).not.toBeInTheDocument(); // details only
 
     const soon = screen.getByRole('region', { name: 'Coming soon' });
     expect(within(soon).getByRole('link', { name: /Fishing in 5d/ })).toBeInTheDocument();
