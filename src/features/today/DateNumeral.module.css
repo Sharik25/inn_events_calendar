@@ -35,7 +35,7 @@
   opacity: 0.8;
 }
 
-/* Theme ornament on the frame: a cap across the top edge, or a piece perched on the corner. */
+/* Theme ornament: a cap across the frame's top edge, or a piece beside its top-right corner. */
 .ornament {
   position: absolute;
   pointer-events: none;
@@ -48,21 +48,22 @@
   height: 100%;
 }
 
-/* Perched on the top-right corner, a little outside it; it takes the place of that corner's gold
-   stud (Frame), so the two never pile up. */
+/* Beside the frame's top-right corner, never on it: in the free space above the next-day arrow.
+   Capped at 40px on phones, where that space is shortest. */
 .ornament[data-placement='corner'] {
-  top: calc(var(--ornament-size) * -0.52);
-  right: calc(var(--ornament-size) * -0.48);
-  width: var(--ornament-size);
-  height: var(--ornament-size);
+  --corner-size: min(var(--ornament-size), 40px);
+
+  top: calc(var(--corner-size) * -0.2);
+  left: calc(100% + 8px);
+  width: var(--corner-size);
+  height: var(--corner-size);
   transform: rotate(12deg);
 }
 
-.frame:has(> .ornament[data-placement='corner'])::before {
-  background:
-    var(--stud) top left / 8px 8px no-repeat,
-    var(--stud) bottom left / 8px 8px no-repeat,
-    var(--stud) bottom right / 8px 8px no-repeat;
+@media (min-width: 768px) {
+  .ornament[data-placement='corner'] {
+    --corner-size: var(--ornament-size);
+  }
 }
 
 .ornament[data-placement='cap'] {

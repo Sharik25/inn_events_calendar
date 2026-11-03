@@ -46,7 +46,7 @@ export const theme: ThemeDefinition = {
       x: 70,
       y: 70,
       motion: 'burst',
-      mobileSize: null, // phones: one burst only, clear of the version chip
+      mobileSize: null, // phones: no room clear of the version chip
     },
     {
       svg: lineBurst(gold, blue),
@@ -56,7 +56,7 @@ export const theme: ThemeDefinition = {
       y: 130,
       motion: 'burst',
       delay: 2.4,
-      mobileSize: 40,
+      mobileSize: null, // phones: no room clear of the countdown and cards
     },
     {
       svg: lineBurst('#bfefff', gold, 10),
