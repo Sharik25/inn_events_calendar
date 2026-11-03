@@ -1,4 +1,4 @@
-import { expandOccurrences } from '@/engine';
+import { buildFeeds, expandOccurrences } from '@/engine';
 import { eventDefinitions } from '../events';
 import { anniversary } from '../versions/anniversary/version';
 import { forever } from '../versions/forever/version';
@@ -73,7 +73,7 @@ describe('WoW: Forever data', () => {
 describe('standard yearly schedule', () => {
   it('reproduces every standard-calendar date in the Anniversary data', () => {
     const rules = expandOccurrences(
-      { ...forever, launchDate: undefined, regions: anniversary.regions, events: forever.events },
+      { ...forever, launches: undefined, regions: anniversary.regions, events: forever.events },
       'eu',
       span,
     );
@@ -116,5 +116,45 @@ describe('fishing', () => {
       expect(wall(o.start).slice(11)).toBe('14:00');
       expect(o.end.getTime() - o.start.getTime()).toBe(120 * 60_000);
     }
+  });
+});
+
+describe('launch', () => {
+  const catalog = Object.fromEntries(eventDefinitions.map((d) => [d.id, d]));
+
+  it('is one event per part of the world, at the one worldwide moment', () => {
+    const launches = occurrences.filter((o) => catalog[o.eventId]?.category === 'launch');
+    expect(
+      launches.map((o) => [o.eventId, o.start.toISOString(), o.end.toISOString(), o.verified]),
+    ).toEqual([
+      ['forever-launch-eu', '2026-11-04T23:00:00.000Z', '2026-11-04T23:01:00.000Z', true],
+      ['forever-launch-na', '2026-11-04T23:00:00.000Z', '2026-11-04T23:01:00.000Z', true],
+    ]);
+    expect(catalog['forever-launch-eu']).toMatchObject({
+      name: 'WoW: Forever launch (Europe)',
+      shortName: 'Europe launch',
+      themeId: 'forever-launch',
+      summary: 'Servers open in Europe on Thu, Nov 5, 2026, 00:00 (GMT+1).',
+    });
+    expect(catalog['forever-launch-na']).toMatchObject({
+      name: 'WoW: Forever launch (America)',
+      summary: 'Servers open in America on Wed, Nov 4, 2026, 15:00 (GMT-8).',
+    });
+    expect(forever.launches?.map((l) => l.id)).toEqual(['eu', 'na']);
+  });
+
+  it('is exported to calendars like every other event', () => {
+    const [feed] = buildFeeds([forever], catalog, span, {
+      appName: 'Test',
+      appUrl: 'https://example.test/app',
+      tentativeLabel: 'tentative',
+      locationLabel: 'Location',
+    });
+    const vevents = (feed?.content ?? '').split('BEGIN:VEVENT').slice(1);
+    const europe = vevents.find((v) => v.includes('SUMMARY:WoW: Forever launch (Europe)'));
+    expect(europe).toContain('DTSTART:20261104T230000Z');
+    expect(europe).toContain('UID:forever:forever-launch-eu:2026-11-04T23:00:00.000Z');
+    expect(europe).toMatch(/DESCRIPTION:Servers open in Europe on Thu\\, Nov 5\\, 2026\\, 00:00/);
+    expect(vevents.some((v) => v.includes('SUMMARY:WoW: Forever launch (America)'))).toBe(true);
   });
 });

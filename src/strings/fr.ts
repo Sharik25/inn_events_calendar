@@ -44,6 +44,7 @@ export const fr: Strings = {
     startsIn: (d) => `Commence dans ${d}`,
     endsIn: (d) => `Se termine dans ${d}`,
     ended: (time) => `Terminé à ${time}`,
+    at: (time) => `À ${time}`,
     alsoToday: 'Aussi ce jour-là',
     comingSoon: 'Bientôt',
     comingSoonEmpty: 'Rien d’autre dans les 30 prochains jours.',
@@ -102,6 +103,7 @@ export const fr: Strings = {
     fishing: 'Pêche',
     world: 'Évènement mondial',
     pvp: 'JcJ',
+    launch: 'Lancement',
     milestone: 'Étape',
   },
   calendarExport: {
@@ -147,7 +149,7 @@ export const fr: Strings = {
     current: 'Actuelle',
     launchesIn: (d) => `Lancement dans ${d}`,
     launchTime: (when) => `${when} (votre heure)`,
-    serverLaunch: (when, region) => `${when} (${region})`,
+    regionLaunch: (region, when) => `${region} : ${when}`,
   },
   topBar: {
     versionChip: (version, region) => `${version} · ${region}`,

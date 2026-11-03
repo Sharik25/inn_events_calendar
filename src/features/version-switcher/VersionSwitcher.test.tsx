@@ -69,8 +69,12 @@ describe('WoW: Forever before and after launch', () => {
     ).toBeInTheDocument();
     const countdown = screen.getByRole('region', { name: 'WoW: Forever' });
     expect(within(countdown).getByText('Launches in 8d 12h')).toBeInTheDocument();
+    // One worldwide moment: one line for Europe and America, with each one's announced time.
+    expect(within(countdown).getAllByTestId('launch-line')).toHaveLength(1);
+    expect(within(countdown).getByText('Europe · America')).toBeInTheDocument();
     expect(within(countdown).getByText('Thu, Nov 5, 00:00 your time')).toBeInTheDocument();
-    expect(within(countdown).getByText('Wed, Nov 4, 15:00 (All realms)')).toBeInTheDocument();
+    expect(within(countdown).getByText('Europe: Thu, Nov 5, 00:00 GMT+1')).toBeInTheDocument();
+    expect(within(countdown).getByText('America: Wed, Nov 4, 15:00 PST')).toBeInTheDocument();
     // The month grid is there with Forever's first Faire (Nov 9) and estimated Winter Veil later.
     expect(
       screen.getByRole('button', { name: /^Monday, November 9: Darkmoon Faire/ }),

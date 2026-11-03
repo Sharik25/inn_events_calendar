@@ -42,6 +42,7 @@ export function EventChip({
       <Link
         to={{ search: withEvent(location.search, def.id, date) }}
         className={cx(styles[variant], !occurrence.verified && styles.unverified)}
+        data-category={def.category}
         data-continues-before={continuesBefore || undefined}
         data-continues-after={continuesAfter || undefined}
         title={def.name}

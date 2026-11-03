@@ -63,7 +63,7 @@ describe('WoW: Forever holidays', () => {
     await screen.findByRole('heading', { level: 1, name: 'A quiet day at the inn' });
     const shell = forever.container.querySelector('[data-theme]')!;
     expect(shell).toHaveAttribute('data-theme', 'base'); // same tokens as Anniversary
-    expect(document.documentElement.dataset.versionStyle).toBe('classic');
+    await waitFor(() => expect(document.documentElement.dataset.versionStyle).toBe('classic'));
     // Forever's stars (its particles and decorations) in their own theme scope.
     await waitFor(() =>
       expect(
@@ -87,5 +87,40 @@ describe('WoW: Forever holidays', () => {
     await waitFor(() =>
       expect(container.querySelector('[data-theme="winter-veil"]')).toBeInTheDocument(),
     );
+  });
+});
+
+describe('WoW: Forever launch day', () => {
+  // Tests run in Paris: the worldwide launch (Nov 4, 15:00 PT) is midnight going into Nov 5 here.
+  it('dresses the launch day, with Europe and America each as their own event', async () => {
+    vi.setSystemTime(new Date('2026-11-04T22:30:00Z'));
+    const { container } = renderRoute('/forever/day/2026-11-05');
+    await screen.findByRole('heading', { level: 1, name: 'WoW: Forever launch (Europe)' });
+    await waitFor(() =>
+      expect(container.querySelector('[data-theme="forever-launch"]')).toBeInTheDocument(),
+    );
+    expect(screen.getByText('Thu, Nov 5, 00:00')).toBeInTheDocument();
+    const also = screen.getByRole('region', { name: 'Also on this day' });
+    expect(within(also).getByRole('link', { name: 'WoW: Forever launch (America)' })).toBeVisible();
+    // The countdown is still up: launch is 30 minutes away.
+    expect(screen.getByTestId('launch-countdown')).toHaveTextContent('Launches in 30m');
+  });
+
+  it('marks the launch day cell in the week view with a small firework', async () => {
+    vi.setSystemTime(new Date('2026-11-04T22:30:00Z'));
+    const { container } = renderRoute('/forever/week/2026-11-05');
+    await screen.findByRole('heading', { level: 1 });
+    await waitFor(() => expect(container.querySelectorAll('[data-day-accent]')).toHaveLength(1));
+    const accent = container.querySelector('[data-day-accent]')!;
+    expect(accent.closest('[data-theme]')).toHaveAttribute('data-theme', 'forever-launch');
+    expect(accent.parentElement).toHaveTextContent('5');
+    expect(screen.getAllByRole('link', { name: /(Europe|America) launch/ })).toHaveLength(2);
+  });
+
+  it('drops the countdown at the launch moment and keeps the launch as a past event', async () => {
+    vi.setSystemTime(new Date('2026-11-04T23:00:00Z'));
+    renderRoute('/forever/day/2026-11-05');
+    await screen.findByRole('heading', { level: 1, name: 'WoW: Forever launch (Europe)' });
+    expect(screen.queryByTestId('launch-countdown')).not.toBeInTheDocument();
   });
 });

@@ -10,6 +10,7 @@ import type {
   ScheduleRule,
   VersionConfig,
   VersionEventBinding,
+  VersionLaunch,
 } from './types';
 
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'must be a kebab-case slug');
@@ -29,6 +30,7 @@ const weekday = z.union(
   ],
 );
 const url = z.url();
+const instant = z.iso.datetime({ offset: true });
 
 const nth = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal('last')]);
 const month = z.number().int().min(1).max(12);
@@ -66,6 +68,7 @@ export const eventCategories = [
   'fishing',
   'world',
   'pvp',
+  'launch',
   'milestone',
 ] as const;
 
@@ -157,6 +160,14 @@ export const scheduleRuleSchema = z.discriminatedUnion('kind', [
     overrides: z.array(explicitOccurrenceSchema).optional(),
   }),
   z.strictObject({
+    kind: z.literal('moment'),
+    at: instant,
+    durationMinutes: z.number().int().positive(),
+    verified: z.boolean(),
+    source: url.optional(),
+    note: z.string().min(1).optional(),
+  }),
+  z.strictObject({
     kind: z.literal('monthly'),
     anchor: z.strictObject({ weekday, nth }),
     offsetDays: z.number().int().optional(),
@@ -186,12 +197,22 @@ export const versionEventBindingSchema = z.strictObject({
   notes: z.string().min(1).optional(),
 });
 
+export const versionLaunchSchema = z.strictObject({
+  id: slug,
+  label: z.string().min(1),
+  at: instant,
+  timeZone: z.string().min(1),
+  verified: z.boolean(),
+  source: url.optional(),
+  note: z.string().min(1).optional(),
+});
+
 export const versionConfigSchema = z.strictObject({
   id: slug,
   name: z.string().min(1),
   shortName: z.string().min(1),
   status: z.enum(['live', 'upcoming', 'retired']),
-  launchDate: z.iso.datetime({ offset: true }).or(z.iso.date()).optional(),
+  launches: z.array(versionLaunchSchema).min(1).optional(),
   summary: z.string().min(1).optional(),
   regions: z.array(regionSchema).min(1),
   defaultRegionId: slug,
@@ -226,6 +247,7 @@ export type SchemaTypeChecks = [
   Assert<Equals<z.infer<typeof scheduleRuleSchema>, ScheduleRule>>,
   Assert<Equals<z.infer<typeof regionSchema>, Region>>,
   Assert<Equals<z.infer<typeof versionEventBindingSchema>, VersionEventBinding>>,
+  Assert<Equals<z.infer<typeof versionLaunchSchema>, VersionLaunch>>,
   Assert<Equals<z.infer<typeof versionConfigSchema>, VersionConfig>>,
   Assert<Equals<z.infer<typeof scheduleFileSchema>, ScheduleFile>>,
 ];

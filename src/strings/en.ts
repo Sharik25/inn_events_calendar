@@ -44,6 +44,7 @@ export const en = {
     startsIn: (d: string) => `Starts in ${d}`,
     endsIn: (d: string) => `Ends in ${d}`,
     ended: (time: string) => `Ended at ${time}`,
+    at: (time: string) => `At ${time}`,
     alsoToday: 'Also on this day',
     comingSoon: 'Coming soon',
     comingSoonEmpty: 'Nothing else in the next 30 days.',
@@ -102,6 +103,7 @@ export const en = {
     fishing: 'Fishing',
     world: 'World event',
     pvp: 'PvP',
+    launch: 'Launch',
     milestone: 'Milestone',
   },
   calendarExport: {
@@ -144,7 +146,7 @@ export const en = {
     current: 'Current',
     launchesIn: (d: string) => `Launches in ${d}`,
     launchTime: (when: string) => `${when} your time`,
-    serverLaunch: (when: string, region: string) => `${when} (${region})`,
+    regionLaunch: (region: string, when: string) => `${region}: ${when}`,
   },
   topBar: {
     versionChip: (version: string, region: string) => `${version} · ${region}`,

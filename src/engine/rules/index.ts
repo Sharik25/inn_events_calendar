@@ -1,6 +1,7 @@
 import type { ScheduleRule, ScheduleRuleKind } from '@/domain/types';
 import { expandAnnual } from './annual';
 import { expandExplicit } from './explicit';
+import { expandMoment } from './moment';
 import { expandMonthly } from './monthly';
 import { expandWeekly } from './weekly';
 import type { ExpandContext, RawOccurrence, RuleExpander } from './types';
@@ -13,6 +14,7 @@ export const ruleExpanders: { [K in ScheduleRuleKind]: RuleExpander<K> } = {
   annual: expandAnnual,
   weekly: expandWeekly,
   monthly: expandMonthly,
+  moment: expandMoment,
 };
 
 export function expandRule(rule: ScheduleRule, ctx: ExpandContext): RawOccurrence[] {

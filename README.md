@@ -106,6 +106,20 @@ Recurring events (weekly contests, a monthly faire) are rules in the version's `
    `{ eventId, rule: standardWeeklyRule(event, { verified: true, source }) }` (Anniversary does this
    for the fishing contest).
 
-3. Optional: `launchDate` (an upcoming version shows a launch countdown under the version
-   switcher and only events after launch), `uiStyle: 'modern'` (shape and motion tokens in
+3. Optional: `launches` (see below), `uiStyle: 'modern'` (shape and motion tokens in
    `src/styles/version-styles.css`), `baseThemeId` for quiet days.
+
+### Launch dates
+
+A version's launch is data: `launches` in its config, one entry per part of the world
+(`{ id, label, at, timeZone, verified, source }`; Forever's are in
+`src/data/versions/forever/launches.ts`). From that list:
+
+- each launch becomes its own event ("WoW: Forever launch (Europe)") via `launchEvents` /
+  `launchBindings` (`src/data/launches.ts`), with a festive day in Day, Week and Month (theme
+  `forever-launch`) and a calendar entry like any other event;
+- the launch countdown under the version switcher counts down to the launches still ahead, and
+  each region's line disappears at its own moment (no redeploy);
+- the version turns live at the first launch, and events that ended before it are left out.
+
+Changing a launch date is editing `at` there.

@@ -23,7 +23,8 @@ export type ParticleKind =
 export type DecorationAnchor =
   'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'top' | 'bottom';
 
-export type DecorationMotion = 'sway' | 'bob' | 'float' | 'flicker' | 'pulse' | 'spin';
+/** `burst`: a firework that opens, glows and fades, then rests for most of its loop. */
+export type DecorationMotion = 'sway' | 'bob' | 'float' | 'flicker' | 'pulse' | 'spin' | 'burst';
 
 /** One piece of original SVG art placed around the page. Pure data: no UI code per theme. */
 export interface Decoration {
@@ -40,6 +41,8 @@ export interface Decoration {
   rotate?: number;
   flip?: boolean;
   motion?: DecorationMotion;
+  /** Seconds to offset the motion by, so several pieces don't move in step. */
+  delay?: number;
   /** Soft colored glow (CSS color), e.g. candle light in a jack-o'-lantern. */
   glow?: string;
   opacity?: number;
@@ -61,6 +64,8 @@ export interface ThemeDefinition {
   numeral?: { ornament?: NumeralOrnament };
   /** Small square art that identifies the event (card medallions, markers). */
   emblem?: string;
+  /** Small art in the corner of week/month day cells this theme leads (e.g. a launch burst). */
+  dayAccent?: string;
   /** Kept minimal: edge garlands/strips and small animated accents, no large corner objects. */
   decorations?: Decoration[];
 }

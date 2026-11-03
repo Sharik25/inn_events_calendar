@@ -6,7 +6,8 @@ export type ThemeId = string; // 'hallows-end' | 'base'
 
 export type Rarity = 'weekly' | 'monthly' | 'seasonal' | 'annual' | 'once';
 
-export type EventCategory = 'holiday' | 'faire' | 'fishing' | 'world' | 'pvp' | 'milestone';
+export type EventCategory =
+  'holiday' | 'faire' | 'fishing' | 'world' | 'pvp' | 'launch' | 'milestone';
 
 export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0 = Sunday
 
@@ -132,6 +133,14 @@ export type ScheduleRule =
       overrides?: ExplicitOccurrence[];
     }
   | {
+      kind: 'moment'; // one absolute instant, the same everywhere (e.g. a worldwide launch)
+      at: string; // ISO with offset, e.g. "2026-11-04T15:00:00-08:00"
+      durationMinutes: number;
+      verified: boolean;
+      source?: string;
+      note?: string;
+    }
+  | {
       kind: 'monthly'; // e.g. Darkmoon Faire
       anchor: { weekday: Weekday; nth: 1 | 2 | 3 | 4 | 'last' }; // "1st Friday"
       offsetDays?: number; // shift from anchor (may be negative)
@@ -172,12 +181,28 @@ export interface QuietDayStyle {
   ambientThemeId?: ThemeId;
 }
 
+/**
+ * A version's launch in one part of the world (e.g. Europe, America). Each becomes its own
+ * event (`<version>-launch-<id>`, see data/launches.ts), with the launch countdown counting down
+ * to the ones still ahead.
+ */
+export interface VersionLaunch {
+  id: string; // 'eu' | 'na': part of the event id, keep stable
+  label: string; // "Europe"
+  at: string; // ISO with offset: the moment servers open
+  timeZone: string; // IANA zone the launch time is announced in, e.g. "Europe/Paris"
+  verified: boolean;
+  source?: string; // URL that states this launch time
+  note?: string;
+}
+
 export interface VersionConfig {
   id: VersionId;
   name: string; // "Anniversary (TBC Classic)"
   shortName: string; // "Anniversary"
   status: 'live' | 'upcoming' | 'retired';
-  launchDate?: string; // ISO
+  /** Launches per part of the world; the earliest one makes an upcoming version live. */
+  launches?: VersionLaunch[];
   /** One or two sentences shown on the upcoming-version screen. */
   summary?: string;
   regions: Region[];

@@ -47,6 +47,7 @@ export const ru: Strings = {
     startsIn: (d) => `Начнётся через ${d}`,
     endsIn: (d) => `Закончится через ${d}`,
     ended: (time) => `Закончилось в ${time}`,
+    at: (time) => `В ${time}`,
     alsoToday: 'Также в этот день',
     comingSoon: 'Скоро',
     comingSoonEmpty: 'В ближайшие 30 дней больше ничего.',
@@ -105,6 +106,7 @@ export const ru: Strings = {
     fishing: 'Рыбалка',
     world: 'Мировое событие',
     pvp: 'PvP',
+    launch: 'Запуск',
     milestone: 'Веха',
   },
   calendarExport: {
@@ -149,7 +151,7 @@ export const ru: Strings = {
     current: 'Текущая',
     launchesIn: (d) => `Запуск через ${d}`,
     launchTime: (when) => `${when} по вашему времени`,
-    serverLaunch: (when, region) => `${when} (${region})`,
+    regionLaunch: (region, when) => `${region}: ${when}`,
   },
   topBar: {
     versionChip: (version, region) => `${version} · ${region}`,

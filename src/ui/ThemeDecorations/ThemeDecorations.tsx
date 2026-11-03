@@ -18,6 +18,7 @@ function cssVars(d: Decoration): CSSProperties {
     '--rotate': `${d.rotate ?? 0}deg`,
     '--flip': d.flip ? -1 : 1,
     ...(d.glow && { '--glow-color': d.glow }),
+    ...(d.delay && { '--motion-delay': `${-d.delay}s` }),
     ...(d.opacity !== undefined && { opacity: d.opacity }),
   } as CSSProperties;
 }

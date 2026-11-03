@@ -43,6 +43,7 @@ export const de: Strings = {
     startsIn: (d) => `Beginnt in ${d}`,
     endsIn: (d) => `Endet in ${d}`,
     ended: (time) => `Endete um ${time}`,
+    at: (time) => `Um ${time}`,
     alsoToday: 'Ebenfalls an diesem Tag',
     comingSoon: 'Demnächst',
     comingSoonEmpty: 'In den nächsten 30 Tagen sonst nichts.',
@@ -101,6 +102,7 @@ export const de: Strings = {
     fishing: 'Angeln',
     world: 'Weltereignis',
     pvp: 'PvP',
+    launch: 'Start',
     milestone: 'Meilenstein',
   },
   calendarExport: {
@@ -146,7 +148,7 @@ export const de: Strings = {
     current: 'Aktuell',
     launchesIn: (d) => `Start in ${d}`,
     launchTime: (when) => `${when} (deine Zeit)`,
-    serverLaunch: (when, region) => `${when} (${region})`,
+    regionLaunch: (region, when) => `${region}: ${when}`,
   },
   topBar: {
     versionChip: (version, region) => `${version} · ${region}`,

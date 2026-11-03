@@ -4,6 +4,7 @@ import { useVersionView } from '@/app/versionView';
 import type { Occurrence } from '@/domain/types';
 import { isShortEvent, layoutRibbons, occurrencesByDay, weekDays } from '@/engine/calendar';
 import type { LocalDate } from '@/engine/time';
+import { DayAccent } from '@/features/calendar/DayAccent';
 import { EventChip } from '@/features/calendar/EventChip';
 import { PeriodHeader } from '@/features/calendar/PeriodHeader';
 import { useDayThemeId } from '@/features/calendar/useDayTheme';
@@ -78,10 +79,12 @@ function WeekList({ days, byDay }: { days: LocalDate[]; byDay: Map<LocalDate, Oc
     <ol className={styles.list}>
       {days.map((date) => {
         const events = byDay.get(date) ?? [];
+        const themeId = themeFor(events);
         return (
           <li key={date} className={styles.row} data-today={date === today || undefined}>
-            <ThemeScope themeId={themeFor(events)} className={styles.dayBox}>
+            <ThemeScope themeId={themeId} className={styles.dayBox}>
               <DayHeading date={date} compact />
+              <DayAccent themeId={themeId} />
             </ThemeScope>
             {events.length > 0 ? (
               <ul className={styles.chips}>
@@ -121,17 +124,21 @@ function WeekGrid({
 
   return (
     <div className={styles.grid}>
-      {days.map((date, i) => (
-        <ThemeScope
-          key={date}
-          themeId={themeFor(byDay.get(date))}
-          className={styles.head}
-          style={{ gridColumn: i + 1 }}
-          data-today={date === today || undefined}
-        >
-          <DayHeading date={date} />
-        </ThemeScope>
-      ))}
+      {days.map((date, i) => {
+        const themeId = themeFor(byDay.get(date));
+        return (
+          <ThemeScope
+            key={date}
+            themeId={themeId}
+            className={styles.head}
+            style={{ gridColumn: i + 1 }}
+            data-today={date === today || undefined}
+          >
+            <DayHeading date={date} />
+            <DayAccent themeId={themeId} />
+          </ThemeScope>
+        );
+      })}
 
       <div className={styles.ribbons}>
         {ribbons.map((seg) => (
