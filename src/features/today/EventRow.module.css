@@ -1,0 +1,81 @@
+/* Same family as the "Coming soon" chips, with the event's accent as a left stripe. */
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 48px;
+  padding: var(--space-1) var(--space-3) var(--space-1) var(--space-1);
+  color: var(--color-ink-on-dark);
+  background: color-mix(in srgb, var(--color-frame) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 60%, transparent);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+}
+
+.row:hover,
+.row:focus-within {
+  border-color: var(--color-gold);
+  border-left-color: var(--color-accent);
+}
+
+/* Small round frame holding the event's emblem. */
+.medallion {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: var(--color-gold);
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in srgb, var(--color-frame) 70%, white),
+    var(--color-frame) 70%
+  );
+  border: 1px solid var(--color-gold);
+  border-radius: 50%;
+}
+
+.emblem {
+  display: block;
+  width: 24px;
+  height: 24px;
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.5));
+}
+
+.emblem > :global(svg) {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.link {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  line-height: 1.25;
+  color: inherit;
+  text-decoration: none;
+  overflow-wrap: break-word;
+}
+
+/* The whole row opens the details. */
+.link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.link:focus-visible {
+  outline: none;
+}
+
+.row:has(.link:focus-visible) {
+  box-shadow: var(--focus-ring);
+}
+
+.progress {
+  flex: none;
+}

@@ -16,7 +16,7 @@ import { strings } from '@/strings';
 import { AmbientParticles, Fireplace, Icon, ParchmentCard } from '@/ui';
 import { AddToCalendar } from '@/features/calendar-export/AddToCalendar';
 import { DateNumeral } from './DateNumeral';
-import { EventCard } from './EventCard';
+import { EventRow } from './EventRow';
 import styles from './TodayView.module.css';
 
 const COMING_SOON_DAYS = 30;
@@ -55,9 +55,28 @@ export function TodayView() {
   return (
     <div className={styles.layout}>
       {/* First in the page: under the version chip (left column on desktop, top on phones), the
-          launch countdown of an upcoming version, then "Coming soon". */}
+          launch countdown of an upcoming version, the day's other events, then "Coming soon". */}
       <div className={styles.soon}>
         <LaunchCountdown view={view} variant="sidebar" />
+        {also.length > 0 && (
+          <section aria-labelledby="also-title">
+            <h2 id="also-title" className={styles.sectionTitle}>
+              {strings.today.alsoToday}
+            </h2>
+            <ul className={styles.rows}>
+              {also.map((o) => {
+                const def = catalog[o.eventId];
+                return (
+                  def && (
+                    <li key={o.key}>
+                      <EventRow def={def} occurrence={o} href={eventHref(o.eventId)} />
+                    </li>
+                  )
+                );
+              })}
+            </ul>
+          </section>
+        )}
         <section aria-labelledby="soon-title">
           <h2 id="soon-title" className={styles.sectionTitle}>
             {strings.today.comingSoon}
@@ -158,23 +177,6 @@ export function TodayView() {
           </>
         )}
       </section>
-
-      {also.length > 0 && (
-        <div className={styles.side}>
-          <section aria-labelledby="also-title">
-            <h2 id="also-title" className={styles.sectionTitle}>
-              {strings.today.alsoToday}
-            </h2>
-            <ul className={styles.cards}>
-              {also.map((o) => (
-                <li key={o.key}>
-                  <EventCard occurrence={o} href={eventHref(o.eventId)} view={view} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        </div>
-      )}
 
       <RoutedEventSheet />
     </div>

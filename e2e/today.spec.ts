@@ -34,9 +34,11 @@ test('dominance on Jul 4 and day navigation', async ({ page }) => {
   await expect(
     page.getByRole('heading', { level: 1, name: 'Fireworks Spectacular' }),
   ).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Also on this day' })).toContainText(
-    'Midsummer Fire Festival',
-  );
+  await expect(
+    page
+      .getByRole('region', { name: 'Also on this day' })
+      .getByRole('link', { name: 'Midsummer Fire Festival' }),
+  ).toBeVisible();
 
   // Fireworks lasts until 10:00 on Jul 5, so it still wins that day; Jul 3 is Midsummer alone.
   await page.getByRole('link', { name: 'Previous day' }).click();
@@ -143,4 +145,33 @@ test('event block shows no highlight lines; the details sheet still has them', a
   for (const line of ['Trick-or-treat at innkeepers', 'Defeat the Headless Horseman']) {
     await expect(sheet.getByText(line)).toBeVisible();
   }
+});
+
+test('"Also on this day" sits in the sidebar above "Coming soon", and hides when empty', async ({
+  page,
+  isMobile,
+}) => {
+  await page.goto('/anniversary/day/2026-10-25'); // Hallow's End + the Sunday fishing contest
+  const also = page.getByRole('region', { name: 'Also on this day' });
+  const soon = page.getByRole('region', { name: 'Coming soon' });
+  await expect(
+    also.getByRole('link', { name: 'Stranglethorn Fishing Extravaganza' }),
+  ).toBeVisible();
+  const a = (await also.boundingBox())!;
+  const s = (await soon.boundingBox())!;
+  const title = (await page.getByRole('heading', { level: 1 }).boundingBox())!;
+  expect(Math.abs(a.x - s.x)).toBeLessThanOrEqual(1); // same column
+  expect(a.y + a.height).toBeLessThanOrEqual(s.y); // directly before "Coming soon"
+  if (isMobile) expect(s.y + s.height).toBeLessThan(title.y);
+  else expect(a.x + a.width).toBeLessThan(title.x);
+  // Compact rows: one line each, 48px tap target.
+  const row = (await also.getByRole('article').first().boundingBox())!;
+  expect(row.height).toBeGreaterThanOrEqual(48);
+  expect(row.height).toBeLessThan(64);
+
+  // Following the viewed date: Monday has nothing else on, so no empty box.
+  await page.getByRole('link', { name: 'Next day' }).click();
+  await expect(page).toHaveURL(/2026-10-26$/);
+  await expect(page.getByRole('region', { name: 'Also on this day' })).toHaveCount(0);
+  await expect(soon).toBeVisible();
 });

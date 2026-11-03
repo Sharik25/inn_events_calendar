@@ -1,4 +1,5 @@
-/* One centered column: coming soon → numeral → title → details → also on. Desktop: see .soon. */
+/* One column: sidebar (countdown, also on this day, coming soon) → numeral → title → details.
+   Desktop: the sidebar moves into a left column, see .soon. */
 .layout {
   display: grid;
   gap: var(--space-6);
@@ -125,7 +126,6 @@
   margin-top: var(--space-5);
 }
 
-/* Side column */
 /* Coming soon: first in the flow, so it sits right under the version chip on phones and tablets;
    on desktop it moves into a left column under the chip while the day stays centered. */
 .soon {
@@ -139,9 +139,7 @@
   .layout {
     max-width: none;
     grid-template-columns: minmax(160px, 1fr) minmax(0, 640px) minmax(160px, 1fr);
-    grid-template-areas:
-      'soon hero .'
-      'soon side .';
+    grid-template-areas: 'soon hero .';
     column-gap: var(--space-5);
     align-items: start;
   }
@@ -153,16 +151,6 @@
   .hero {
     grid-area: hero;
   }
-
-  .side {
-    grid-area: side;
-  }
-}
-
-.side {
-  display: grid;
-  gap: var(--space-5);
-  min-width: 0;
 }
 
 .sectionTitle {
@@ -174,12 +162,13 @@
   color: var(--color-gold);
 }
 
-.cards {
+/* "Also on this day": compact rows in the sidebar. */
+.rows {
   margin: 0;
   padding: 0;
   list-style: none;
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .chips {
