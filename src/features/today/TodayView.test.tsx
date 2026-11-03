@@ -31,6 +31,25 @@ describe('routing', () => {
     expect(picked.router.state.location.pathname).toBe('/anniversary/today');
   });
 
+  it('opens URLs without a version in the start version, keeping view, date and query', async () => {
+    const month = renderRoute('/month/2026-11');
+    await screen.findByRole('heading', { level: 1, name: 'WoW: Forever' });
+    expect(month.router.state.location.pathname).toBe('/forever/month/2026-11');
+    month.unmount();
+
+    const day = renderRoute('/day/2026-10-27?event=hallows-end', {
+      chosenVersionId: 'anniversary',
+    });
+    await screen.findByRole('dialog', { name: "Hallow's End" });
+    expect(day.router.state.location.pathname).toBe('/anniversary/day/2026-10-27');
+    expect(day.router.state.location.search).toBe('?event=hallows-end');
+    day.unmount();
+
+    const today = renderRoute('/today');
+    await screen.findByRole('heading', { level: 1, name: 'WoW: Forever' });
+    expect(today.router.state.location.pathname).toBe('/forever/today');
+  });
+
   it('ignores a picked version that no longer exists', async () => {
     const { router } = renderRoute('/', { chosenVersionId: 'retired-long-ago' });
     await screen.findByRole('heading', { level: 1, name: 'WoW: Forever' });
