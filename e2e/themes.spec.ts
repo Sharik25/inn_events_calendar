@@ -104,3 +104,21 @@ test("'Also on this day' cards wear their own event theme", async ({ page }) => 
     page.getByRole('dialog', { name: 'Stranglethorn Fishing Extravaganza' }),
   ).toBeVisible();
 });
+
+test('a corner ornament takes the place of the date plate stud instead of covering it', async ({
+  page,
+}) => {
+  const studs = (date: string) =>
+    page.locator(`time[datetime="${date}"]`).evaluate((time) => {
+      const bg = getComputedStyle(time.parentElement!, '::before').backgroundImage;
+      return bg.match(/radial-gradient/g)?.length ?? 0;
+    });
+  await page.goto('/anniversary/today'); // Hallow's End: a pumpkin on the corner
+  await expect(page.locator('[data-placement="corner"]')).toBeVisible();
+  expect(await studs('2026-10-27')).toBe(3);
+  await page.goto('/anniversary/day/2026-11-24'); // quiet day: no ornament, all four studs
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'A quiet day at the inn' }),
+  ).toBeVisible();
+  expect(await studs('2026-11-24')).toBe(4);
+});
