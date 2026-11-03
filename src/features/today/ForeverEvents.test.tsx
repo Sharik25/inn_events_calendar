@@ -57,19 +57,28 @@ describe('WoW: Forever holidays', () => {
     expect(event.uid).toMatch(/^forever:winter-veil:2026-12-15/);
   });
 
-  it('a quiet day wears the Forever inn theme (brown base, sea-blue rims); Anniversary keeps its own', async () => {
+  it("a quiet day is the Anniversary inn with Forever's blue stars on top", async () => {
     vi.setSystemTime(new Date('2026-11-24T18:00:00Z')); // no events in either version
     const forever = renderRoute('/forever/today');
     await screen.findByRole('heading', { level: 1, name: 'A quiet day at the inn' });
+    const shell = forever.container.querySelector('[data-theme]')!;
+    expect(shell).toHaveAttribute('data-theme', 'base'); // same tokens as Anniversary
+    expect(document.documentElement.dataset.versionStyle).toBe('classic');
+    // Forever's stars (its particles and decorations) in their own theme scope.
     await waitFor(() =>
-      expect(forever.container.querySelector('[data-theme="forever-inn"]')).toBeInTheDocument(),
+      expect(
+        forever.container.querySelector('[data-theme="forever"] [data-kind="sparkles"]'),
+      ).toBeInTheDocument(),
     );
     forever.unmount();
 
     const anniversary = renderRoute('/anniversary/today');
     await screen.findByRole('heading', { level: 1, name: 'A quiet day at the inn' });
-    expect(anniversary.container.querySelector('[data-theme="base"]')).toBeInTheDocument();
-    expect(anniversary.container.querySelector('[data-theme="forever-inn"]')).toBeNull();
+    expect(anniversary.container.querySelector('[data-theme]')).toHaveAttribute(
+      'data-theme',
+      'base',
+    );
+    expect(anniversary.container.querySelector('[data-kind="sparkles"]')).toBeNull();
   });
 
   it('an event day in Forever still wears the event theme', async () => {

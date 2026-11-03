@@ -148,6 +148,17 @@ export interface VersionEventBinding {
   notes?: string; // version-specific nuance, e.g. "includes Ahune"
 }
 
+/**
+ * How a version dresses its quiet day at the inn. Defaults: the version's base theme and uiStyle,
+ * no extra ambience. `ambientThemeId` layers another theme's particles and decorations (only
+ * those, not its colors) on top, e.g. Forever's blue stars over the Anniversary inn.
+ */
+export interface QuietDayStyle {
+  themeId?: ThemeId;
+  uiStyle?: 'classic' | 'modern';
+  ambientThemeId?: ThemeId;
+}
+
 export interface VersionConfig {
   id: VersionId;
   name: string; // "Anniversary (TBC Classic)"
@@ -160,8 +171,8 @@ export interface VersionConfig {
   defaultRegionId: string;
   events: VersionEventBinding[];
   baseThemeId: ThemeId; // theme when no event is dominant
-  /** Theme of a day with no events (the quiet day at the inn); default `baseThemeId`. */
-  quietThemeId?: ThemeId;
+  /** The quiet day at the inn (Day view of a day with no events), per version. */
+  quietDay?: QuietDayStyle;
   /** Shape/depth/motion tokens for this version (src/styles/version-styles.css); default classic. */
   uiStyle?: 'classic' | 'modern';
 }

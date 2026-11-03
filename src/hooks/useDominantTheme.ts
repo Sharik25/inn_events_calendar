@@ -2,7 +2,7 @@ import type { EventCatalog, Occurrence, ThemeId, VersionConfig } from '@/domain/
 import { occurrencesOnDay, pickLongestEvent } from '@/engine/dominance';
 import { monthRange, type LocalDate, type LocalMonth } from '@/engine/time';
 
-/** Theme of the day's dominant event, or on a quiet day the version's quiet-day (else base) theme. */
+/** Theme of the day's dominant event, or the version's base theme on a quiet day. */
 export function dominantThemeId(
   occurrences: Occurrence[],
   date: LocalDate,
@@ -11,9 +11,7 @@ export function dominantThemeId(
   version: VersionConfig,
 ): ThemeId {
   const [dominant] = occurrencesOnDay(occurrences, date, timeZone, catalog);
-  return (
-    (dominant && catalog[dominant.eventId]?.themeId) || version.quietThemeId || version.baseThemeId
-  );
+  return (dominant && catalog[dominant.eventId]?.themeId) || version.baseThemeId;
 }
 
 /** The month's one main theme: its longest-running event's, or the version's base theme. */

@@ -34,7 +34,6 @@ const themeLoaders: Record<ThemeId, ThemeLoader> = {
   brewfest: () => import('./brewfest/theme'),
   'harvest-festival': () => import('./harvest-festival/theme'),
   forever: () => import('./forever/theme'),
-  'forever-inn': () => import('./forever-inn/theme'),
 };
 
 export const themeIds: readonly ThemeId[] = Object.keys(themeLoaders);

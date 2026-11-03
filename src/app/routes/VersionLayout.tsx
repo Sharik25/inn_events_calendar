@@ -10,6 +10,7 @@ import {
 import { startOfWeek } from '@/engine/calendar';
 import { findRegion } from '@/engine/expand';
 import { addDays, addMonths, localDateOf, monthOf, type LocalDate } from '@/engine/time';
+import { occurrencesOnDay } from '@/engine/dominance';
 import { switchVersionPath } from '@/engine/version';
 import { MoreSheet } from '@/features/settings/MoreSheet';
 import { takeReopenSettings } from '@/features/settings/reopen';
@@ -61,15 +62,6 @@ export function VersionLayout() {
   const weekStartsOn = useSettings((s) => s.weekStartsOn);
   const region = findRegion(version, useRegionId(version));
 
-  // On <html>, so sheets and other portals get the version's tokens too.
-  useEffect(() => {
-    const root = document.documentElement;
-    root.dataset.versionStyle = version.uiStyle ?? 'classic';
-    return () => {
-      delete root.dataset.versionStyle;
-    };
-  }, [version.uiStyle]);
-
   const userTz = userTimeZone();
   const today = localDateOf(now, userTz);
   const mode =
@@ -102,12 +94,30 @@ export function VersionLayout() {
     catalog,
     hiddenCategories,
   );
+  // The quiet day at the inn (Day view, no events) can be dressed per version (`quietDay`).
+  const quiet =
+    mode === 'day' && occurrencesOnDay(themeOccurrences, viewDate, userTz, catalog).length === 0;
+  const quietDay = quiet ? version.quietDay : undefined;
   const themeId =
-    mode === 'month'
+    quietDay?.themeId ??
+    (mode === 'month'
       ? monthThemeId(themeOccurrences, viewMonth, userTz, catalog, version)
-      : dominantThemeId(themeOccurrences, viewDate, userTz, catalog, version);
+      : dominantThemeId(themeOccurrences, viewDate, userTz, catalog, version));
   const theme = useTheme(themeId);
+  // Another theme's particles and decorations only, on top (e.g. Forever's blue stars).
+  const ambientTheme = useTheme(quietDay?.ambientThemeId ?? themeId);
+  const ambient = quietDay?.ambientThemeId ? ambientTheme : undefined;
   const reducedMotion = useReducedMotion();
+  const uiStyle = quietDay?.uiStyle ?? version.uiStyle ?? 'classic';
+
+  // On <html>, so sheets and other portals get the version's tokens too.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.versionStyle = uiStyle;
+    return () => {
+      delete root.dataset.versionStyle;
+    };
+  }, [uiStyle]);
 
   const view: VersionView = useMemo(() => {
     const hrefFor = (target: ViewMode, date: LocalDate) => {
@@ -188,6 +198,13 @@ export function VersionLayout() {
     <ThemeScope themeId={themeId} withBackground className={styles.shell}>
       <ThemeDecorations decorations={theme.decorations} reducedMotion={reducedMotion} />
       {theme.particles && !reducedMotion && <AmbientParticles kind={theme.particles} />}
+      {ambient && (
+        // Its own tokens (particle colors) apply to these layers only; no box of its own.
+        <ThemeScope themeId={ambient.id} style={{ display: 'contents' }}>
+          <ThemeDecorations decorations={ambient.decorations} reducedMotion={reducedMotion} />
+          {ambient.particles && !reducedMotion && <AmbientParticles kind={ambient.particles} />}
+        </ThemeScope>
+      )}
       {themeId === 'winter-veil' && <FestiveGarland reducedMotion={reducedMotion} />}
 
       <header className={styles.topBar}>
