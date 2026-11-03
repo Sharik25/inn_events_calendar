@@ -13,7 +13,7 @@ import { addDays, addMonths, localDateOf, monthOf, type LocalDate } from '@/engi
 import { switchVersionPath, versionStatus } from '@/engine/version';
 import { MoreSheet } from '@/features/settings/MoreSheet';
 import { takeReopenSettings } from '@/features/settings/reopen';
-import { SupportLink } from '@/features/support/SupportLink';
+import { SupportMenu } from '@/features/support/SupportMenu';
 import { LaunchScreen } from '@/features/version-switcher/LaunchScreen';
 import { VersionPicker } from '@/features/version-switcher/VersionPicker';
 import { dominantThemeId, monthThemeId } from '@/hooks/useDominantTheme';
@@ -208,14 +208,17 @@ export function VersionLayout() {
         >
           {strings.topBar.versionChip(version.shortName, region.label)}
         </button>
-        <button
-          type="button"
-          className={styles.iconButton}
-          onClick={() => setMoreOpen(true)}
-          aria-label={strings.topBar.openSettings}
-        >
-          <Icon name="settings" />
-        </button>
+        <div className={styles.topActions}>
+          <SupportMenu />
+          <button
+            type="button"
+            className={styles.iconButton}
+            onClick={() => setMoreOpen(true)}
+            aria-label={strings.topBar.openSettings}
+          >
+            <Icon name="settings" />
+          </button>
+        </div>
       </header>
 
       <main className={styles.main} {...swipe}>
@@ -232,10 +235,7 @@ export function VersionLayout() {
           variant="scene"
           reducedMotion={reducedMotion}
         />
-        <div className={styles.footerLine}>
-          <SupportLink />
-          <small>{strings.legal.disclaimer}</small>
-        </div>
+        <small>{strings.legal.disclaimer}</small>
       </footer>
 
       <ActionBar>

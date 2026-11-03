@@ -185,7 +185,7 @@ export const ru: Strings = {
   },
   support: {
     beer: 'Угостите меня пивом 🍺',
-    notConfigured: 'Заглушка: укажите SUPPORT_URL в src/config.ts',
+    choose: 'Выберите, как угостить трактирщика:',
   },
   legal: {
     disclaimer:

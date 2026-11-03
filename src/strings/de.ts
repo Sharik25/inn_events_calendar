@@ -182,7 +182,7 @@ export const de: Strings = {
   },
   support: {
     beer: 'Spendier mir ein Bier 🍺',
-    notConfigured: 'Platzhalter: SUPPORT_URL in src/config.ts setzen',
+    choose: 'Wähle, wie du dem Wirt Trinkgeld gibst:',
   },
   legal: {
     disclaimer:

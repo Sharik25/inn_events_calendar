@@ -183,7 +183,7 @@ export const fr: Strings = {
   },
   support: {
     beer: 'Offrez-moi une bière 🍺',
-    notConfigured: 'Espace réservé : définissez SUPPORT_URL dans src/config.ts',
+    choose: 'Choisissez comment laisser un pourboire à l’aubergiste :',
   },
   legal: {
     disclaimer:

@@ -1,7 +1,9 @@
 /**
- * "Buy me a beer" support link (Buy Me a Coffee, Ko-fi, PayPal.me, …), opened in a new tab from
- * the footer on mobile and desktop. TODO: set your page, e.g. 'https://ko-fi.com/your-name'.
- * Until then the button shows only in `npm run dev` (as an inert placeholder), never on the live
- * site, so visitors never get a dead link.
+ * "Buy me a beer" payment options, shown in the header's tip menu in this order. Each opens in a
+ * new tab (rel="noopener noreferrer"). Add another option by adding one line; the label is the
+ * provider's own name, so it isn't translated.
  */
-export const SUPPORT_URL = '';
+export const SUPPORT_LINKS: readonly { id: string; label: string; url: string }[] = [
+  { id: 'wise', label: 'Wise', url: 'https://wise.com/pay/me/egorr36' },
+  { id: 'paypal', label: 'PayPal', url: 'https://paypal.me/EgorReviakin' },
+];

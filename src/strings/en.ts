@@ -180,7 +180,7 @@ export const en = {
   },
   support: {
     beer: 'Buy me a beer 🍺',
-    notConfigured: 'Placeholder: set SUPPORT_URL in src/config.ts',
+    choose: 'Pick a way to tip the innkeeper:',
   },
   legal: {
     disclaimer:

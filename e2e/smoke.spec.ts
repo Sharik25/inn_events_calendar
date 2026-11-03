@@ -42,27 +42,32 @@ test('an open tooltip stays inside a 360px viewport', async ({ page }) => {
   await expect.poll(() => page.evaluate(overflowX)).toBeLessThanOrEqual(0);
 });
 
-test('the beer button shows in the footer on every view without breaking the layout', async ({
+test('header beer button opens Wise and PayPal without breaking the layout', async ({
   page,
   isMobile,
 }) => {
-  // The dev server has no SUPPORT_URL yet, so this is the placeholder; same placement and size.
   for (const path of ['/forever/today', '/anniversary/today', '/anniversary/month/2026-10']) {
     await page.goto(path);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-    const beer = page.getByRole('link', { name: /Buy me a beer/ });
-    await beer.scrollIntoViewIfNeeded();
-    await expect(beer, path).toBeInViewport();
-    const box = (await beer.boundingBox())!;
-    expect(box.height).toBeGreaterThanOrEqual(48);
-    // Not covered by the action bar or anything else.
-    const onTop = await page.evaluate(
-      ([x, y]) => !!document.elementFromPoint(x!, y!)?.closest('a[href="#support"]'),
-      [box.x + box.width / 2, box.y + box.height / 2],
-    );
-    expect(onTop, path).toBe(true);
+    const beer = page.getByRole('button', { name: 'Buy me a beer 🍺' });
+    const settings = page.getByRole('button', { name: 'Settings' });
+    const b = (await beer.boundingBox())!;
+    const s = (await settings.boundingBox())!;
+    expect(b.height).toBeGreaterThanOrEqual(44);
+    expect(b.width).toBeGreaterThanOrEqual(44);
+    expect(b.x + b.width).toBeLessThanOrEqual(s.x); // left of Settings, no overlap
+    expect(Math.abs(b.y + b.height / 2 - (s.y + s.height / 2))).toBeLessThan(2); // same row
+    expect(await page.evaluate(overflowX), path).toBeLessThanOrEqual(0);
+
+    await beer.click();
+    for (const name of ['Wise', 'PayPal']) {
+      const link = page.getByRole('link', { name: new RegExp(`^${name}`) });
+      await expect(link).toBeInViewport({ ratio: 1 });
+      await expect(link).toHaveAttribute('target', '_blank');
+    }
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('link', { name: /^PayPal/ })).toBeHidden();
     if (!isMobile) {
-      // Desktop stays viewport-fit: the page itself never scrolls.
       const pageScroll = await page.evaluate(
         () => document.documentElement.scrollHeight - document.documentElement.clientHeight,
       );
