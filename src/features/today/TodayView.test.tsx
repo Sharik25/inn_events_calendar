@@ -18,9 +18,7 @@ afterEach(() => {
 describe('routing', () => {
   it('redirects / to Forever by default, and to the version picked in the switcher', async () => {
     const { router, unmount } = renderRoute('/');
-    expect(
-      await screen.findByRole('heading', { level: 1, name: 'WoW: Forever' }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'WoW: Forever' })).toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/forever/today');
     unmount();
 
@@ -31,9 +29,28 @@ describe('routing', () => {
     expect(picked.router.state.location.pathname).toBe('/anniversary/today');
   });
 
+  it('opens URLs without a version in the start version, keeping view, date and query', async () => {
+    const month = renderRoute('/month/2026-11');
+    await screen.findByRole('heading', { name: 'WoW: Forever' });
+    expect(month.router.state.location.pathname).toBe('/forever/month/2026-11');
+    month.unmount();
+
+    const day = renderRoute('/day/2026-10-27?event=hallows-end', {
+      chosenVersionId: 'anniversary',
+    });
+    await screen.findByRole('dialog', { name: "Hallow's End" });
+    expect(day.router.state.location.pathname).toBe('/anniversary/day/2026-10-27');
+    expect(day.router.state.location.search).toBe('?event=hallows-end');
+    day.unmount();
+
+    const today = renderRoute('/today');
+    await screen.findByRole('heading', { name: 'WoW: Forever' });
+    expect(today.router.state.location.pathname).toBe('/forever/today');
+  });
+
   it('ignores a picked version that no longer exists', async () => {
     const { router } = renderRoute('/', { chosenVersionId: 'retired-long-ago' });
-    await screen.findByRole('heading', { level: 1, name: 'WoW: Forever' });
+    await screen.findByRole('heading', { name: 'WoW: Forever' });
     expect(router.state.location.pathname).toBe('/forever/today');
   });
 
@@ -60,7 +77,8 @@ describe('Today view', () => {
     // EU ends Nov 1 10:00 CET = 09:00Z → 4d 22h from 11:00Z Oct 27.
     expect(screen.getByText('Ends in 4d 22h')).toBeInTheDocument();
     expect(screen.queryByText('Unconfirmed')).not.toBeInTheDocument(); // verified date
-    expect(screen.getByText('Trick-or-treat at innkeepers')).toBeInTheDocument();
+    expect(screen.getByText(/^Trick-or-treat at the inns/)).toBeInTheDocument(); // summary
+    expect(screen.queryByText('Trick-or-treat at innkeepers')).not.toBeInTheDocument(); // details only
 
     const soon = screen.getByRole('region', { name: 'Coming soon' });
     expect(within(soon).getByRole('link', { name: /Fishing in 5d/ })).toBeInTheDocument();
@@ -107,7 +125,24 @@ describe('Today view', () => {
     ).toBeInTheDocument();
     const soon = screen.getByRole('region', { name: 'Coming soon' });
     // Next fishing is Sun Nov 29 14:00 → 5 days after the start of Nov 24, not 33 days from now.
-    expect(within(soon).getByRole('link', { name: /Fishing in 5d/ })).toBeInTheDocument();
+    // On a quiet day the cards are the inn cards: emblem, name, date and distance.
+    const fishing = within(soon).getByRole('link', {
+      name: 'Stranglethorn Fishing Extravaganza, Sun, Nov 29, in 5d',
+    });
+    expect(fishing).toHaveClass('inn');
+    expect(fishing.querySelector('svg')).toBeInTheDocument();
+  });
+
+  it('keeps the small "Coming soon" chips on days with events', async () => {
+    renderRoute('/anniversary/day/2026-11-15'); // Darkmoon Faire
+    await screen.findByRole('heading', { level: 1, name: 'Darkmoon Faire' });
+    const soon = screen.getByRole('region', { name: 'Coming soon' });
+    const links = within(soon).getAllByRole('link');
+    expect(links.length).toBeGreaterThan(0);
+    for (const link of links) {
+      expect(link).toHaveClass('chip');
+      expect(link.querySelector('svg')).toBeNull();
+    }
   });
 
   it('shows countdowns only on Today', async () => {
@@ -174,11 +209,14 @@ describe('Today view', () => {
     // drift on slow machines can't change the expected text.
     vi.setSystemTime(new Date('2026-10-27T10:30:00Z'));
     renderRoute('/anniversary/today');
-    await vi.waitFor(() => screen.getByText('Ends in 4d 22h'));
+    // 3s like Testing Library's queries (test/setup.ts): the route loads async.
+    await vi.waitFor(() => screen.getByText('Ends in 4d 22h'), { timeout: 3000 });
     act(() => {
       vi.advanceTimersByTime(60 * 60_000);
     });
-    await vi.waitFor(() => expect(screen.getByText('Ends in 4d 21h')).toBeInTheDocument());
+    await vi.waitFor(() => expect(screen.getByText('Ends in 4d 21h')).toBeInTheDocument(), {
+      timeout: 3000,
+    });
   });
 });
 

@@ -8,3 +8,4 @@ export * from './feeds';
 export * from './checklist';
 export * from './version';
 export { ruleExpanders, expandRule } from './rules';
+export { annualStartDate, easterSunday, LUNAR_NEW_YEAR } from './rules/annual';

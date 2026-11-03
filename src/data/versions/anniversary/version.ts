@@ -1,5 +1,7 @@
 import type { ScheduleFile, VersionConfig } from '@/domain/types';
-import { explicitBindingsFromSchedules, scheduleFilesFromGlob } from '../../schedules';
+import { eventDefinitions } from '../../events';
+import { stvFishing } from '../../events/stv-fishing';
+import { scheduleBindings, scheduleFilesFromGlob, standardWeeklyRule } from '../../schedules';
 import { weeklyResetBindings } from '../../weekly-reset';
 import { DARKMOON_ROTATION } from './darkmoon-rotation';
 import { WEEKLY_RESET } from './weekly-reset';
@@ -22,7 +24,8 @@ export const anniversary: VersionConfig = {
   defaultRegionId: 'eu',
   baseThemeId: 'base',
   events: [
-    ...explicitBindingsFromSchedules(scheduleFiles),
+    // Hand-tracked dates only (schedule-<year>.json); no estimates.
+    ...scheduleBindings(scheduleFiles, { events: eventDefinitions }),
     {
       eventId: 'darkmoon-faire',
       // Arrives the first Friday of the month, opens the following Monday, leaves after Sunday.
@@ -46,14 +49,11 @@ export const anniversary: VersionConfig = {
     },
     {
       eventId: 'stv-fishing',
-      rule: {
-        kind: 'weekly',
-        weekday: 0,
-        startTime: '14:00',
-        durationMinutes: 120,
+      // The standard Sunday slot (on the event), confirmed for Anniversary.
+      rule: standardWeeklyRule(stvFishing, {
         verified: true,
         source: 'https://warcraft.wiki.gg/wiki/School_of_Tastyfish',
-      },
+      }),
     },
     ...weeklyResetBindings(WEEKLY_RESET),
   ],

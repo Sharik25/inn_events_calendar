@@ -1,0 +1,98 @@
+/* Chip (any day with events): name and distance in a small dark pill. */
+.chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-ink-on-dark);
+  text-decoration: none;
+  background: color-mix(in srgb, var(--color-frame) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 60%, transparent);
+  border-radius: var(--radius-sm);
+}
+
+.chip:hover {
+  border-color: var(--color-gold);
+}
+
+.chipName {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-sm);
+}
+
+.chipWhen {
+  font-size: var(--text-sm);
+  color: var(--color-ink-on-dark-muted);
+  white-space: nowrap;
+}
+
+/* Inn (the quiet day at the inn): a little polished-wood card by the hearth. Warm frame wood
+   with a soft gold sheen on top, a parchment-toned title, and an inner glow in the quiet day's
+   accent (ember in Anniversary, sea blue in Forever). Text stays on the dark wood (AA). */
+.inn {
+  --inn-accent: var(--quiet-accent, var(--color-accent));
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 56px;
+  height: 100%;
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
+  color: var(--color-ink-on-dark);
+  text-decoration: none;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-gold) 12%, transparent),
+      transparent 60%
+    ),
+    color-mix(in srgb, var(--color-frame) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 45%, transparent);
+  border-radius: var(--radius-md);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--color-gold) 30%, transparent),
+    inset 0 0 16px color-mix(in srgb, var(--inn-accent) 18%, transparent),
+    0 2px 8px rgb(0 0 0 / 0.35);
+  transition:
+    border-color calc(150ms * var(--motion-scale)) var(--motion-ease, ease),
+    box-shadow calc(150ms * var(--motion-scale)) var(--motion-ease, ease);
+}
+
+.inn:hover {
+  border-color: var(--color-gold);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--color-gold) 40%, transparent),
+    inset 0 0 18px color-mix(in srgb, var(--inn-accent) 26%, transparent),
+    0 0 12px color-mix(in srgb, var(--inn-accent) 35%, transparent);
+}
+
+.innEmblem {
+  border-color: var(--inn-accent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--inn-accent) 40%, transparent);
+}
+
+.innText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.innName {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+
+.innWhen {
+  font-size: var(--text-sm);
+  color: var(--color-ink-on-dark-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.innDistance {
+  white-space: nowrap;
+}

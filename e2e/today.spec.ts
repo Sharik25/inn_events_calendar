@@ -34,9 +34,11 @@ test('dominance on Jul 4 and day navigation', async ({ page }) => {
   await expect(
     page.getByRole('heading', { level: 1, name: 'Fireworks Spectacular' }),
   ).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Also on this day' })).toContainText(
-    'Midsummer Fire Festival',
-  );
+  await expect(
+    page
+      .getByRole('region', { name: 'Also on this day' })
+      .getByRole('link', { name: 'Midsummer Fire Festival' }),
+  ).toBeVisible();
 
   // Fireworks lasts until 10:00 on Jul 5, so it still wins that day; Jul 3 is Midsummer alone.
   await page.getByRole('link', { name: 'Previous day' }).click();
@@ -112,4 +114,88 @@ test('event days show no fireplace', async ({ page }) => {
   await page.goto('/anniversary/today');
   await expect(page.getByRole('heading', { level: 1, name: "Hallow's End" })).toBeVisible();
   await expect(page.getByTestId('fireplace')).toHaveCount(0);
+});
+
+test('"Coming soon" sits under the version chip: left column on desktop, on top on phones', async ({
+  page,
+  isMobile,
+}) => {
+  await page.goto('/anniversary/today');
+  await expect(page.getByRole('heading', { level: 1, name: "Hallow's End" })).toBeVisible();
+  const chip = (await page.getByRole('button', { name: 'Anniversary · Europe' }).boundingBox())!;
+  const soon = (await page.getByRole('region', { name: 'Coming soon' }).boundingBox())!;
+  const title = (await page.getByRole('heading', { level: 1 }).boundingBox())!;
+
+  expect(Math.abs(soon.x - chip.x)).toBeLessThanOrEqual(1); // same left edge
+  expect(soon.y).toBeGreaterThanOrEqual(chip.y + chip.height); // below the chip, no overlap
+  expect(soon.y - (chip.y + chip.height)).toBeLessThan(40); // …directly below it
+  if (isMobile) expect(soon.y + soon.height).toBeLessThan(title.y);
+  else expect(soon.x + soon.width).toBeLessThan(title.x); // its own column, left of the day
+});
+
+test('event block shows no highlight lines; the details sheet still has them', async ({ page }) => {
+  await page.goto('/anniversary/today');
+  const card = page.locator('[class*="heroCard"]');
+  await expect(card).toContainText('Trick-or-treat at the inns'); // the one-line summary stays
+  for (const line of ['Trick-or-treat at innkeepers', 'Defeat the Headless Horseman']) {
+    await expect(card.getByText(line)).toHaveCount(0);
+  }
+  await card.getByRole('link', { name: "Details for Hallow's End" }).click();
+  const sheet = page.getByRole('dialog', { name: "Hallow's End" });
+  for (const line of ['Trick-or-treat at innkeepers', 'Defeat the Headless Horseman']) {
+    await expect(sheet.getByText(line)).toBeVisible();
+  }
+});
+
+test('"Also on this day" sits in the sidebar above "Coming soon", and hides when empty', async ({
+  page,
+  isMobile,
+}) => {
+  await page.goto('/anniversary/day/2026-10-25'); // Hallow's End + the Sunday fishing contest
+  const also = page.getByRole('region', { name: 'Also on this day' });
+  const soon = page.getByRole('region', { name: 'Coming soon' });
+  await expect(
+    also.getByRole('link', { name: 'Stranglethorn Fishing Extravaganza' }),
+  ).toBeVisible();
+  const a = (await also.boundingBox())!;
+  const s = (await soon.boundingBox())!;
+  const title = (await page.getByRole('heading', { level: 1 }).boundingBox())!;
+  expect(Math.abs(a.x - s.x)).toBeLessThanOrEqual(1); // same column
+  expect(a.y + a.height).toBeLessThanOrEqual(s.y); // directly before "Coming soon"
+  if (isMobile) expect(s.y + s.height).toBeLessThan(title.y);
+  else expect(a.x + a.width).toBeLessThan(title.x);
+  // Compact rows: one line each, 48px tap target.
+  const row = (await also.getByRole('article').first().boundingBox())!;
+  expect(row.height).toBeGreaterThanOrEqual(48);
+  expect(row.height).toBeLessThan(64);
+
+  // Following the viewed date: Monday has nothing else on, so no empty box.
+  await page.getByRole('link', { name: 'Next day' }).click();
+  await expect(page).toHaveURL(/2026-10-26$/);
+  await expect(page.getByRole('region', { name: 'Also on this day' })).toHaveCount(0);
+  await expect(soon).toBeVisible();
+});
+
+test('a quiet day dresses "Coming soon" as inn cards that open the details', async ({ page }) => {
+  for (const version of ['anniversary', 'forever']) {
+    await page.goto(`/${version}/day/2026-11-24`);
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'A quiet day at the inn' }),
+    ).toBeVisible();
+    const soon = page.getByRole('region', { name: 'Coming soon' });
+    const card = soon.getByRole('link', {
+      name: /^Stranglethorn Fishing Extravaganza, Sun, Nov 29, in \dd$/,
+    });
+    await expect(card).toBeVisible();
+    const box = (await card.boundingBox())!;
+    expect(box.height).toBeGreaterThanOrEqual(48);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+    ).toBe(true);
+    await card.click();
+    await expect(
+      page.getByRole('dialog', { name: 'Stranglethorn Fishing Extravaganza' }),
+    ).toBeVisible();
+    await page.keyboard.press('Escape');
+  }
 });

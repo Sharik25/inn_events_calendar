@@ -4,7 +4,7 @@
  * events keep their wall-clock time across DST changes (a UTC RRULE would drift by an hour).
  */
 import type { EventDefinition, Occurrence } from '@/domain/types';
-import { localDateOf } from './time';
+import { dayRange, localDateOf, type LocalDate } from './time';
 
 export interface IcsEvent {
   uid: string;
@@ -155,10 +155,35 @@ export function occurrenceAppUrl(occurrence: Occurrence, appUrl: string): string
   return `${appUrl.replace(/\/$/, '')}/${occurrence.versionId}/day/${date}?event=${occurrence.eventId}&on=${date}`;
 }
 
+/** True when an occurrence runs on more than one calendar day in `timeZone`. */
+export function spansSeveralDays(occurrence: Pick<Occurrence, 'start' | 'end'>, timeZone: string) {
+  const lastInstant = new Date(occurrence.end.getTime() - 1);
+  return localDateOf(occurrence.start, timeZone) !== localDateOf(lastInstant, timeZone);
+}
+
+/**
+ * Only `date` (a calendar day in `timeZone`) of an occurrence, for "add this day": clipped to
+ * that day, with its own key (so its own calendar UID) to sit beside the whole event instead of
+ * replacing it. Null when the occurrence doesn't run that day.
+ */
+export function occurrenceOnDay(
+  occurrence: Occurrence,
+  date: LocalDate,
+  timeZone: string,
+): Occurrence | null {
+  const day = dayRange(date, timeZone);
+  const start = new Date(Math.max(occurrence.start.getTime(), day.start.getTime()));
+  const end = new Date(Math.min(occurrence.end.getTime(), day.end.getTime()));
+  if (start >= end) return null;
+  return { ...occurrence, key: `${occurrence.key}/${date}`, start, end };
+}
+
+/** `name` replaces the event's name in the title, e.g. "Hallow's End (Tue, Oct 27)" for one day. */
 export function occurrenceToIcsEvent(
   occurrence: Occurrence,
   def: EventDefinition,
   { appUrl, tentativeLabel, locationLabel }: ExportOptions,
+  name = def.name,
 ): IcsEvent {
   const url = appUrl ? occurrenceAppUrl(occurrence, appUrl) : undefined;
   const description = [
@@ -173,7 +198,7 @@ export function occurrenceToIcsEvent(
     uid: occurrenceUid(occurrence),
     start: occurrence.start,
     end: occurrence.end,
-    title: occurrence.verified ? def.name : `(${tentativeLabel}) ${def.name}`,
+    title: occurrence.verified ? name : `(${tentativeLabel}) ${name}`,
     description,
     ...(url && { url }),
     ...(occurrence.location && { location: occurrence.location }),

@@ -12,11 +12,16 @@ test('version picker switches to Forever keeping view and date, and back', async
   await picker.getByRole('button', { name: /WoW: Forever/ }).click();
 
   await expect(page).toHaveURL(/\/forever\/month\/2026-11$/);
-  await expect(page.getByRole('heading', { level: 1, name: 'WoW: Forever' })).toBeVisible();
-  await expect(page.getByText('Launches in 8d 12h')).toBeVisible();
+  // Before launch: Forever's calendar, with a compact countdown row instead of a launch screen.
+  await expect(page.getByRole('heading', { level: 1, name: 'November 2026' })).toBeVisible();
+  await expect(page.getByTestId('launch-countdown')).toContainText('Launches in 8d 12h');
   expect(await page.evaluate(overflowX)).toBeLessThanOrEqual(0);
 
-  await page.getByRole('link', { name: 'Back to Anniversary' }).click();
+  await page.getByRole('button', { name: 'Version' }).click();
+  await page
+    .getByRole('dialog', { name: 'Choose version' })
+    .getByRole('button', { name: /Anniversary/ })
+    .click();
   await expect(page).toHaveURL(/\/anniversary\/month\/2026-11$/);
   await expect(page.getByRole('heading', { level: 1, name: 'November 2026' })).toBeVisible();
 });
@@ -62,4 +67,34 @@ test('picker fits a 360px screen', async ({ page }) => {
   expect(box.x).toBeGreaterThanOrEqual(0);
   expect(box.x + box.width).toBeLessThanOrEqual(360);
   expect(await page.evaluate(overflowX)).toBeLessThanOrEqual(0);
+});
+
+test('launch countdown sits under the version switcher, compact, above "Coming soon"', async ({
+  page,
+  isMobile,
+}) => {
+  await page.goto('/forever/today');
+  const chip = (await page.getByRole('button', { name: 'Forever · All realms' }).boundingBox())!;
+  const countdown = page.getByTestId('launch-countdown');
+  await expect(countdown).toContainText('Launches in 8d 12h');
+  const c = (await countdown.boundingBox())!;
+  const soon = (await page.getByRole('region', { name: 'Coming soon' }).boundingBox())!;
+  const title = (await page.getByRole('heading', { level: 1 }).boundingBox())!;
+
+  expect(Math.abs(c.x - chip.x)).toBeLessThanOrEqual(1); // same left edge as the switcher
+  expect(c.y).toBeGreaterThanOrEqual(chip.y + chip.height); // below it, no overlap
+  expect(c.y - (chip.y + chip.height)).toBeLessThan(40);
+  expect(soon.y).toBeGreaterThanOrEqual(c.y + c.height); // "Coming soon" stacks under it
+  if (isMobile) {
+    expect(c.height).toBeLessThan(56); // a single compact row
+    expect(c.y + c.height).toBeLessThan(title.y);
+  } else {
+    expect(c.x + c.width).toBeLessThan(title.x); // left column, clear of the day
+  }
+  expect(await page.evaluate(overflowX)).toBeLessThanOrEqual(0);
+
+  // Week view: one compact row above the grid.
+  await page.goto('/forever/week/2026-11-02');
+  await expect(page.getByTestId('launch-countdown')).toBeVisible();
+  expect((await page.getByTestId('launch-countdown').boundingBox())!.height).toBeLessThan(56);
 });

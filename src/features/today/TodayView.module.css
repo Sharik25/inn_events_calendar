@@ -1,4 +1,5 @@
-/* One centered column on every viewport: numeral → title → details → also on → coming soon. */
+/* One column: sidebar (countdown, also on this day, coming soon) → numeral → title → details.
+   Desktop: the sidebar moves into a left column, see .soon. */
 .layout {
   display: grid;
   gap: var(--space-6);
@@ -54,7 +55,7 @@
   font-family: var(--font-display);
   font-size: var(--text-2xl);
   line-height: 1.15;
-  letter-spacing: 0.03em;
+  letter-spacing: calc(0.03em * var(--tracking-scale));
   color: var(--color-ink-on-dark);
   text-shadow: 0 2px 8px rgb(0 0 0 / 0.6);
   overflow-wrap: anywhere;
@@ -97,16 +98,6 @@
   line-height: 1.45;
 }
 
-.highlights {
-  margin: var(--space-3) 0 0;
-  padding-left: var(--space-5);
-}
-
-.highlights li::marker {
-  content: '▸ ';
-  color: var(--color-accent);
-}
-
 /* Details + Add to calendar, centered under the card content. */
 .actions {
   display: flex;
@@ -128,35 +119,56 @@
   background: linear-gradient(180deg, #f1d58c, var(--color-gold));
   border: 1px solid color-mix(in srgb, var(--color-gold) 60%, black);
   border-radius: var(--radius-sm);
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.25);
+  box-shadow: var(--shadow-raised);
 }
 
 .hearth {
   margin-top: var(--space-5);
 }
 
-/* Side column */
-.side {
+/* Coming soon: first in the flow, so it sits right under the version chip on phones and tablets;
+   on desktop it moves into a left column under the chip while the day stays centered. */
+.soon {
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-4);
+  align-content: start;
   min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    max-width: none;
+    grid-template-columns: minmax(160px, 1fr) minmax(0, 640px) minmax(160px, 1fr);
+    grid-template-areas: 'soon hero .';
+    column-gap: var(--space-5);
+    align-items: start;
+  }
+
+  .soon {
+    grid-area: soon;
+  }
+
+  .hero {
+    grid-area: hero;
+  }
 }
 
 .sectionTitle {
   margin: 0 0 var(--space-3);
   font-family: var(--font-display);
   font-size: var(--text-md);
-  letter-spacing: 0.1em;
+  letter-spacing: calc(0.1em * var(--tracking-scale));
   text-transform: uppercase;
   color: var(--color-gold);
 }
 
-.cards {
+/* "Also on this day": compact rows in the sidebar. */
+.rows {
   margin: 0;
   padding: 0;
   list-style: none;
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .chips {
@@ -168,33 +180,20 @@
   gap: var(--space-2);
 }
 
-.chip {
-  display: inline-flex;
-  align-items: baseline;
+/* Quiet day: the inn cards, two side by side on phones, one per row in the desktop sidebar. */
+.innCards {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: var(--space-2);
-  min-height: 44px;
-  padding: var(--space-2) var(--space-3);
-  color: var(--color-ink-on-dark);
-  text-decoration: none;
-  background: color-mix(in srgb, var(--color-frame) 85%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-gold) 60%, transparent);
-  border-radius: var(--radius-sm);
 }
 
-.chip:hover {
-  border-color: var(--color-gold);
-}
-
-.chipName {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--text-sm);
-}
-
-.chipWhen {
-  font-size: var(--text-sm);
-  color: var(--color-ink-on-dark-muted);
-  white-space: nowrap;
+@media (min-width: 1024px) {
+  .innCards {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .empty {

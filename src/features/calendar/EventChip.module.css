@@ -69,6 +69,25 @@
   border-style: dashed;
 }
 
+/* A launch: festive but quiet. Gold rim, the theme's glow and a small sparkle before the name. */
+[data-category='launch'] {
+  border-color: var(--color-gold);
+  box-shadow:
+    0 1px 3px rgb(0 0 0 / 0.4),
+    var(--glow);
+}
+
+[data-category='launch'] .name::before {
+  content: '';
+  display: inline-block;
+  width: 0.85em;
+  height: 0.85em;
+  margin-right: 0.3em;
+  vertical-align: -0.05em;
+  background: var(--color-gold);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+}
+
 .time {
   font-variant-numeric: tabular-nums;
   font-weight: 700;

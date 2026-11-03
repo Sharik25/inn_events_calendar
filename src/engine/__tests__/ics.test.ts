@@ -8,8 +8,10 @@ import {
   googleCalendarUrl,
   icsDate,
   occurrenceAppUrl,
+  occurrenceOnDay,
   occurrenceToIcsEvent,
   occurrenceUid,
+  spansSeveralDays,
 } from '../ics';
 
 const def: EventDefinition = {
@@ -142,6 +144,47 @@ describe('occurrence export', () => {
       googleCalendarUrl({ uid: 'u', start: occ.start, end: occ.end, title: 'T' }),
     );
     expect(bare.searchParams.has('details')).toBe(false);
+  });
+});
+
+describe('one day of an event', () => {
+  it('clips the occurrence to the day, with its own key and UID', () => {
+    // Hallow's End runs Oct 18, 10:00 – Nov 1, 10:00 in Paris.
+    const middle = occurrenceOnDay(occ, '2026-10-27', 'Europe/Paris')!;
+    expect([middle.start.toISOString(), middle.end.toISOString()]).toEqual([
+      '2026-10-26T23:00:00.000Z', // Oct 27, 00:00 CET
+      '2026-10-27T23:00:00.000Z',
+    ]);
+    expect(middle.key).toBe(`${occ.key}/2026-10-27`);
+    expect(occurrenceUid(middle)).not.toBe(occurrenceUid(occ));
+    expect(middle).toMatchObject({ eventId: occ.eventId, verified: true });
+
+    const first = occurrenceOnDay(occ, '2026-10-18', 'Europe/Paris')!;
+    expect(first.start).toEqual(occ.start); // starts at the event's own start time
+    const last = occurrenceOnDay(occ, '2026-11-01', 'Europe/Paris')!;
+    expect(last.end).toEqual(occ.end);
+    expect(occurrenceOnDay(occ, '2026-11-02', 'Europe/Paris')).toBeNull();
+  });
+
+  it('tells multi-day events from one-day ones', () => {
+    expect(spansSeveralDays(occ, 'Europe/Paris')).toBe(true);
+    const evening = {
+      start: new Date('2026-10-25T13:00:00Z'),
+      end: new Date('2026-10-25T15:00:00Z'),
+    };
+    expect(spansSeveralDays(evening, 'Europe/Paris')).toBe(false);
+    // Ending exactly at midnight still counts as one day.
+    const fullDay = {
+      start: new Date('2026-10-26T23:00:00Z'),
+      end: new Date('2026-10-27T23:00:00Z'),
+    };
+    expect(spansSeveralDays(fullDay, 'Europe/Paris')).toBe(false);
+  });
+
+  it('can title the export differently', () => {
+    expect(occurrenceToIcsEvent(occ, def, opts, "Hallow's End (Tue, Oct 27)").title).toBe(
+      "Hallow's End (Tue, Oct 27)",
+    );
   });
 });
 

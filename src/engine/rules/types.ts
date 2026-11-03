@@ -8,6 +8,7 @@ export interface RawOccurrence {
   location?: string;
   source?: string;
   note?: string;
+  estimated?: 'yearly' | 'weekly';
 }
 
 export interface ExpandContext {

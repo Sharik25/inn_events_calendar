@@ -13,4 +13,11 @@ export const hallowsEnd: EventDefinition = {
     'Wands, masks and costumes',
   ],
   links: [{ label: 'Warcraft Wiki', url: "https://warcraft.wiki.gg/wiki/Hallow's_End" }],
+  // Standard yearly schedule (Classic/TBC holiday calendar): October 18 to November 1.
+  annual: {
+    anchor: { type: 'date', month: 10, day: 18 },
+    startTime: '10:00',
+    durationDays: 14,
+    source: 'https://www.darmory.com/events',
+  },
 };

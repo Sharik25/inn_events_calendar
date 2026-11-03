@@ -13,4 +13,11 @@ export const lunarFestival: EventDefinition = {
     'Festive clothing and recipes',
   ],
   links: [{ label: 'Warcraft Wiki', url: 'https://warcraft.wiki.gg/wiki/Lunar_Festival' }],
+  // Standard yearly schedule (Classic/TBC holiday calendar): Day before Lunar New Year, two weeks.
+  annual: {
+    anchor: { type: 'lunar-new-year', offsetDays: -1 },
+    startTime: '10:00',
+    durationDays: 14,
+    source: 'https://www.darmory.com/events',
+  },
 };

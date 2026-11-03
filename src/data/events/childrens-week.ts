@@ -13,4 +13,11 @@ export const childrensWeek: EventDefinition = {
     'Choose a companion pet reward',
   ],
   links: [{ label: 'Warcraft Wiki', url: "https://warcraft.wiki.gg/wiki/Children's_Week" }],
+  // Standard yearly schedule (Classic/TBC holiday calendar): Last Monday of April, one week.
+  annual: {
+    anchor: { type: 'weekday', month: 4, weekday: 1, nth: 'last' },
+    startTime: '10:00',
+    durationDays: 7,
+    source: 'https://www.darmory.com/events',
+  },
 };

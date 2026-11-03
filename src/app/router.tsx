@@ -9,6 +9,7 @@ import {
   monthLoader,
   rootLoader,
   versionIndexLoader,
+  versionlessLoader,
   versionLoader,
   weekLoader,
 } from './routes/loaders';
@@ -20,6 +21,12 @@ const view = (mode: ViewMode) => ({ view: mode });
 
 export const routes: RouteObject[] = [
   { path: '/', loader: rootLoader, HydrateFallback: hydrateFallback },
+  // Links without a version open the start version (static segments outrank `/:versionId`).
+  { path: '/today', loader: versionlessLoader('today'), HydrateFallback: hydrateFallback },
+  ...(['day', 'week', 'month'] as const).flatMap((view) => [
+    { path: `/${view}`, loader: versionlessLoader(view), HydrateFallback: hydrateFallback },
+    { path: `/${view}/*`, loader: versionlessLoader(view), HydrateFallback: hydrateFallback },
+  ]),
   {
     // Hidden design-system gallery (PLAN.md Phase 2). Lazy so it never weighs on the main bundle.
     path: '/dev/ui',

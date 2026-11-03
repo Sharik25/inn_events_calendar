@@ -1,6 +1,9 @@
 import type { ScheduleFile, VersionConfig } from '@/domain/types';
-import { explicitBindingsFromSchedules, scheduleFilesFromGlob } from '../../schedules';
+import { eventDefinitions } from '../../events';
+import { launchBindings } from '../../launches';
+import { scheduleBindings, scheduleFilesFromGlob } from '../../schedules';
 import { weeklyResetBindings } from '../../weekly-reset';
+import { FOREVER_LAUNCHES } from './launches';
 import { WEEKLY_RESET } from './weekly-reset';
 
 const scheduleFiles = scheduleFilesFromGlob(
@@ -8,25 +11,43 @@ const scheduleFiles = scheduleFilesFromGlob(
 );
 
 /**
- * WoW: Forever. Launch: Nov 4, 2026, 3:00 pm PT (worldwide), per
- * https://www.techspot.com/news/113832-world-warcraft-forever-launches-november-4-new-race.html
- * and https://www.warcrafttavern.com/forever/news/warcraft-forever-classic-announced-at-blizzcon-2026/
+ * WoW: Forever. Launch: Nov 4, 2026, 3:00 pm PT, the same moment worldwide (midnight Nov 5 in
+ * Paris); the launches per part of the world are in `launches.ts`.
  *
  * Dated events live in `schedule-<year>.json` next to this file: editing one on GitHub redeploys
- * the site, no code change needed. They stay empty until the post-launch calendar is verified
- * (PLAN.md §14). Weekly/monthly events go in `events` below as rules.
+ * the site, no code change needed. As of Nov 3, 2026 Wowhead lists no world events for Forever:
+ * the Darkmoon Faire visits come from the game client (unconfirmed, see the JSON notes), and every
+ * yearly holiday and the weekly fishing contest are estimated from the standard schedule (shown as
+ * "Estimated") until Forever's own dates are known. Weekly/monthly events go in `events` below as
+ * rules once a source confirms them.
  */
 export const forever: VersionConfig = {
   id: 'forever',
   name: 'WoW: Forever',
   shortName: 'Forever',
   status: 'upcoming',
-  launchDate: '2026-11-04T15:00:00-08:00',
+  // Launch days, countdown lines and calendar entries per part of the world. The first launch
+  // switches the version from "upcoming" to live.
+  launches: FOREVER_LAUNCHES,
   summary:
-    'A new take on the level-60 world with fresh quests, dungeons and raids. Its event calendar appears here once dates are confirmed after launch.',
+    'A new take on the level-60 world with fresh quests, dungeons and raids. Its calendar fills in as event dates are confirmed.',
   // Realmless: one event clock for everyone. Pacific is assumed until the live calendar is checked.
   regions: [{ id: 'global', label: 'All realms', timeZone: 'America/Los_Angeles' }],
   defaultRegionId: 'global',
   baseThemeId: 'forever',
-  events: [...explicitBindingsFromSchedules(scheduleFiles), ...weeklyResetBindings(WEEKLY_RESET)],
+  // Quiet day at the inn: the Anniversary inn exactly (its theme and classic shapes), with
+  // Forever's own blue stars on top as the one Forever touch.
+  quietDay: { themeId: 'base', uiStyle: 'classic', ambientThemeId: 'forever' },
+  // Same design, slightly more modern: tune it in src/styles/version-styles.css.
+  uiStyle: 'modern',
+  // Calendar export: the whole event or only the viewed day of it, from any event's details.
+  calendarExport: { scopes: ['event', 'day'], onEveryEvent: true },
+  events: [
+    // Every yearly holiday and weekly event (the fishing contest), estimated from the standard
+    // schedule until Forever's own dates are known; a date added to schedule-<year>.json
+    // replaces a holiday's estimate for that year.
+    ...scheduleBindings(scheduleFiles, { events: eventDefinitions, estimateStandard: true }),
+    ...weeklyResetBindings(WEEKLY_RESET),
+    ...launchBindings('forever', FOREVER_LAUNCHES),
+  ],
 };

@@ -20,6 +20,17 @@
   z-index: 1;
 }
 
+/* Above the content too, so the tip menu drops down over it. */
+.topBar {
+  z-index: 3;
+}
+
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 .topBar {
   display: flex;
   align-items: center;
@@ -97,20 +108,4 @@
   color: var(--color-ink-on-dark-muted);
   font-size: var(--text-xs);
   line-height: 1.4;
-}
-
-/* Support link above the disclaimer on mobile; side by side on desktop, so the footer stays short. */
-.footerLine {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-@media (min-width: 768px) {
-  .footerLine {
-    flex-direction: row;
-    justify-content: center;
-    gap: var(--space-4);
-  }
 }

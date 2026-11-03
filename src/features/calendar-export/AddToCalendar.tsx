@@ -1,13 +1,16 @@
 import { useId, useState } from 'react';
 import { useVersionView } from '@/app/versionView';
-import type { Occurrence } from '@/domain/types';
-import { localDateOf } from '@/engine/time';
+import type { CalendarExportScope, Occurrence } from '@/domain/types';
+import { occurrenceOnDay, spansSeveralDays } from '@/engine/ics';
+import { localDateOf, type LocalDate } from '@/engine/time';
+import { calendarExportOf } from '@/engine/version';
 import { formatDay, formatRange } from '@/lib/format';
 import { strings } from '@/strings';
 import { useSettings } from '@/state/settings';
 import { Badge, Checkbox, Icon, Segmented, Sheet } from '@/ui';
 import { useCalendarExport } from './useCalendarExport';
 import styles from './AddToCalendar.module.css';
+import { dateStatusLabel } from '@/features/common/dateStatus';
 
 /** Reminder choices for the .ics download, in minutes before the start. */
 const REMINDERS = [
@@ -30,16 +33,41 @@ function EventLine({ occurrence }: { occurrence: Occurrence }) {
       </time>
       {!occurrence.verified && (
         <Badge tone="unconfirmed" className={styles.tag}>
-          {strings.common.unconfirmed}
+          {dateStatusLabel(occurrence)}
         </Badge>
       )}
     </span>
   );
 }
 
-function ExportSheet({ occurrence, onClose }: { occurrence: Occurrence; onClose: () => void }) {
-  const { catalog, displayTimeZone } = useVersionView();
-  const exp = useCalendarExport(occurrence);
+/**
+ * The scopes the version offers for this occurrence: "only this day" needs an event that spans
+ * several days and runs on `day`.
+ */
+function scopesFor(
+  scopes: CalendarExportScope[],
+  occurrence: Occurrence,
+  day: LocalDate | undefined,
+  timeZone: string,
+): CalendarExportScope[] {
+  const dayFits =
+    !!day && spansSeveralDays(occurrence, timeZone) && !!occurrenceOnDay(occurrence, day, timeZone);
+  return scopes.filter((scope) => scope !== 'day' || dayFits);
+}
+
+function ExportSheet({
+  occurrence,
+  day,
+  onClose,
+}: {
+  occurrence: Occurrence;
+  day?: LocalDate;
+  onClose: () => void;
+}) {
+  const { version, catalog, displayTimeZone, userTimeZone } = useVersionView();
+  const scopes = scopesFor(calendarExportOf(version).scopes, occurrence, day, userTimeZone);
+  const [scope, setScope] = useState<CalendarExportScope>(scopes[0] ?? 'event');
+  const exp = useCalendarExport(occurrence, scope, day);
   const [picked, setPicked] = useState<ReadonlySet<string>>(() => new Set());
   const countId = useId();
   const reminderMinutes = useSettings((s) => s.reminderMinutes);
@@ -58,8 +86,24 @@ function ExportSheet({ occurrence, onClose }: { occurrence: Occurrence; onClose:
 
   return (
     <Sheet open onClose={onClose} title={strings.calendarExport.addToCalendar}>
+      {scopes.length > 1 && day && (
+        <div className={styles.scope}>
+          <Segmented
+            legend={strings.calendarExport.scope}
+            options={scopes.map((value) => ({
+              value,
+              label:
+                value === 'day'
+                  ? strings.calendarExport.scopeDay(formatDay(day))
+                  : strings.calendarExport.scopeEvent,
+            }))}
+            value={scope}
+            onChange={setScope}
+          />
+        </div>
+      )}
       <div className={styles.main}>
-        <EventLine occurrence={occurrence} />
+        <EventLine occurrence={exp.target} />
         <span className={styles.included}>{strings.calendarExport.alwaysIncluded}</span>
       </div>
 
@@ -165,9 +209,10 @@ function ExportSheet({ occurrence, onClose }: { occurrence: Occurrence; onClose:
 
 /**
  * Add-to-calendar button (PLAN.md §10). Opens a sheet with Google Calendar and .ics options; for a
- * long-running event it also lists the one-day events during it, to add to the .ics file.
+ * long-running event it also lists the one-day events during it, to add to the .ics file. When the
+ * version offers it (`calendarExport.scopes`), the user can add only `day` of a multi-day event.
  */
-export function AddToCalendar({ occurrence }: { occurrence: Occurrence }) {
+export function AddToCalendar({ occurrence, day }: { occurrence: Occurrence; day?: LocalDate }) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -180,7 +225,7 @@ export function AddToCalendar({ occurrence }: { occurrence: Occurrence }) {
         <Icon name="calendarPlus" size={18} />
         {strings.calendarExport.addToCalendar}
       </button>
-      {open && <ExportSheet occurrence={occurrence} onClose={() => setOpen(false)} />}
+      {open && <ExportSheet occurrence={occurrence} day={day} onClose={() => setOpen(false)} />}
     </>
   );
 }

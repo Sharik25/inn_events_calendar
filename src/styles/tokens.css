@@ -40,4 +40,13 @@
 
   /* Focus */
   --focus-ring: 0 0 0 3px var(--color-gold);
+
+  /* Version style ("classic"): shape, depth and motion. A version can override these with
+     \`uiStyle\` (see version-styles.css); event themes only change colors. */
+  --frame-border: 2px;
+  --radius-sheet: 14px;
+  --shadow-raised: 0 2px 6px rgb(0 0 0 / 0.25);
+  --motion-scale: 1;
+  --motion-ease: ease;
+  --tracking-scale: 1;
 }

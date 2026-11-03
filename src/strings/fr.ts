@@ -25,6 +25,9 @@ export const fr: Strings = {
     unconfirmed: 'Non confirmé',
     unconfirmedHint:
       'Date pas encore confirmée pour cette version. Consultez le calendrier en jeu.',
+    estimated: 'Estimé',
+    estimatedHint: 'Date estimée d’après le calendrier annuel habituel.',
+    estimatedWeeklyHint: 'Horaire estimé d’après le programme hebdomadaire habituel.',
   },
   actionBar: {
     label: 'Vues et actions',
@@ -41,6 +44,7 @@ export const fr: Strings = {
     startsIn: (d) => `Commence dans ${d}`,
     endsIn: (d) => `Se termine dans ${d}`,
     ended: (time) => `Terminé à ${time}`,
+    at: (time) => `À ${time}`,
     alsoToday: 'Aussi ce jour-là',
     comingSoon: 'Bientôt',
     comingSoonEmpty: 'Rien d’autre dans les 30 prochains jours.',
@@ -99,10 +103,15 @@ export const fr: Strings = {
     fishing: 'Pêche',
     world: 'Évènement mondial',
     pvp: 'JcJ',
+    launch: 'Lancement',
     milestone: 'Étape',
   },
   calendarExport: {
     addToCalendar: 'Ajouter au calendrier',
+    scope: 'Ajouter',
+    scopeEvent: 'Tout l’évènement',
+    scopeDay: (day) => `Uniquement ${day}`,
+    dayTitle: (name, day) => `${name} (${day})`,
     google: 'Google Agenda',
     appleOutlook: 'Apple / Outlook (.ics)',
     tentative: 'provisoire',
@@ -142,11 +151,9 @@ export const fr: Strings = {
     retired: 'Arrêtée',
     launches: (date) => `Lancement : ${date}`,
     current: 'Actuelle',
-    comingSoon: 'Bientôt',
     launchesIn: (d) => `Lancement dans ${d}`,
     launchTime: (when) => `${when} (votre heure)`,
-    serverLaunch: (when, region) => `${when} (${region})`,
-    backTo: (name) => `Revenir à ${name}`,
+    regionLaunch: (region, when) => `${region} : ${when}`,
   },
   topBar: {
     versionChip: (version, region) => `${version} · ${region}`,
@@ -182,8 +189,8 @@ export const fr: Strings = {
     language: 'Langue',
   },
   support: {
-    beer: 'Offrez-moi une bière 🍺',
-    notConfigured: 'Espace réservé : définissez SUPPORT_URL dans src/config.ts',
+    beer: 'Offrez-moi une bière',
+    choose: 'Choisissez comment laisser un pourboire à l’aubergiste :',
   },
   legal: {
     disclaimer:

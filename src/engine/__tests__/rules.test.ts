@@ -17,6 +17,7 @@ describe('explicit rule', () => {
         verified: true,
         source: 'https://example.com/a',
         note: 'n',
+        location: 'Elwynn Forest',
       },
       { start: '2027-10-18T10:00', end: '2027-11-01T10:00', verified: false },
     ],
@@ -33,6 +34,7 @@ describe('explicit rule', () => {
       verified: true,
       source: 'https://example.com/a',
       note: 'n',
+      location: 'Elwynn Forest',
     });
   });
 
@@ -48,6 +50,37 @@ describe('explicit rule', () => {
         verified: false,
       },
     ]);
+  });
+});
+
+describe('moment rule', () => {
+  const rule: ScheduleRule = {
+    kind: 'moment',
+    at: '2026-11-05T00:00:00+01:00',
+    durationMinutes: 1,
+    verified: true,
+    source: 'https://example.com/launch',
+  };
+
+  it('is the same instant in every time zone', () => {
+    for (const timeZone of ['America/Los_Angeles', 'Europe/Paris', 'Australia/Sydney']) {
+      const [o, ...rest] = expandRule(rule, {
+        timeZone,
+        range: range('2026-11-01T00:00Z', '2026-11-10T00:00Z'),
+      });
+      expect(rest).toEqual([]);
+      expect(o).toEqual({
+        start: new Date('2026-11-04T23:00:00Z'),
+        end: new Date('2026-11-04T23:01:00Z'),
+        verified: true,
+        source: 'https://example.com/launch',
+      });
+    }
+  });
+
+  it('is left out when outside the range', () => {
+    const ctx = { timeZone: 'UTC', range: range('2026-11-05T00:00Z', '2026-11-06T00:00Z') };
+    expect(expandRule(rule, ctx)).toEqual([]);
   });
 });
 

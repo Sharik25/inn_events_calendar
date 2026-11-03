@@ -53,9 +53,9 @@
   letter-spacing: 0.04em;
   color: var(--color-ink-on-dark-muted);
   transition:
-    background-color 150ms ease,
-    color 150ms ease,
-    box-shadow 150ms ease;
+    background-color calc(150ms * var(--motion-scale)) var(--motion-ease),
+    color calc(150ms * var(--motion-scale)) var(--motion-ease),
+    box-shadow calc(150ms * var(--motion-scale)) var(--motion-ease);
   pointer-events: none;
 }
 

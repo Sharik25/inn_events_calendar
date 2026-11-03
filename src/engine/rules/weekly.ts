@@ -15,7 +15,9 @@ export const expandWeekly: RuleExpander<'weekly'> = (rule, { timeZone, range }) 
       start,
       end: new Date(start.getTime() + durationMs),
       verified: rule.verified,
+      ...(rule.estimated && { estimated: 'weekly' as const }),
       ...(rule.source && { source: rule.source }),
+      ...(rule.note && { note: rule.note }),
     };
     if (intersects(occurrence, range)) result.push(occurrence);
     day = addDays(day, 7);

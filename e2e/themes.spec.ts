@@ -104,3 +104,29 @@ test("'Also on this day' cards wear their own event theme", async ({ page }) => 
     page.getByRole('dialog', { name: 'Stranglethorn Fishing Extravaganza' }),
   ).toBeVisible();
 });
+
+test('a corner ornament sits beside the date plate, never on it or on the arrows', async ({
+  page,
+}) => {
+  const overlaps = (
+    a: { x: number; y: number; width: number; height: number },
+    b: { x: number; y: number; width: number; height: number },
+  ) => a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+  // Hallow's End (pumpkin, 52px) and the fishing contest (fish, the largest at 60px).
+  for (const [path, date] of [
+    ['/anniversary/today', '2026-10-27'],
+    ['/anniversary/day/2026-11-08', '2026-11-08'],
+  ] as const) {
+    await page.goto(path);
+    const ornament = page.locator('[data-placement="corner"]');
+    await expect(ornament).toBeVisible();
+    const art = (await ornament.boundingBox())!;
+    const plate = (await page.locator(`time[datetime="${date}"]`).locator('..').boundingBox())!;
+    expect(overlaps(art, plate), `${path}: ornament on the plate`).toBe(false);
+    for (const name of ['Previous day', 'Next day']) {
+      const arrow = (await page.getByRole('link', { name }).boundingBox())!;
+      expect(overlaps(art, arrow), `${path}: ornament on "${name}"`).toBe(false);
+    }
+    expect(art.x + art.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+  }
+});

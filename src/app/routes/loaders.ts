@@ -15,12 +15,28 @@ export interface VersionLoaderData {
   catalog: EventCatalog;
 }
 
-/** `/` → Today of the version picked in the switcher, or of the default version. */
-export async function rootLoader() {
+/** The version a link without one opens: the one picked in the switcher, else the default. */
+async function startVersionId(): Promise<string> {
   const versions = await repository.getVersions();
   const chosen = useSettings.getState().chosenVersionId;
-  const id = chosen && versions.some((v) => v.id === chosen) ? chosen : defaultVersionId;
-  return redirect(paths.today(id));
+  return chosen && versions.some((v) => v.id === chosen) ? chosen : defaultVersionId;
+}
+
+/** `/` → Today of the start version (WoW: Forever unless the user picked another). */
+export async function rootLoader() {
+  return redirect(paths.today(await startVersionId()));
+}
+
+/**
+ * A view URL without a version (`/today`, `/day/…`, `/week/…`, `/month/…`) → the same view and
+ * query in the start version, e.g. `/month/2026-11` → `/forever/month/2026-11`.
+ */
+export function versionlessLoader(view: 'today' | 'day' | 'week' | 'month') {
+  return async ({ request, params }: LoaderFunctionArgs) => {
+    const rest = params['*'] ? `/${params['*']}` : '';
+    const { search } = new URL(request.url);
+    return redirect(`/${await startVersionId()}/${view}${rest}${search}`);
+  };
 }
 
 export async function versionLoader({ params }: LoaderFunctionArgs): Promise<VersionLoaderData> {

@@ -158,6 +158,12 @@
   animation: spin 60s linear infinite;
 }
 
+/* A firework opens and fades, then the sky rests: subtle, and idle most of the time. */
+.art[data-motion='burst'] {
+  animation: burst 7s ease-out infinite;
+  animation-delay: var(--motion-delay, 0s);
+}
+
 .layer[data-motion='reduce'] .art {
   animation: none;
 }
@@ -210,6 +216,25 @@
   50% {
     transform: scale(1.06);
     opacity: 1;
+  }
+}
+
+@keyframes burst {
+  0% {
+    transform: scale(0.35);
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  22% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  40%,
+  100% {
+    transform: scale(1.06);
+    opacity: 0;
   }
 }
 

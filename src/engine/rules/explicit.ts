@@ -9,5 +9,6 @@ export const expandExplicit: RuleExpander<'explicit'> = (rule, { timeZone, range
       verified: o.verified,
       ...(o.source && { source: o.source }),
       ...(o.note && { note: o.note }),
+      ...(o.location && { location: o.location }),
     }))
     .filter((o) => intersects(o, range));

@@ -14,4 +14,11 @@ export const loveIsInTheAir: EventDefinition = {
     'Seasonal pets and cosmetics',
   ],
   links: [{ label: 'Warcraft Wiki', url: 'https://warcraft.wiki.gg/wiki/Love_is_in_the_Air' }],
+  // Standard yearly schedule (Classic/TBC holiday calendar): Second Monday of February, two weeks.
+  annual: {
+    anchor: { type: 'weekday', month: 2, weekday: 1, nth: 2 },
+    startTime: '10:00',
+    durationDays: 14,
+    source: 'https://www.darmory.com/events',
+  },
 };

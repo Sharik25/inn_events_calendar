@@ -6,16 +6,18 @@ import { buildDayAgenda } from '@/engine/agenda';
 import { addDays, dayRange } from '@/engine/time';
 import { ChecklistProgress } from '@/features/checklist/ChecklistProgress';
 import { Countdown } from '@/features/common/Countdown';
+import { LaunchCountdown } from '@/features/version-switcher/LaunchCountdown';
 import { UnconfirmedMarker } from '@/features/common/UnconfirmedMarker';
 import { RoutedEventSheet } from '@/features/event-sheet/RoutedEventSheet';
 import { useOccurrences } from '@/hooks/useOccurrences';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { formatDistance, formatRange } from '@/lib/format';
+import { formatRange } from '@/lib/format';
 import { strings } from '@/strings';
 import { AmbientParticles, Fireplace, Icon, ParchmentCard } from '@/ui';
 import { AddToCalendar } from '@/features/calendar-export/AddToCalendar';
+import { ComingSoonCard } from './ComingSoonCard';
 import { DateNumeral } from './DateNumeral';
-import { EventCard } from './EventCard';
+import { EventRow } from './EventRow';
 import styles from './TodayView.module.css';
 
 const COMING_SOON_DAYS = 30;
@@ -48,11 +50,65 @@ export function TodayView() {
   const { dominant } = agenda;
   const dominantDef = dominant ? catalog[dominant.eventId] : undefined;
   const also = agenda.active.slice(1);
+  // A quiet day at the inn: nothing on, so "Coming soon" wears the inn cards.
+  const quiet = !dominant;
   // "Coming soon" distances count from now on Today, from the start of the viewed day otherwise.
   const soonFrom = isToday ? now.getTime() : dayRange(viewDate, userTimeZone).start.getTime();
 
   return (
     <div className={styles.layout}>
+      {/* First in the page: under the version chip (left column on desktop, top on phones), the
+          launch countdown of an upcoming version, the day's other events, then "Coming soon". */}
+      <div className={styles.soon}>
+        <LaunchCountdown view={view} variant="sidebar" />
+        {also.length > 0 && (
+          <section aria-labelledby="also-title">
+            <h2 id="also-title" className={styles.sectionTitle}>
+              {strings.today.alsoToday}
+            </h2>
+            <ul className={styles.rows}>
+              {also.map((o) => {
+                const def = catalog[o.eventId];
+                return (
+                  def && (
+                    <li key={o.key}>
+                      <EventRow def={def} occurrence={o} href={eventHref(o.eventId)} />
+                    </li>
+                  )
+                );
+              })}
+            </ul>
+          </section>
+        )}
+        <section aria-labelledby="soon-title">
+          <h2 id="soon-title" className={styles.sectionTitle}>
+            {strings.today.comingSoon}
+          </h2>
+          {agenda.comingSoon.length > 0 ? (
+            <ul className={quiet ? styles.innCards : styles.chips}>
+              {agenda.comingSoon.map((o) => {
+                const def = catalog[o.eventId];
+                return (
+                  def && (
+                    <li key={o.key}>
+                      <ComingSoonCard
+                        def={def}
+                        occurrence={o}
+                        href={eventHref(o.eventId)}
+                        from={soonFrom}
+                        timeZone={displayTimeZone}
+                        variant={quiet ? 'inn' : 'chip'}
+                      />
+                    </li>
+                  )
+                );
+              })}
+            </ul>
+          ) : (
+            <p className={styles.empty}>{strings.today.comingSoonEmpty}</p>
+          )}
+        </section>
+      </div>
       <section className={styles.hero} aria-labelledby="day-title">
         <div className={styles.dayNav}>
           <Link
@@ -93,7 +149,7 @@ export function TodayView() {
                   className={styles.countdown}
                 />
               )}
-              {!dominant.verified && <UnconfirmedMarker onDark />}
+              <UnconfirmedMarker occurrence={dominant} onDark />
               <ChecklistProgress def={dominantDef} occurrence={dominant} />
             </p>
             <p className={styles.range}>
@@ -103,13 +159,6 @@ export function TodayView() {
             </p>
             <ParchmentCard className={styles.heroCard}>
               <p className={styles.summary}>{dominantDef.summary}</p>
-              {dominantDef.highlights && (
-                <ul className={styles.highlights}>
-                  {dominantDef.highlights.map((h) => (
-                    <li key={h}>{h}</li>
-                  ))}
-                </ul>
-              )}
               <div className={styles.actions}>
                 <Link
                   to={eventHref(dominantDef.id)}
@@ -118,7 +167,7 @@ export function TodayView() {
                 >
                   {strings.today.details}
                 </Link>
-                <AddToCalendar occurrence={dominant} />
+                <AddToCalendar occurrence={dominant} day={viewDate} />
               </div>
             </ParchmentCard>
           </>
@@ -133,50 +182,6 @@ export function TodayView() {
           </>
         )}
       </section>
-
-      <div className={styles.side}>
-        {also.length > 0 && (
-          <section aria-labelledby="also-title">
-            <h2 id="also-title" className={styles.sectionTitle}>
-              {strings.today.alsoToday}
-            </h2>
-            <ul className={styles.cards}>
-              {also.map((o) => (
-                <li key={o.key}>
-                  <EventCard occurrence={o} href={eventHref(o.eventId)} view={view} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        <section aria-labelledby="soon-title">
-          <h2 id="soon-title" className={styles.sectionTitle}>
-            {strings.today.comingSoon}
-          </h2>
-          {agenda.comingSoon.length > 0 ? (
-            <ul className={styles.chips}>
-              {agenda.comingSoon.map((o) => {
-                const def = catalog[o.eventId];
-                return (
-                  def && (
-                    <li key={o.key}>
-                      <Link to={eventHref(o.eventId)} className={styles.chip}>
-                        <span className={styles.chipName}>{def.shortName ?? def.name}</span>{' '}
-                        <time dateTime={o.start.toISOString()} className={styles.chipWhen}>
-                          {strings.today.inDistance(formatDistance(o.start.getTime() - soonFrom))}
-                        </time>
-                      </Link>
-                    </li>
-                  )
-                );
-              })}
-            </ul>
-          ) : (
-            <p className={styles.empty}>{strings.today.comingSoonEmpty}</p>
-          )}
-        </section>
-      </div>
 
       <RoutedEventSheet />
     </div>

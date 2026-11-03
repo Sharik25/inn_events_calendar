@@ -28,6 +28,9 @@ export const ru: Strings = {
     close: 'Закрыть',
     unconfirmed: 'Не подтверждено',
     unconfirmedHint: 'Дата для этой версии ещё не подтверждена. Проверьте внутриигровой календарь.',
+    estimated: 'Ориентировочно',
+    estimatedHint: 'Дата рассчитана по стандартному годовому расписанию.',
+    estimatedWeeklyHint: 'Время рассчитано по стандартному недельному расписанию.',
   },
   actionBar: {
     label: 'Виды и действия',
@@ -44,6 +47,7 @@ export const ru: Strings = {
     startsIn: (d) => `Начнётся через ${d}`,
     endsIn: (d) => `Закончится через ${d}`,
     ended: (time) => `Закончилось в ${time}`,
+    at: (time) => `В ${time}`,
     alsoToday: 'Также в этот день',
     comingSoon: 'Скоро',
     comingSoonEmpty: 'В ближайшие 30 дней больше ничего.',
@@ -102,10 +106,15 @@ export const ru: Strings = {
     fishing: 'Рыбалка',
     world: 'Мировое событие',
     pvp: 'PvP',
+    launch: 'Запуск',
     milestone: 'Веха',
   },
   calendarExport: {
     addToCalendar: 'Добавить в календарь',
+    scope: 'Добавить',
+    scopeEvent: 'Всё событие',
+    scopeDay: (day) => `Только ${day}`,
+    dayTitle: (name, day) => `${name} (${day})`,
     google: 'Google Календарь',
     appleOutlook: 'Apple / Outlook (.ics)',
     tentative: 'предварительно',
@@ -144,11 +153,9 @@ export const ru: Strings = {
     retired: 'Закрыта',
     launches: (date) => `Запуск: ${date}`,
     current: 'Текущая',
-    comingSoon: 'Скоро',
     launchesIn: (d) => `Запуск через ${d}`,
     launchTime: (when) => `${when} по вашему времени`,
-    serverLaunch: (when, region) => `${when} (${region})`,
-    backTo: (name) => `Вернуться к ${name}`,
+    regionLaunch: (region, when) => `${region}: ${when}`,
   },
   topBar: {
     versionChip: (version, region) => `${version} · ${region}`,
@@ -184,8 +191,8 @@ export const ru: Strings = {
     language: 'Язык',
   },
   support: {
-    beer: 'Угостите меня пивом 🍺',
-    notConfigured: 'Заглушка: укажите SUPPORT_URL в src/config.ts',
+    beer: 'Угостите меня пивом',
+    choose: 'Выберите, как угостить трактирщика:',
   },
   legal: {
     disclaimer:

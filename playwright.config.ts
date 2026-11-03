@@ -23,8 +23,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    // VITE_SUPPORT_PREVIEW: show the support button's placeholder, so its layout is tested too.
-    command: `npm run build-ics && VITE_SUPPORT_PREVIEW=1 npx vite build && npx vite preview --port ${PORT} --strictPort`,
+    command: `npm run build-ics && npx vite build && npx vite preview --port ${PORT} --strictPort`,
     port: PORT,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

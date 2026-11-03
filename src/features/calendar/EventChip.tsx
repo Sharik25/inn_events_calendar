@@ -6,9 +6,9 @@ import type { Occurrence } from '@/domain/types';
 import { isShortEvent } from '@/engine/calendar';
 import type { LocalDate } from '@/engine/time';
 import { formatTime } from '@/lib/format';
-import { strings } from '@/strings';
 import { cx, ThemeScope } from '@/ui';
 import styles from './EventChip.module.css';
+import { dateStatusLabel } from '@/features/common/dateStatus';
 
 /**
  * An event as a chip (mobile lists) or ribbon (desktop grids), tinted by the event's theme.
@@ -42,6 +42,7 @@ export function EventChip({
       <Link
         to={{ search: withEvent(location.search, def.id, date) }}
         className={cx(styles[variant], !occurrence.verified && styles.unverified)}
+        data-category={def.category}
         data-continues-before={continuesBefore || undefined}
         data-continues-after={continuesAfter || undefined}
         title={def.name}
@@ -51,7 +52,7 @@ export function EventChip({
           {variant === 'block' ? def.name : (def.shortName ?? def.name)}
         </span>
         {!occurrence.verified && (
-          <span className={styles.srOnly}>({strings.common.unconfirmed})</span>
+          <span className={styles.srOnly}>({dateStatusLabel(occurrence)})</span>
         )}
       </Link>
     </ThemeScope>

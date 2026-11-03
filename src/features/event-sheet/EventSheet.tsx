@@ -3,6 +3,8 @@ import { useVersionView } from '@/app/versionView';
 import { findOccurrenceForDay } from '@/engine/agenda';
 import { expandOccurrences } from '@/engine/expand';
 import { addDays, daysRange } from '@/engine/time';
+import { calendarExportOf } from '@/engine/version';
+import { AddToCalendar } from '@/features/calendar-export/AddToCalendar';
 import { Countdown } from '@/features/common/Countdown';
 import { UnconfirmedMarker } from '@/features/common/UnconfirmedMarker';
 import { strings } from '@/strings';
@@ -52,7 +54,7 @@ export function EventSheet({
       <Sheet open onClose={onClose} title={def.name}>
         <div className={styles.badges}>
           <Badge>{strings.categories[def.category]}</Badge>
-          {occurrence && !occurrence.verified && <UnconfirmedMarker />}
+          {occurrence && <UnconfirmedMarker occurrence={occurrence} />}
         </div>
 
         {occurrence ? (
@@ -60,6 +62,11 @@ export function EventSheet({
             <p className={styles.countdown}>
               <Countdown occurrence={occurrence} now={now} timeZone={userTimeZone} />
             </p>
+            {calendarExportOf(version).onEveryEvent && (
+              <div className={styles.export}>
+                <AddToCalendar occurrence={occurrence} day={viewDate} />
+              </div>
+            )}
             {occurrence.location && (
               <dl className={styles.times}>
                 <dt>{strings.eventSheet.location}</dt>

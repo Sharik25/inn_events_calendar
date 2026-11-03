@@ -4,6 +4,7 @@ import { useVersionView } from '@/app/versionView';
 import type { Occurrence } from '@/domain/types';
 import { layoutRibbons, monthWeeks, occurrencesByDay } from '@/engine/calendar';
 import { monthOf, type LocalDate } from '@/engine/time';
+import { DayAccent } from '@/features/calendar/DayAccent';
 import { DaySheet } from '@/features/calendar/DaySheet';
 import { EventChip } from '@/features/calendar/EventChip';
 import { PeriodHeader } from '@/features/calendar/PeriodHeader';
@@ -134,10 +135,11 @@ function WeekRow({
           .map((o) => catalog[o.eventId]?.name)
           .filter(Boolean)
           .join(', ');
+        const themeId = themeFor(events);
         return (
           <ThemeScope
             key={date}
-            themeId={themeFor(events)}
+            themeId={themeId}
             className={styles.cell}
             style={{ gridColumn: col + 1 }}
             data-date={date}
@@ -167,6 +169,7 @@ function WeekRow({
                 </span>
               )}
             </button>
+            <DayAccent themeId={themeId} />
           </ThemeScope>
         );
       })}

@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useSettings } from '@/state/settings';
 import { renderRoute } from '@/test/renderRoute';
@@ -62,23 +62,33 @@ describe('version picker', () => {
 });
 
 describe('WoW: Forever before and after launch', () => {
-  it('shows a themed launch countdown in every view, with a way back', async () => {
-    const { container } = renderRoute('/forever/month/2026-11');
+  it('shows the calendar with a compact launch countdown under the switcher', async () => {
+    renderRoute('/forever/month/2026-11');
     expect(
-      await screen.findByRole('heading', { level: 1, name: 'WoW: Forever' }),
+      await screen.findByRole('heading', { level: 1, name: 'November 2026' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Launches in 8d 12h')).toBeInTheDocument();
-    expect(screen.getByText('Thu, Nov 5, 00:00 your time')).toBeInTheDocument();
-    expect(screen.getByText('Wed, Nov 4, 15:00 (All realms)')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Back to Anniversary' })).toHaveAttribute(
-      'href',
-      '/anniversary/month/2026-11',
-    );
-    await waitFor(() =>
-      expect(container.querySelector('[data-theme="forever"]')).toBeInTheDocument(),
-    );
-    // Single realmless region: no region switcher; no events yet: no subscription feed.
+    const countdown = screen.getByRole('region', { name: 'WoW: Forever' });
+    expect(within(countdown).getByText('Launches in 8d 12h')).toBeInTheDocument();
+    // One worldwide moment: one line for Europe and America, with each one's announced time.
+    expect(within(countdown).getAllByTestId('launch-line')).toHaveLength(1);
+    expect(within(countdown).getByText('Europe · America')).toBeInTheDocument();
+    expect(within(countdown).getByText('Thu, Nov 5, 00:00 your time')).toBeInTheDocument();
+    expect(within(countdown).getByText('Europe: Thu, Nov 5, 00:00 GMT+1')).toBeInTheDocument();
+    expect(within(countdown).getByText('America: Wed, Nov 4, 15:00 PST')).toBeInTheDocument();
+    // The month grid is there with Forever's first Faire (Nov 9) and estimated Winter Veil later.
+    expect(
+      screen.getByRole('button', { name: /^Monday, November 9: Darkmoon Faire/ }),
+    ).toBeInTheDocument();
+    // Single realmless region.
     expect(screen.getByRole('button', { name: 'Forever · All realms' })).toBeInTheDocument();
+  });
+
+  it('puts the countdown above "Coming soon" in the Day view', async () => {
+    renderRoute('/forever/today');
+    const countdown = await screen.findByRole('region', { name: 'WoW: Forever' });
+    const soon = screen.getByRole('region', { name: 'Coming soon' });
+    expect(countdown.compareDocumentPosition(soon) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(countdown.parentElement).toBe(soon.parentElement);
   });
 
   it('becomes a normal calendar once the launch time has passed', async () => {
@@ -89,20 +99,24 @@ describe('WoW: Forever before and after launch', () => {
       await screen.findByRole('heading', { level: 1, name: 'A quiet day at the inn' }),
     ).toBeInTheDocument();
     expect(screen.queryByText(/Launches in/)).not.toBeInTheDocument();
+    expect(screen.queryByTestId('launch-countdown')).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Version' }));
     expect(screen.getByRole('button', { name: /WoW: Forever/ })).toHaveTextContent('Live');
   });
 
-  it('settings for a realmless version hide the region switcher and feed', async () => {
+  it('settings for a realmless version hide the region switcher and offer its one feed', async () => {
     const user = userEvent.setup();
     renderRoute('/forever/today');
-    await screen.findByRole('heading', { level: 1, name: 'WoW: Forever' });
+    await screen.findByRole('heading', { name: 'WoW: Forever' });
     await user.click(screen.getByRole('button', { name: 'Settings' }));
     const sheet = await screen.findByRole('dialog', { name: 'Settings & info' });
     expect(within(sheet).queryByRole('group', { name: 'Server region' })).not.toBeInTheDocument();
     expect(
-      within(sheet).queryByRole('heading', { name: 'Subscribe to all events' }),
-    ).not.toBeInTheDocument();
+      within(sheet).getByRole('heading', { name: 'Subscribe to all events' }),
+    ).toBeInTheDocument();
+    expect(within(sheet).getByRole('textbox', { name: 'Feed address' })).toHaveValue(
+      'http://localhost:3000/calendars/forever-global.ics',
+    );
   });
 
   it('remembers only a version picked in the switcher, not one just visited', async () => {

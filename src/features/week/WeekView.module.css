@@ -24,12 +24,20 @@
   border-radius: var(--radius-md);
 }
 
+/* A festive day (its theme has a day accent, e.g. launch day): framed in the theme's accent. */
+.dayBox:has([data-day-accent]),
+.head:has([data-day-accent]) {
+  border-color: var(--color-accent);
+  box-shadow: inset 0 0 12px color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+
 .row[data-today] {
   border-color: var(--color-gold);
   box-shadow: 0 0 12px rgb(255 196 90 / 0.35);
 }
 
 .dayBox {
+  position: relative;
   align-self: stretch;
   display: grid;
   border-radius: var(--radius-sm);
@@ -111,12 +119,13 @@
   column-gap: 6px;
   padding: var(--space-3);
   background: color-mix(in srgb, var(--color-frame) 75%, transparent);
-  border: 2px solid var(--color-gold);
+  border: var(--frame-border) solid var(--color-gold);
   border-radius: var(--radius-md);
   box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
 }
 
 .head {
+  position: relative;
   grid-row: 1;
   border-radius: var(--radius-sm);
   background:

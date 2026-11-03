@@ -25,6 +25,9 @@ export const en = {
     close: 'Close',
     unconfirmed: 'Unconfirmed',
     unconfirmedHint: 'Date not yet confirmed for this version. Check the in-game calendar.',
+    estimated: 'Estimated',
+    estimatedHint: 'Date estimated from the standard yearly schedule.',
+    estimatedWeeklyHint: 'Time estimated from the standard weekly schedule.',
   },
   actionBar: {
     label: 'Views and actions',
@@ -41,6 +44,7 @@ export const en = {
     startsIn: (d: string) => `Starts in ${d}`,
     endsIn: (d: string) => `Ends in ${d}`,
     ended: (time: string) => `Ended at ${time}`,
+    at: (time: string) => `At ${time}`,
     alsoToday: 'Also on this day',
     comingSoon: 'Coming soon',
     comingSoonEmpty: 'Nothing else in the next 30 days.',
@@ -99,10 +103,15 @@ export const en = {
     fishing: 'Fishing',
     world: 'World event',
     pvp: 'PvP',
+    launch: 'Launch',
     milestone: 'Milestone',
   },
   calendarExport: {
     addToCalendar: 'Add to calendar',
+    scope: 'Add',
+    scopeEvent: 'Whole event',
+    scopeDay: (day: string) => `Only ${day}`,
+    dayTitle: (name: string, day: string) => `${name} (${day})`,
     google: 'Google Calendar',
     appleOutlook: 'Apple / Outlook (.ics)',
     tentative: 'tentative',
@@ -139,11 +148,9 @@ export const en = {
     retired: 'Retired',
     launches: (date: string) => `Launches ${date}`,
     current: 'Current',
-    comingSoon: 'Coming soon',
     launchesIn: (d: string) => `Launches in ${d}`,
     launchTime: (when: string) => `${when} your time`,
-    serverLaunch: (when: string, region: string) => `${when} (${region})`,
-    backTo: (name: string) => `Back to ${name}`,
+    regionLaunch: (region: string, when: string) => `${region}: ${when}`,
   },
   topBar: {
     versionChip: (version: string, region: string) => `${version} · ${region}`,
@@ -179,8 +186,8 @@ export const en = {
     language: 'Language',
   },
   support: {
-    beer: 'Buy me a beer 🍺',
-    notConfigured: 'Placeholder: set SUPPORT_URL in src/config.ts',
+    beer: 'Buy me a beer',
+    choose: 'Pick a way to tip the innkeeper:',
   },
   legal: {
     disclaimer:

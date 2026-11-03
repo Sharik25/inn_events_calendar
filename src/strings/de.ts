@@ -24,6 +24,9 @@ export const de: Strings = {
     close: 'Schließen',
     unconfirmed: 'Unbestätigt',
     unconfirmedHint: 'Datum für diese Version noch nicht bestätigt. Prüfe den Ingame-Kalender.',
+    estimated: 'Geschätzt',
+    estimatedHint: 'Datum aus dem üblichen Jahreskalender geschätzt.',
+    estimatedWeeklyHint: 'Zeit aus dem üblichen Wochenplan geschätzt.',
   },
   actionBar: {
     label: 'Ansichten und Aktionen',
@@ -40,6 +43,7 @@ export const de: Strings = {
     startsIn: (d) => `Beginnt in ${d}`,
     endsIn: (d) => `Endet in ${d}`,
     ended: (time) => `Endete um ${time}`,
+    at: (time) => `Um ${time}`,
     alsoToday: 'Ebenfalls an diesem Tag',
     comingSoon: 'Demnächst',
     comingSoonEmpty: 'In den nächsten 30 Tagen sonst nichts.',
@@ -98,10 +102,15 @@ export const de: Strings = {
     fishing: 'Angeln',
     world: 'Weltereignis',
     pvp: 'PvP',
+    launch: 'Start',
     milestone: 'Meilenstein',
   },
   calendarExport: {
     addToCalendar: 'Zum Kalender hinzufügen',
+    scope: 'Hinzufügen',
+    scopeEvent: 'Ganzes Event',
+    scopeDay: (day) => `Nur ${day}`,
+    dayTitle: (name, day) => `${name} (${day})`,
     google: 'Google Kalender',
     appleOutlook: 'Apple / Outlook (.ics)',
     tentative: 'vorläufig',
@@ -141,11 +150,9 @@ export const de: Strings = {
     retired: 'Eingestellt',
     launches: (date) => `Start: ${date}`,
     current: 'Aktuell',
-    comingSoon: 'Demnächst',
     launchesIn: (d) => `Start in ${d}`,
     launchTime: (when) => `${when} (deine Zeit)`,
-    serverLaunch: (when, region) => `${when} (${region})`,
-    backTo: (name) => `Zurück zu ${name}`,
+    regionLaunch: (region, when) => `${region}: ${when}`,
   },
   topBar: {
     versionChip: (version, region) => `${version} · ${region}`,
@@ -181,8 +188,8 @@ export const de: Strings = {
     language: 'Sprache',
   },
   support: {
-    beer: 'Spendier mir ein Bier 🍺',
-    notConfigured: 'Platzhalter: SUPPORT_URL in src/config.ts setzen',
+    beer: 'Spendier mir ein Bier',
+    choose: 'Wähle, wie du dem Wirt Trinkgeld gibst:',
   },
   legal: {
     disclaimer:

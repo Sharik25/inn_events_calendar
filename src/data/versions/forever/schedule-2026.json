@@ -1,5 +1,24 @@
 {
   "year": 2026,
-  "notes": "Server-time dates (America/Los_Angeles) for WoW: Forever. Empty until the post-launch in-game calendar is checked. Add entries in the same shape as anniversary/schedule-2026.json, each with verified, source and (if unverified) a note.",
-  "events": {}
+  "notes": "Server-time dates (America/Los_Angeles) for WoW: Forever. Wowhead lists no world events for Forever (Nov 3, 2026); only the Darkmoon Faire has dates, read from the game client by Bind on Forever. Add other events only with a source, each with verified, source and (if unverified) a note.",
+  "events": {
+    "darkmoon-faire": [
+      {
+        "start": "2026-11-09T00:00",
+        "end": "2026-11-16T00:00",
+        "verified": false,
+        "source": "https://bindonforever.com/articles/build-70707",
+        "note": "Client data from build 1.60.1.70707 (Oct 30, 2026), not announced by Blizzard and may change. Each visit lasts a week; time of day is assumed (00:00 server time, as on Anniversary).",
+        "location": "Elwynn Forest"
+      },
+      {
+        "start": "2026-12-07T00:00",
+        "end": "2026-12-14T00:00",
+        "verified": false,
+        "source": "https://bindonforever.com/articles/build-70707",
+        "note": "Client data from build 1.60.1.70707 (Oct 30, 2026), not announced by Blizzard and may change. Each visit lasts a week; time of day is assumed (00:00 server time, as on Anniversary).",
+        "location": "Mulgore (below Thunder Bluff)"
+      }
+    ]
+  }
 }

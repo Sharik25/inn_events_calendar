@@ -87,6 +87,15 @@ export function validateData({ events, versions, themeIds }: DataSet): string[] 
     if (!themes.has(version.baseThemeId)) {
       issues.push(`${where}: unknown baseThemeId "${version.baseThemeId}"`);
     }
+    for (const key of ['themeId', 'ambientThemeId'] as const) {
+      const id = version.quietDay?.[key];
+      if (id && !themes.has(id)) issues.push(`${where}: unknown quietDay.${key} "${id}"`);
+    }
+    const launches = version.launches ?? [];
+    for (const id of duplicates(launches.map((l) => l.id)))
+      issues.push(`${where}: duplicate launch "${id}"`);
+    for (const l of launches.filter((l) => !isValidTimeZone(l.timeZone)))
+      issues.push(`${where}: launch "${l.id}" has invalid time zone "${l.timeZone}"`);
     const regionIds = version.regions.map((r) => r.id);
     for (const id of duplicates(regionIds)) issues.push(`${where}: duplicate region "${id}"`);
     if (!regionIds.includes(version.defaultRegionId)) {

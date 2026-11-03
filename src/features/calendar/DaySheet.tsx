@@ -7,6 +7,7 @@ import { formatDayLong, formatRange } from '@/lib/format';
 import { strings } from '@/strings';
 import { Sheet } from '@/ui';
 import styles from './DaySheet.module.css';
+import { dateStatusLabel } from '@/features/common/dateStatus';
 
 /** Events of one day, opened by tapping a month cell. */
 export function DaySheet({
@@ -35,9 +36,7 @@ export function DaySheet({
                   </Link>
                   <span className={styles.meta}>
                     {formatRange(o.start, o.end, displayTimeZone)}
-                    {!o.verified && (
-                      <span className={styles.unverified}>{strings.common.unconfirmed}</span>
-                    )}
+                    {!o.verified && <span className={styles.unverified}>{dateStatusLabel(o)}</span>}
                   </span>
                 </li>
               )

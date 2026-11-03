@@ -42,6 +42,15 @@ export const iconPaths = {
       <path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5" />
     </>
   ),
+  // A wooden tavern tankard with a head of foam (two staves, a round handle).
+  beer: (
+    <>
+      <path d="M4.5 9.5h10V19a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2z" />
+      <path d="M14.5 11.5h2a2.5 2.5 0 0 1 2.5 2.5v1.5a2.5 2.5 0 0 1-2.5 2.5h-2" />
+      <path d="M4 9.5a2.2 2.2 0 0 1 1.3-3.9A3 3 0 0 1 10.5 4a2.6 2.6 0 0 1 4.6 1.7A1.9 1.9 0 0 1 15 9.5" />
+      <path d="M8 12.5v5M11 12.5v5" />
+    </>
+  ),
   close: <path d="M6 6l12 12M18 6L6 18" />,
   chevronLeft: <path d="M15 5l-7 7 7 7" />,
   chevronRight: <path d="M9 5l7 7-7 7" />,

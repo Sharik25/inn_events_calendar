@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import {
   Outlet,
   useLoaderData,
@@ -10,11 +10,12 @@ import {
 import { startOfWeek } from '@/engine/calendar';
 import { findRegion } from '@/engine/expand';
 import { addDays, addMonths, localDateOf, monthOf, type LocalDate } from '@/engine/time';
-import { switchVersionPath, versionStatus } from '@/engine/version';
+import { occurrencesOnDay } from '@/engine/dominance';
+import { switchVersionPath } from '@/engine/version';
 import { MoreSheet } from '@/features/settings/MoreSheet';
 import { takeReopenSettings } from '@/features/settings/reopen';
-import { SupportLink } from '@/features/support/SupportLink';
-import { LaunchScreen } from '@/features/version-switcher/LaunchScreen';
+import { SupportMenu } from '@/features/support/SupportMenu';
+import { LaunchCountdown } from '@/features/version-switcher/LaunchCountdown';
 import { VersionPicker } from '@/features/version-switcher/VersionPicker';
 import { dominantThemeId, monthThemeId } from '@/hooks/useDominantTheme';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
@@ -54,7 +55,6 @@ export function VersionLayout() {
   // Reopens after a language switch remounted the app (the picker lives in this sheet).
   const [moreOpen, setMoreOpen] = useState(takeReopenSettings);
   const [pickerOpen, setPickerOpen] = useState(false);
-  const status = versionStatus(version, now);
 
   const chooseVersion = useSettings((s) => s.chooseVersion);
   const hiddenCategories = useSettings((s) => s.hiddenCategories);
@@ -94,12 +94,31 @@ export function VersionLayout() {
     catalog,
     hiddenCategories,
   );
+  // The quiet day at the inn (Day view, no events) can be dressed per version (`quietDay`).
+  const quiet =
+    mode === 'day' && occurrencesOnDay(themeOccurrences, viewDate, userTz, catalog).length === 0;
+  const quietDay = quiet ? version.quietDay : undefined;
   const themeId =
-    mode === 'month'
+    quietDay?.themeId ??
+    (mode === 'month'
       ? monthThemeId(themeOccurrences, viewMonth, userTz, catalog, version)
-      : dominantThemeId(themeOccurrences, viewDate, userTz, catalog, version);
+      : dominantThemeId(themeOccurrences, viewDate, userTz, catalog, version));
   const theme = useTheme(themeId);
+  // Another theme's particles and decorations only, on top (e.g. Forever's blue stars).
+  const ambientTheme = useTheme(quietDay?.ambientThemeId ?? themeId);
+  const ambient = quietDay?.ambientThemeId ? ambientTheme : undefined;
+  const quietAccent = ambient?.tokens['--color-accent'];
   const reducedMotion = useReducedMotion();
+  const uiStyle = quietDay?.uiStyle ?? version.uiStyle ?? 'classic';
+
+  // On <html>, so sheets and other portals get the version's tokens too.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.versionStyle = uiStyle;
+    return () => {
+      delete root.dataset.versionStyle;
+    };
+  }, [uiStyle]);
 
   const view: VersionView = useMemo(() => {
     const hrefFor = (target: ViewMode, date: LocalDate) => {
@@ -175,14 +194,24 @@ export function VersionLayout() {
     if (versionId !== version.id)
       navigate(switchVersionPath(location.pathname, version.id, versionId));
   };
-  const liveFallback = versions.find(
-    (v) => v.id !== version.id && versionStatus(v, now) === 'live',
-  );
 
   return (
-    <ThemeScope themeId={themeId} withBackground className={styles.shell}>
+    <ThemeScope
+      themeId={themeId}
+      withBackground
+      className={styles.shell}
+      // The quiet day's ambient accent (Forever's blue) for the inn's own touches.
+      style={quietAccent ? ({ '--quiet-accent': quietAccent } as CSSProperties) : undefined}
+    >
       <ThemeDecorations decorations={theme.decorations} reducedMotion={reducedMotion} />
       {theme.particles && !reducedMotion && <AmbientParticles kind={theme.particles} />}
+      {ambient && (
+        // Its own tokens (particle colors) apply to these layers only; no box of its own.
+        <ThemeScope themeId={ambient.id} style={{ display: 'contents' }}>
+          <ThemeDecorations decorations={ambient.decorations} reducedMotion={reducedMotion} />
+          {ambient.particles && !reducedMotion && <AmbientParticles kind={ambient.particles} />}
+        </ThemeScope>
+      )}
       {themeId === 'winter-veil' && <FestiveGarland reducedMotion={reducedMotion} />}
 
       <header className={styles.topBar}>
@@ -196,22 +225,23 @@ export function VersionLayout() {
         >
           {strings.topBar.versionChip(version.shortName, region.label)}
         </button>
-        <button
-          type="button"
-          className={styles.iconButton}
-          onClick={() => setMoreOpen(true)}
-          aria-label={strings.topBar.openSettings}
-        >
-          <Icon name="settings" />
-        </button>
+        <div className={styles.topActions}>
+          <SupportMenu />
+          <button
+            type="button"
+            className={styles.iconButton}
+            onClick={() => setMoreOpen(true)}
+            aria-label={strings.topBar.openSettings}
+          >
+            <Icon name="settings" />
+          </button>
+        </div>
       </header>
 
       <main className={styles.main} {...swipe}>
-        {status === 'upcoming' ? (
-          <LaunchScreen view={view} fallback={liveFallback} />
-        ) : (
-          <Outlet context={view} />
-        )}
+        {/* Week/Month: the launch countdown as one row; the Day view puts it in its sidebar. */}
+        {mode !== 'day' && <LaunchCountdown view={view} variant="row" />}
+        <Outlet context={view} />
       </main>
 
       <footer className={styles.footer}>
@@ -220,10 +250,7 @@ export function VersionLayout() {
           variant="scene"
           reducedMotion={reducedMotion}
         />
-        <div className={styles.footerLine}>
-          <SupportLink />
-          <small>{strings.legal.disclaimer}</small>
-        </div>
+        <small>{strings.legal.disclaimer}</small>
       </footer>
 
       <ActionBar>

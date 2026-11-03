@@ -96,3 +96,93 @@ test('settings offer the feed for the selected region', async ({ page }) => {
     '/calendars/anniversary-us.ics',
   );
 });
+
+test('WoW: Forever after launch: Faire day, location, .ics export and its own feed', async ({
+  page,
+  request,
+}) => {
+  await page.clock.setFixedTime(new Date('2026-11-10T18:00:00Z'));
+  await page.goto('/forever/today');
+  await expect(page.getByRole('heading', { level: 1, name: 'Darkmoon Faire' })).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-version-style', 'modern');
+
+  await page.getByRole('button', { name: 'Add to calendar' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Add to calendar' });
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    sheet.getByRole('button', { name: 'Apple / Outlook (.ics)' }).click(),
+  ]);
+  expect(download.suggestedFilename()).toBe('darkmoon-faire-2026-11-09.ics');
+  const { events } = parseEvents(readFileSync((await download.path())!, 'utf8'));
+  expect(events[0]?.uid).toBe('forever:darkmoon-faire:2026-11-09T08:00:00.000Z@innkeepers-almanac');
+  expect(events[0]?.summary).toBe('(tentative) Darkmoon Faire');
+  expect(events[0]?.location).toBe('Elwynn Forest');
+
+  const feed = await request.get('/calendars/forever-global.ics');
+  expect(feed.ok()).toBe(true);
+  expect(parseEvents(await feed.text()).events.map((e) => e.location)).toContain(
+    'Mulgore (below Thunder Bluff)',
+  );
+});
+
+test('WoW: Forever fishing Sunday: estimated contest, details and .ics export', async ({
+  page,
+}) => {
+  await page.clock.setFixedTime(new Date('2026-11-08T18:00:00Z')); // Sun Nov 8, after launch
+  await page.goto('/forever/today');
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Stranglethorn Fishing Extravaganza' }),
+  ).toBeVisible();
+  await expect(page.getByText('Estimated', { exact: true })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Add to calendar' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Add to calendar' });
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    sheet.getByRole('button', { name: 'Apple / Outlook (.ics)' }).click(),
+  ]);
+  const { events } = parseEvents(readFileSync((await download.path())!, 'utf8'));
+  expect(events[0]?.uid).toBe('forever:stv-fishing:2026-11-08T22:00:00.000Z@innkeepers-almanac');
+  expect(events[0]?.summary).toBe('(tentative) Stranglethorn Fishing Extravaganza');
+  expect(events[0]?.description).toContain('Time estimated from the standard weekly schedule');
+  const [fishing] = events;
+  expect(fishing).toBeDefined();
+  expect(fishing!.endDate.toJSDate().getTime() - fishing!.startDate.toJSDate().getTime()).toBe(
+    2 * 3_600_000,
+  );
+});
+
+test('WoW: Forever launch: Europe and America export as one entry', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-04T22:30:00Z')); // 23:30 in Paris
+  await page.goto('/forever/day/2026-11-05'); // the launch is midnight in Paris
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'WoW: Forever launch (Europe & America)' }),
+  ).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Also on this day' })).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Add to calendar' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Add to calendar' });
+  const google = new URL(
+    (await sheet
+      .getByRole('link', { name: 'Google Calendar', exact: true })
+      .getAttribute('href')) ?? '',
+  );
+  expect(google.searchParams.get('text')).toBe('WoW: Forever launch (Europe & America)');
+  expect(google.searchParams.get('dates')).toBe('20261104T230000Z/20261104T230100Z');
+  expect(google.searchParams.get('details')).toContain(
+    'Servers open at the same moment in Europe (Thu, Nov 5, 2026, 00:00 GMT+1) and America (Wed, Nov 4, 2026, 15:00 GMT-8).',
+  );
+
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    sheet.getByRole('button', { name: 'Apple / Outlook (.ics)' }).click(),
+  ]);
+  const { events } = parseEvents(readFileSync((await download.path())!, 'utf8'));
+  expect(events).toHaveLength(1);
+  const [launch] = events;
+  expect(launch?.uid).toBe(
+    'forever:forever-launch-eu-na:2026-11-04T23:00:00.000Z@innkeepers-almanac',
+  );
+  expect(launch?.summary).toBe('WoW: Forever launch (Europe & America)');
+  expect(launch?.startDate.toJSDate().toISOString()).toBe('2026-11-04T23:00:00.000Z');
+});

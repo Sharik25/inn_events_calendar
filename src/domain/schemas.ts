@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import type {
+  CalendarExportConfig,
   ChecklistItem,
+  WeeklySchedule,
   EventDefinition,
   EventExperience,
   ExplicitOccurrence,
@@ -9,6 +11,7 @@ import type {
   ScheduleRule,
   VersionConfig,
   VersionEventBinding,
+  VersionLaunch,
 } from './types';
 
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'must be a kebab-case slug');
@@ -28,6 +31,36 @@ const weekday = z.union(
   ],
 );
 const url = z.url();
+const instant = z.iso.datetime({ offset: true });
+
+const nth = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal('last')]);
+const month = z.number().int().min(1).max(12);
+
+export const annualAnchorSchema = z.discriminatedUnion('type', [
+  z
+    .strictObject({ type: z.literal('date'), month, day: z.number().int().min(1).max(31) })
+    .refine(
+      ({ month: m, day }) => day <= new Date(Date.UTC(2001, m, 0)).getUTCDate(),
+      'no such day in that month',
+    ),
+  z.strictObject({ type: z.literal('weekday'), month, weekday, nth }),
+  z.strictObject({ type: z.literal('easter'), offsetDays: z.number().int() }),
+  z.strictObject({ type: z.literal('lunar-new-year'), offsetDays: z.number().int() }),
+]);
+
+export const annualScheduleSchema = z.strictObject({
+  anchor: annualAnchorSchema,
+  startTime: timeOfDay,
+  durationDays: z.number().int().positive(),
+  source: url,
+});
+
+export const weeklyScheduleSchema = z.strictObject({
+  weekday,
+  startTime: timeOfDay,
+  durationMinutes: z.number().int().positive(),
+  source: url,
+});
 
 export const rarities = ['weekly', 'monthly', 'seasonal', 'annual', 'once'] as const;
 export const eventCategories = [
@@ -36,6 +69,7 @@ export const eventCategories = [
   'fishing',
   'world',
   'pvp',
+  'launch',
   'milestone',
 ] as const;
 
@@ -87,6 +121,8 @@ export const eventDefinitionSchema = z.strictObject({
   links: z.array(z.strictObject({ label: z.string().min(1), url })).optional(),
   experience: z.record(slug, eventExperienceSchema).optional(),
   checklist: z.record(slug, z.array(checklistItemSchema).min(1)).optional(),
+  annual: annualScheduleSchema.optional(),
+  weekly: weeklyScheduleSchema.optional(),
 });
 
 export const explicitOccurrenceSchema = z.strictObject({
@@ -95,6 +131,7 @@ export const explicitOccurrenceSchema = z.strictObject({
   verified: z.boolean(),
   source: url.optional(),
   note: z.string().min(1).optional(),
+  location: z.string().min(1).optional(),
 });
 
 export const scheduleRuleSchema = z.discriminatedUnion('kind', [
@@ -108,14 +145,32 @@ export const scheduleRuleSchema = z.discriminatedUnion('kind', [
     startTime: timeOfDay,
     durationMinutes: z.number().int().positive(),
     verified: z.boolean(),
+    estimated: z.boolean().optional(),
     source: url.optional(),
+    note: z.string().min(1).optional(),
+  }),
+  z.strictObject({
+    kind: z.literal('annual'),
+    anchor: annualAnchorSchema,
+    startTime: timeOfDay,
+    durationDays: z.number().int().positive(),
+    verified: z.boolean(),
+    estimated: z.boolean().optional(),
+    source: url.optional(),
+    note: z.string().min(1).optional(),
+    overrides: z.array(explicitOccurrenceSchema).optional(),
+  }),
+  z.strictObject({
+    kind: z.literal('moment'),
+    at: instant,
+    durationMinutes: z.number().int().positive(),
+    verified: z.boolean(),
+    source: url.optional(),
+    note: z.string().min(1).optional(),
   }),
   z.strictObject({
     kind: z.literal('monthly'),
-    anchor: z.strictObject({
-      weekday,
-      nth: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal('last')]),
-    }),
+    anchor: z.strictObject({ weekday, nth }),
     offsetDays: z.number().int().optional(),
     startTime: timeOfDay,
     durationDays: z.number().int().positive(),
@@ -143,17 +198,41 @@ export const versionEventBindingSchema = z.strictObject({
   notes: z.string().min(1).optional(),
 });
 
+export const versionLaunchSchema = z.strictObject({
+  id: slug,
+  label: z.string().min(1),
+  at: instant,
+  timeZone: z.string().min(1),
+  verified: z.boolean(),
+  source: url.optional(),
+  note: z.string().min(1).optional(),
+});
+
+export const calendarExportConfigSchema = z.strictObject({
+  scopes: z.array(z.enum(['event', 'day'])).min(1),
+  onEveryEvent: z.boolean(),
+});
+
 export const versionConfigSchema = z.strictObject({
   id: slug,
   name: z.string().min(1),
   shortName: z.string().min(1),
   status: z.enum(['live', 'upcoming', 'retired']),
-  launchDate: z.iso.datetime({ offset: true }).or(z.iso.date()).optional(),
+  launches: z.array(versionLaunchSchema).min(1).optional(),
   summary: z.string().min(1).optional(),
   regions: z.array(regionSchema).min(1),
   defaultRegionId: slug,
   events: z.array(versionEventBindingSchema),
   baseThemeId: slug,
+  quietDay: z
+    .strictObject({
+      themeId: slug.optional(),
+      uiStyle: z.enum(['classic', 'modern']).optional(),
+      ambientThemeId: slug.optional(),
+    })
+    .optional(),
+  uiStyle: z.enum(['classic', 'modern']).optional(),
+  calendarExport: calendarExportConfigSchema.optional(),
 });
 
 export const scheduleFileSchema = z.strictObject({
@@ -170,10 +249,13 @@ export type SchemaTypeChecks = [
   Assert<Equals<z.infer<typeof eventDefinitionSchema>, EventDefinition>>,
   Assert<Equals<z.infer<typeof eventExperienceSchema>, EventExperience>>,
   Assert<Equals<z.infer<typeof checklistItemSchema>, ChecklistItem>>,
+  Assert<Equals<z.infer<typeof weeklyScheduleSchema>, WeeklySchedule>>,
   Assert<Equals<z.infer<typeof explicitOccurrenceSchema>, ExplicitOccurrence>>,
   Assert<Equals<z.infer<typeof scheduleRuleSchema>, ScheduleRule>>,
   Assert<Equals<z.infer<typeof regionSchema>, Region>>,
   Assert<Equals<z.infer<typeof versionEventBindingSchema>, VersionEventBinding>>,
+  Assert<Equals<z.infer<typeof versionLaunchSchema>, VersionLaunch>>,
+  Assert<Equals<z.infer<typeof calendarExportConfigSchema>, CalendarExportConfig>>,
   Assert<Equals<z.infer<typeof versionConfigSchema>, VersionConfig>>,
   Assert<Equals<z.infer<typeof scheduleFileSchema>, ScheduleFile>>,
 ];

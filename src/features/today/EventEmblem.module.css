@@ -1,0 +1,29 @@
+/* Small round frame holding the event's emblem. */
+.medallion {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: var(--color-gold);
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in srgb, var(--color-frame) 70%, white),
+    var(--color-frame) 70%
+  );
+  border: 1px solid var(--color-gold);
+  border-radius: 50%;
+}
+
+.emblem {
+  display: block;
+  width: 24px;
+  height: 24px;
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.5));
+}
+
+.emblem > :global(svg) {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

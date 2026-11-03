@@ -9,3 +9,6 @@ blob-report
 .env*
 # Generated at build time
 public/calendars/*.ics
+
+# graphify knowledge graph (local, regenerated with `graphify update .`)
+graphify-out/
