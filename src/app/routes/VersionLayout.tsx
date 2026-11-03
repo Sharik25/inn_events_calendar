@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Outlet,
   useLoaderData,
@@ -62,6 +62,15 @@ export function VersionLayout() {
   const weekStartsOn = useSettings((s) => s.weekStartsOn);
   const region = findRegion(version, useRegionId(version));
 
+  // On <html>, so sheets and other portals get the version's tokens too.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.versionStyle = version.uiStyle ?? 'classic';
+    return () => {
+      delete root.dataset.versionStyle;
+    };
+  }, [version.uiStyle]);
+
   const userTz = userTimeZone();
   const today = localDateOf(now, userTz);
   const mode =
@@ -94,10 +103,13 @@ export function VersionLayout() {
     catalog,
     hiddenCategories,
   );
+  // Before launch the launch screen wears the version's own theme, never an event's.
   const themeId =
-    mode === 'month'
-      ? monthThemeId(themeOccurrences, viewMonth, userTz, catalog, version)
-      : dominantThemeId(themeOccurrences, viewDate, userTz, catalog, version);
+    status === 'upcoming'
+      ? version.baseThemeId
+      : mode === 'month'
+        ? monthThemeId(themeOccurrences, viewMonth, userTz, catalog, version)
+        : dominantThemeId(themeOccurrences, viewDate, userTz, catalog, version);
   const theme = useTheme(themeId);
   const reducedMotion = useReducedMotion();
 

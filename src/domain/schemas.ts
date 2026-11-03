@@ -95,6 +95,7 @@ export const explicitOccurrenceSchema = z.strictObject({
   verified: z.boolean(),
   source: url.optional(),
   note: z.string().min(1).optional(),
+  location: z.string().min(1).optional(),
 });
 
 export const scheduleRuleSchema = z.discriminatedUnion('kind', [
@@ -154,6 +155,7 @@ export const versionConfigSchema = z.strictObject({
   defaultRegionId: slug,
   events: z.array(versionEventBindingSchema),
   baseThemeId: slug,
+  uiStyle: z.enum(['classic', 'modern']).optional(),
 });
 
 export const scheduleFileSchema = z.strictObject({

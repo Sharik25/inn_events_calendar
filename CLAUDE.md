@@ -45,7 +45,7 @@ Node 22 is required (`nvm use`; see `.nvmrc`). The system default Node 18 is too
 
 - Explicit dates live in `src/data/versions/<id>/schedule-<year>.json`. `version.ts` globs them, so adding a year only means adding a file.
 - **Forever is the default version.** `/` opens the version picked in the switcher (`chosenVersionId` in settings), else `defaultVersionId` (`forever`). Visiting a version is not a choice.
-- **Auto-update:** Forever's dates are JSON too (`forever/schedule-<year>.json`, empty until the in-game calendar is verified). Editing one on `main` redeploys. `deploy.yml` also rebuilds daily so the `.ics` feed window rolls forward. `useNow` ticks every minute and on tab focus, so "today" never needs a deploy. There is no scraper on purpose: no official calendar API, and scraped dates can't be `verified`.
+- **Auto-update:** Forever's dates are JSON too (`forever/schedule-<year>.json`). As of Nov 3, 2026 Wowhead lists no world events for Forever; the only dates are four Darkmoon Faire visits read from the game client (build 70707, `verified: false`, explicit `location`). Add nothing without a source. Editing one on `main` redeploys. `deploy.yml` also rebuilds daily so the `.ics` feed window rolls forward. `useNow` ticks every minute and on tab focus, so "today" never needs a deploy. There is no scraper on purpose: no official calendar API, and scraped dates can't be `verified`.
 - Experience & rewards: optional `experience[<versionId>]` on an event (xp bonus, level range, quests, rewards, notes, required `source`). The event sheet shows it only when present. Same rule as dates: only facts the version-specific source states, never estimated numbers.
 - Set `verified: true` only with a source specific to that version. Every unverified date needs a `note` saying what's unconfirmed (a test enforces this).
 - Anniversary assumptions to re-check in-game: US event clock = Pacific time; holiday start/end time = 10:00 server; Darkmoon Faire opens 00:00 Monday after the first Friday, location rotation unknown.
@@ -59,6 +59,7 @@ Node 22 is required (`nvm use`; see `.nvmrc`). The system default Node 18 is too
 - Art lives in `src/themes/art/*.ts` as original SVG strings (chunky outlines, painted gradients). Never copy or trace game art.
 - Several copies of the same art can be on a page: always render through `uniqueSvgIds()`, or gradients break when the first copy is hidden.
 - Mobile: bottom-corner art moves from the fixed layer into the end-of-page scene so it never sits behind text.
+- **Version styles:** `uiStyle` on a version (`classic` default, `modern` for Forever) sets `<html data-version-style>`; `src/styles/version-styles.css` overrides shape/depth/motion tokens only (`--radius-*`, `--frame-border`, `--shadow-*`, `--motion-scale`, `--motion-ease`, `--tracking-scale`). Use those tokens instead of literal borders, shadows and durations so both versions follow.
 - Quiet days (no events) show `<Fireplace>` (`src/ui/Fireplace`): inline SVG, so its parts can be CSS-animated, with `useId` gradient ids. Stone, wood and trim come from theme tokens, and it stands still under reduced motion.
 - `src/themes/__tests__/contrast.test.ts` enforces WCAG AA per theme and the 150 KB budget. Fix a failing theme by adjusting its tokens, not the test.
 

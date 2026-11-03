@@ -111,7 +111,7 @@
   column-gap: 6px;
   padding: var(--space-3);
   background: color-mix(in srgb, var(--color-frame) 75%, transparent);
-  border: 2px solid var(--color-gold);
+  border: var(--frame-border) solid var(--color-gold);
   border-radius: var(--radius-md);
   box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
 }

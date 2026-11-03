@@ -96,3 +96,31 @@ test('settings offer the feed for the selected region', async ({ page }) => {
     '/calendars/anniversary-us.ics',
   );
 });
+
+test('WoW: Forever after launch: Faire day, location, .ics export and its own feed', async ({
+  page,
+  request,
+}) => {
+  await page.clock.setFixedTime(new Date('2026-11-10T18:00:00Z'));
+  await page.goto('/forever/today');
+  await expect(page.getByRole('heading', { level: 1, name: 'Darkmoon Faire' })).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-version-style', 'modern');
+
+  await page.getByRole('button', { name: 'Add to calendar' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Add to calendar' });
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    sheet.getByRole('button', { name: 'Apple / Outlook (.ics)' }).click(),
+  ]);
+  expect(download.suggestedFilename()).toBe('darkmoon-faire-2026-11-09.ics');
+  const { events } = parseEvents(readFileSync((await download.path())!, 'utf8'));
+  expect(events[0]?.uid).toBe('forever:darkmoon-faire:2026-11-09T08:00:00.000Z@innkeepers-almanac');
+  expect(events[0]?.summary).toBe('(tentative) Darkmoon Faire');
+  expect(events[0]?.location).toBe('Elwynn Forest');
+
+  const feed = await request.get('/calendars/forever-global.ics');
+  expect(feed.ok()).toBe(true);
+  expect(parseEvents(await feed.text()).events.map((e) => e.location)).toContain(
+    'Mulgore (below Thunder Bluff)',
+  );
+});

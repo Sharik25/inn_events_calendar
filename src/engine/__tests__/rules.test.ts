@@ -17,6 +17,7 @@ describe('explicit rule', () => {
         verified: true,
         source: 'https://example.com/a',
         note: 'n',
+        location: 'Elwynn Forest',
       },
       { start: '2027-10-18T10:00', end: '2027-11-01T10:00', verified: false },
     ],
@@ -33,6 +34,7 @@ describe('explicit rule', () => {
       verified: true,
       source: 'https://example.com/a',
       note: 'n',
+      location: 'Elwynn Forest',
     });
   });
 

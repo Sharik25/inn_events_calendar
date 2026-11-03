@@ -1,0 +1,20 @@
+/*
+ * Version styles: the same design system tuned per game version, set by `uiStyle` in
+ * src/data/versions/<id>/version.ts (VersionLayout puts it on <html data-version-style>).
+ * Only shape, depth and motion tokens: colors stay with the event themes. "classic" is the
+ * default in tokens.css.
+ */
+
+/* Modern (WoW: Forever): rounder corners, hairline frames, softer and deeper shadows,
+   slightly longer, eased transitions, calmer heading tracking. Still gold-trimmed parchment. */
+:root[data-version-style='modern'] {
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-sheet: 22px;
+  --frame-border: 1px;
+  --shadow-card: 0 12px 32px rgb(0 0 0 / 0.32), inset 0 0 0 1px rgb(255 255 255 / 0.06);
+  --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.18), 0 6px 16px rgb(0 0 0 / 0.16);
+  --motion-scale: 1.6;
+  --motion-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --tracking-scale: 0.6;
+}

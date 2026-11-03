@@ -68,6 +68,7 @@ export interface ExplicitOccurrence {
   verified: boolean;
   source?: string; // URL
   note?: string; // e.g. which part is unconfirmed
+  location?: string; // where it takes place this time (e.g. a Darkmoon Faire site)
 }
 
 /** How an event is scheduled in a specific version. */
@@ -126,6 +127,8 @@ export interface VersionConfig {
   defaultRegionId: string;
   events: VersionEventBinding[];
   baseThemeId: ThemeId; // theme when no event is dominant
+  /** Shape/depth/motion tokens for this version (src/styles/version-styles.css); default classic. */
+  uiStyle?: 'classic' | 'modern';
 }
 
 /** A `schedule-<year>.json` file: explicit dates for one version and one year. */
@@ -143,7 +146,7 @@ export interface Occurrence {
   start: Date;
   end: Date;
   verified: boolean;
-  location?: string; // from rotation
+  location?: string; // from a monthly rotation or an explicit date
   source?: string;
   note?: string;
 }

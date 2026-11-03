@@ -77,7 +77,9 @@ describe('WoW: Forever before and after launch', () => {
     await waitFor(() =>
       expect(container.querySelector('[data-theme="forever"]')).toBeInTheDocument(),
     );
-    // Single realmless region: no region switcher; no events yet: no subscription feed.
+    // November has a Darkmoon Faire, but before launch the screen keeps the Forever theme.
+    expect(container.querySelector('[data-theme="darkmoon-faire"]')).not.toBeInTheDocument();
+    // Single realmless region: no region switcher.
     expect(screen.getByRole('button', { name: 'Forever · All realms' })).toBeInTheDocument();
   });
 
@@ -93,7 +95,7 @@ describe('WoW: Forever before and after launch', () => {
     expect(screen.getByRole('button', { name: /WoW: Forever/ })).toHaveTextContent('Live');
   });
 
-  it('settings for a realmless version hide the region switcher and feed', async () => {
+  it('settings for a realmless version hide the region switcher and offer its one feed', async () => {
     const user = userEvent.setup();
     renderRoute('/forever/today');
     await screen.findByRole('heading', { level: 1, name: 'WoW: Forever' });
@@ -101,8 +103,11 @@ describe('WoW: Forever before and after launch', () => {
     const sheet = await screen.findByRole('dialog', { name: 'Settings & info' });
     expect(within(sheet).queryByRole('group', { name: 'Server region' })).not.toBeInTheDocument();
     expect(
-      within(sheet).queryByRole('heading', { name: 'Subscribe to all events' }),
-    ).not.toBeInTheDocument();
+      within(sheet).getByRole('heading', { name: 'Subscribe to all events' }),
+    ).toBeInTheDocument();
+    expect(within(sheet).getByRole('textbox', { name: 'Feed address' })).toHaveValue(
+      'http://localhost:3000/calendars/forever-global.ics',
+    );
   });
 
   it('remembers only a version picked in the switcher, not one just visited', async () => {
