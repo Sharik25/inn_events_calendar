@@ -192,11 +192,14 @@ describe('Today view', () => {
     // drift on slow machines can't change the expected text.
     vi.setSystemTime(new Date('2026-10-27T10:30:00Z'));
     renderRoute('/anniversary/today');
-    await vi.waitFor(() => screen.getByText('Ends in 4d 22h'));
+    // 3s like Testing Library's queries (test/setup.ts): the route loads async.
+    await vi.waitFor(() => screen.getByText('Ends in 4d 22h'), { timeout: 3000 });
     act(() => {
       vi.advanceTimersByTime(60 * 60_000);
     });
-    await vi.waitFor(() => expect(screen.getByText('Ends in 4d 21h')).toBeInTheDocument());
+    await vi.waitFor(() => expect(screen.getByText('Ends in 4d 21h')).toBeInTheDocument(), {
+      timeout: 3000,
+    });
   });
 });
 
