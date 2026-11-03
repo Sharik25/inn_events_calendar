@@ -1,4 +1,4 @@
-/* One centered column on every viewport: numeral → title → details → also on → coming soon. */
+/* One centered column: coming soon → numeral → title → details → also on. Desktop: see .soon. */
 .layout {
   display: grid;
   gap: var(--space-6);
@@ -136,6 +136,36 @@
 }
 
 /* Side column */
+/* Coming soon: first in the flow, so it sits right under the version chip on phones and tablets;
+   on desktop it moves into a left column under the chip while the day stays centered. */
+.soon {
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    max-width: none;
+    grid-template-columns: minmax(160px, 1fr) minmax(0, 640px) minmax(160px, 1fr);
+    grid-template-areas:
+      'soon hero .'
+      'soon side .';
+    column-gap: var(--space-5);
+    align-items: start;
+  }
+
+  .soon {
+    grid-area: soon;
+  }
+
+  .hero {
+    grid-area: hero;
+  }
+
+  .side {
+    grid-area: side;
+  }
+}
+
 .side {
   display: grid;
   gap: var(--space-5);

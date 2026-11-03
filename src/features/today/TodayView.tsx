@@ -53,6 +53,33 @@ export function TodayView() {
 
   return (
     <div className={styles.layout}>
+      {/* First in the page: under the version chip (left column on desktop, top on phones). */}
+      <section aria-labelledby="soon-title" className={styles.soon}>
+        <h2 id="soon-title" className={styles.sectionTitle}>
+          {strings.today.comingSoon}
+        </h2>
+        {agenda.comingSoon.length > 0 ? (
+          <ul className={styles.chips}>
+            {agenda.comingSoon.map((o) => {
+              const def = catalog[o.eventId];
+              return (
+                def && (
+                  <li key={o.key}>
+                    <Link to={eventHref(o.eventId)} className={styles.chip}>
+                      <span className={styles.chipName}>{def.shortName ?? def.name}</span>{' '}
+                      <time dateTime={o.start.toISOString()} className={styles.chipWhen}>
+                        {strings.today.inDistance(formatDistance(o.start.getTime() - soonFrom))}
+                      </time>
+                    </Link>
+                  </li>
+                )
+              );
+            })}
+          </ul>
+        ) : (
+          <p className={styles.empty}>{strings.today.comingSoonEmpty}</p>
+        )}
+      </section>
       <section className={styles.hero} aria-labelledby="day-title">
         <div className={styles.dayNav}>
           <Link
@@ -134,8 +161,8 @@ export function TodayView() {
         )}
       </section>
 
-      <div className={styles.side}>
-        {also.length > 0 && (
+      {also.length > 0 && (
+        <div className={styles.side}>
           <section aria-labelledby="also-title">
             <h2 id="also-title" className={styles.sectionTitle}>
               {strings.today.alsoToday}
@@ -148,35 +175,8 @@ export function TodayView() {
               ))}
             </ul>
           </section>
-        )}
-
-        <section aria-labelledby="soon-title">
-          <h2 id="soon-title" className={styles.sectionTitle}>
-            {strings.today.comingSoon}
-          </h2>
-          {agenda.comingSoon.length > 0 ? (
-            <ul className={styles.chips}>
-              {agenda.comingSoon.map((o) => {
-                const def = catalog[o.eventId];
-                return (
-                  def && (
-                    <li key={o.key}>
-                      <Link to={eventHref(o.eventId)} className={styles.chip}>
-                        <span className={styles.chipName}>{def.shortName ?? def.name}</span>{' '}
-                        <time dateTime={o.start.toISOString()} className={styles.chipWhen}>
-                          {strings.today.inDistance(formatDistance(o.start.getTime() - soonFrom))}
-                        </time>
-                      </Link>
-                    </li>
-                  )
-                );
-              })}
-            </ul>
-          ) : (
-            <p className={styles.empty}>{strings.today.comingSoonEmpty}</p>
-          )}
-        </section>
-      </div>
+        </div>
+      )}
 
       <RoutedEventSheet />
     </div>

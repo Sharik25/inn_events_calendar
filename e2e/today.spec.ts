@@ -113,3 +113,20 @@ test('event days show no fireplace', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1, name: "Hallow's End" })).toBeVisible();
   await expect(page.getByTestId('fireplace')).toHaveCount(0);
 });
+
+test('"Coming soon" sits under the version chip: left column on desktop, on top on phones', async ({
+  page,
+  isMobile,
+}) => {
+  await page.goto('/anniversary/today');
+  await expect(page.getByRole('heading', { level: 1, name: "Hallow's End" })).toBeVisible();
+  const chip = (await page.getByRole('button', { name: 'Anniversary · Europe' }).boundingBox())!;
+  const soon = (await page.getByRole('region', { name: 'Coming soon' }).boundingBox())!;
+  const title = (await page.getByRole('heading', { level: 1 }).boundingBox())!;
+
+  expect(Math.abs(soon.x - chip.x)).toBeLessThanOrEqual(1); // same left edge
+  expect(soon.y).toBeGreaterThanOrEqual(chip.y + chip.height); // below the chip, no overlap
+  expect(soon.y - (chip.y + chip.height)).toBeLessThan(40); // …directly below it
+  if (isMobile) expect(soon.y + soon.height).toBeLessThan(title.y);
+  else expect(soon.x + soon.width).toBeLessThan(title.x); // its own column, left of the day
+});
