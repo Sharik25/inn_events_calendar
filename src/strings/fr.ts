@@ -27,6 +27,7 @@ export const fr: Strings = {
       'Date pas encore confirmée pour cette version. Consultez le calendrier en jeu.',
     estimated: 'Estimé',
     estimatedHint: 'Date estimée d’après le calendrier annuel habituel.',
+    estimatedWeeklyHint: 'Horaire estimé d’après le programme hebdomadaire habituel.',
   },
   actionBar: {
     label: 'Vues et actions',

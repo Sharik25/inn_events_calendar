@@ -20,6 +20,13 @@ export const stvFishing: EventDefinition = {
       url: 'https://warcraft.wiki.gg/wiki/Stranglethorn_Fishing_Extravaganza',
     },
   ],
+  // Standard (Classic/TBC) weekly schedule: Sundays 14:00-16:00 server time.
+  weekly: {
+    weekday: 0,
+    startTime: '14:00',
+    durationMinutes: 120,
+    source: 'https://warcraft.wiki.gg/wiki/School_of_Tastyfish',
+  },
   experience: {
     // TBC-era quest page. Later expansions renamed the quest "Grand Prize" and added more prizes.
     anniversary: {

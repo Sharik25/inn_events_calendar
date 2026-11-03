@@ -26,6 +26,7 @@ export const de: Strings = {
     unconfirmedHint: 'Datum für diese Version noch nicht bestätigt. Prüfe den Ingame-Kalender.',
     estimated: 'Geschätzt',
     estimatedHint: 'Datum aus dem üblichen Jahreskalender geschätzt.',
+    estimatedWeeklyHint: 'Zeit aus dem üblichen Wochenplan geschätzt.',
   },
   actionBar: {
     label: 'Ansichten und Aktionen',

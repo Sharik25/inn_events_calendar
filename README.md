@@ -40,8 +40,9 @@ never components. `npm run validate-data` (also part of `build`) checks everythi
      themeId: 'harvest-festival', // any theme in src/themes/index.ts
      summary: 'One sentence.',
      highlights: ['Short bullet'],
-     // Optional: its slot in the standard yearly calendar. Versions that estimate holidays
-     // (estimateYearly) then show it every year, marked "Estimated".
+     // Optional: its slot in the standard yearly calendar. Versions that estimate
+     // (estimateStandard) then show it every year, marked "Estimated". A weekly event uses
+     // `weekly: { weekday, startTime, durationMinutes, source }` instead (e.g. the fishing contest).
      annual: {
        anchor: { type: 'weekday', month: 11, weekday: 1, nth: 4 }, // or 'date' | 'easter' | 'lunar-new-year'
        startTime: '10:00', // server time
@@ -93,14 +94,17 @@ Recurring events (weekly contests, a monthly faire) are rules in the version's `
    events: [
      ...scheduleBindings(scheduleFiles, {
        events: eventDefinitions,
-       estimateYearly: true, // every holiday with an `annual` slot, marked "Estimated"
+       estimateStandard: true, // every event with an `annual` or `weekly` slot, marked "Estimated"
        disabled: ['new-year'], // holidays this version doesn't have
      }),
      // weekly/monthly rules, weekly reset (weeklyResetBindings), …
    ],
    ```
 
-   With `estimateYearly: false` (as Anniversary), only the schedule files' dates show.
+   With `estimateStandard: false` (as Anniversary), only the schedule files' dates show. To
+   confirm a standard weekly slot for a version, add
+   `{ eventId, rule: standardWeeklyRule(event, { verified: true, source }) }` (Anniversary does this
+   for the fishing contest).
 
 3. Optional: `launchDate` (an upcoming version shows a launch countdown under the version
    switcher and only events after launch), `uiStyle: 'modern'` (shape and motion tokens in

@@ -3,12 +3,41 @@ import type {
   EventId,
   ExplicitOccurrence,
   ScheduleFile,
+  ScheduleRule,
   VersionEventBinding,
 } from '@/domain/types';
 
 /** Note on every estimated date (shown in the event sheet and written into .ics descriptions). */
 export const ESTIMATED_NOTE =
   'Date estimated from the standard yearly schedule; not confirmed for this version yet. Time of day assumed (10:00 server time).';
+
+/** Note on every estimated weekly occurrence (e.g. the fishing contest). */
+export const ESTIMATED_WEEKLY_NOTE =
+  'Time estimated from the standard weekly schedule; not confirmed for this version yet.';
+
+/**
+ * The weekly rule for an event's standard weekly slot, with this version's status: confirmed with
+ * a source for this version, or estimated. Keeps the day/time/duration in one place (the event).
+ */
+export function standardWeeklyRule(
+  def: EventDefinition,
+  status: { verified: true; source: string } | { verified: false },
+): Extract<ScheduleRule, { kind: 'weekly' }> {
+  if (!def.weekly) throw new Error(`event "${def.id}" has no weekly slot`);
+  const { weekday, startTime, durationMinutes, source } = def.weekly;
+  return status.verified
+    ? { kind: 'weekly', weekday, startTime, durationMinutes, verified: true, source: status.source }
+    : {
+        kind: 'weekly',
+        weekday,
+        startTime,
+        durationMinutes,
+        verified: false,
+        estimated: true,
+        source,
+        note: ESTIMATED_WEEKLY_NOTE,
+      };
+}
 
 /** Explicit dates per event from a version's `schedule-<year>.json` files, oldest first. */
 function datesByEvent(files: ScheduleFile[]): Map<EventId, ExplicitOccurrence[]> {
@@ -42,28 +71,35 @@ export interface ScheduleOptions {
   /** The event catalog (needed to know which events have a standard yearly slot). */
   events: EventDefinition[];
   /**
-   * Estimate every holiday with an `annual` slot for years the files don't cover, marked
-   * "Estimated". Off: only the files' dates (a version whose calendar is tracked by hand).
+   * Estimate every event with a standard slot, marked "Estimated": holidays with an `annual` slot
+   * (for years the files don't cover) and recurring events with a `weekly` slot. Off: only the
+   * files' dates (a version whose calendar is tracked by hand).
    */
-  estimateYearly?: boolean;
+  estimateStandard?: boolean;
   /** Events this version doesn't have. */
   disabled?: EventId[];
 }
 
 /**
  * A version's dated events, declaratively: its own `schedule-<year>.json` dates (the per-version
- * overrides, with their own verified flag and source), plus, with `estimateYearly`, every yearly
- * holiday estimated from the standard schedule wherever the files have no date for that year.
+ * overrides, with their own verified flag and source), plus, with `estimateStandard`, every yearly
+ * holiday estimated from the standard schedule wherever the files have no date for that year, and
+ * every weekly event estimated from its standard weekly slot.
  */
 export function scheduleBindings(
   files: ScheduleFile[],
-  { events, estimateYearly = false, disabled = [] }: ScheduleOptions,
+  { events, estimateStandard = false, disabled = [] }: ScheduleOptions,
 ): VersionEventBinding[] {
   const dates = datesByEvent(files);
   const off = new Set(disabled);
   const bindings: VersionEventBinding[] = [];
 
-  if (estimateYearly) {
+  if (estimateStandard) {
+    for (const def of events) {
+      if (def.weekly && !def.annual && !dates.has(def.id) && !off.has(def.id)) {
+        bindings.push({ eventId: def.id, rule: standardWeeklyRule(def, { verified: false }) });
+      }
+    }
     for (const def of events) {
       if (!def.annual || off.has(def.id)) continue;
       const { anchor, startTime, durationDays, source } = def.annual;

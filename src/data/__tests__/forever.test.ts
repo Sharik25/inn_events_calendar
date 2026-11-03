@@ -2,7 +2,7 @@ import { expandOccurrences } from '@/engine';
 import { eventDefinitions } from '../events';
 import { anniversary } from '../versions/anniversary/version';
 import { forever } from '../versions/forever/version';
-import { ESTIMATED_NOTE } from '../schedules';
+import { ESTIMATED_NOTE, ESTIMATED_WEEKLY_NOTE } from '../schedules';
 
 const span = { start: new Date('2026-01-01T00:00Z'), end: new Date('2028-01-01T00:00Z') };
 const occurrences = expandOccurrences(forever, 'global', span);
@@ -33,7 +33,7 @@ describe('WoW: Forever data', () => {
       expect(ofEvent(id).length, id).toBeGreaterThan(0);
       for (const o of ofEvent(id)) {
         expect(o.verified).toBe(false);
-        expect(o.estimated).toBe(true);
+        expect(o.estimated).toBe('yearly');
         expect(o.note).toBe(ESTIMATED_NOTE);
       }
     }
@@ -85,6 +85,36 @@ describe('standard yearly schedule', () => {
       const match = rules.find((r) => r.eventId === o.eventId && +r.start === +o.start);
       expect(match, `${o.eventId} ${o.start.toISOString()}`).toBeDefined();
       expect(+match!.end).toBe(+o.end);
+    }
+  });
+});
+
+describe('fishing', () => {
+  it('Forever has the Sunday fishing contest from launch, same slot as Anniversary, estimated', () => {
+    const fishing = ofEvent('stv-fishing');
+    expect(wall(fishing[0]!.start)).toBe('2026-11-08T14:00'); // first Sunday after launch
+    for (const o of fishing) {
+      expect(new Date(wall(o.start) + 'Z').getUTCDay()).toBe(0);
+      expect(wall(o.start).slice(11)).toBe('14:00');
+      expect(o.end.getTime() - o.start.getTime()).toBe(120 * 60_000);
+      expect(o.verified).toBe(false);
+      expect(o.estimated).toBe('weekly');
+      expect(o.note).toBe(ESTIMATED_WEEKLY_NOTE);
+    }
+    // Every Sunday from Nov 8, 2026 through 2027.
+    expect(fishing).toHaveLength(60);
+  });
+
+  it('Anniversary keeps its confirmed Sunday 14:00-16:00 contest', () => {
+    const anniv = expandOccurrences(anniversary, 'us', span).filter(
+      (o) => o.eventId === 'stv-fishing',
+    );
+    expect(anniv).toHaveLength(104);
+    for (const o of anniv) {
+      expect(o.verified).toBe(true);
+      expect(o.estimated).toBeUndefined();
+      expect(wall(o.start).slice(11)).toBe('14:00');
+      expect(o.end.getTime() - o.start.getTime()).toBe(120 * 60_000);
     }
   });
 });

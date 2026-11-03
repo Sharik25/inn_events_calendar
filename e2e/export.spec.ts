@@ -124,3 +124,28 @@ test('WoW: Forever after launch: Faire day, location, .ics export and its own fe
     'Mulgore (below Thunder Bluff)',
   );
 });
+
+test('WoW: Forever fishing Sunday: estimated contest, details and .ics export', async ({
+  page,
+}) => {
+  await page.clock.setFixedTime(new Date('2026-11-08T18:00:00Z')); // Sun Nov 8, after launch
+  await page.goto('/forever/today');
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Stranglethorn Fishing Extravaganza' }),
+  ).toBeVisible();
+  await expect(page.getByText('Estimated', { exact: true })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Add to calendar' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Add to calendar' });
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    sheet.getByRole('button', { name: 'Apple / Outlook (.ics)' }).click(),
+  ]);
+  const { events } = parseEvents(readFileSync((await download.path())!, 'utf8'));
+  expect(events[0]?.uid).toBe('forever:stv-fishing:2026-11-08T22:00:00.000Z@innkeepers-almanac');
+  expect(events[0]?.summary).toBe('(tentative) Stranglethorn Fishing Extravaganza');
+  expect(events[0]?.description).toContain('Time estimated from the standard weekly schedule');
+  expect(events[0]?.endDate.toJSDate().getTime()! - events[0]!.startDate.toJSDate().getTime()).toBe(
+    2 * 3_600_000,
+  );
+});

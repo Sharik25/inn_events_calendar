@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type {
   ChecklistItem,
+  WeeklySchedule,
   EventDefinition,
   EventExperience,
   ExplicitOccurrence,
@@ -48,6 +49,13 @@ export const annualScheduleSchema = z.strictObject({
   anchor: annualAnchorSchema,
   startTime: timeOfDay,
   durationDays: z.number().int().positive(),
+  source: url,
+});
+
+export const weeklyScheduleSchema = z.strictObject({
+  weekday,
+  startTime: timeOfDay,
+  durationMinutes: z.number().int().positive(),
   source: url,
 });
 
@@ -110,6 +118,7 @@ export const eventDefinitionSchema = z.strictObject({
   experience: z.record(slug, eventExperienceSchema).optional(),
   checklist: z.record(slug, z.array(checklistItemSchema).min(1)).optional(),
   annual: annualScheduleSchema.optional(),
+  weekly: weeklyScheduleSchema.optional(),
 });
 
 export const explicitOccurrenceSchema = z.strictObject({
@@ -132,7 +141,9 @@ export const scheduleRuleSchema = z.discriminatedUnion('kind', [
     startTime: timeOfDay,
     durationMinutes: z.number().int().positive(),
     verified: z.boolean(),
+    estimated: z.boolean().optional(),
     source: url.optional(),
+    note: z.string().min(1).optional(),
   }),
   z.strictObject({
     kind: z.literal('annual'),
@@ -210,6 +221,7 @@ export type SchemaTypeChecks = [
   Assert<Equals<z.infer<typeof eventDefinitionSchema>, EventDefinition>>,
   Assert<Equals<z.infer<typeof eventExperienceSchema>, EventExperience>>,
   Assert<Equals<z.infer<typeof checklistItemSchema>, ChecklistItem>>,
+  Assert<Equals<z.infer<typeof weeklyScheduleSchema>, WeeklySchedule>>,
   Assert<Equals<z.infer<typeof explicitOccurrenceSchema>, ExplicitOccurrence>>,
   Assert<Equals<z.infer<typeof scheduleRuleSchema>, ScheduleRule>>,
   Assert<Equals<z.infer<typeof regionSchema>, Region>>,

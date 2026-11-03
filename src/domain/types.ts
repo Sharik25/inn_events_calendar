@@ -34,6 +34,16 @@ export interface EventDefinition {
    * confirmed dates can estimate from it (see data/schedules.ts).
    */
   annual?: AnnualSchedule;
+  /** Its slot in the standard (Classic/TBC) weekly schedule, e.g. the Sunday fishing contest. */
+  weekly?: WeeklySchedule;
+}
+
+/** A recurring event's slot in the standard weekly schedule (version-agnostic). */
+export interface WeeklySchedule {
+  weekday: Weekday;
+  startTime: string; // "14:00", server time
+  durationMinutes: number;
+  source: string; // URL of the standard schedule this follows
 }
 
 /** How a holiday's start day is found each year. */
@@ -103,7 +113,10 @@ export type ScheduleRule =
       startTime: string; // "14:00" (server time)
       durationMinutes: number;
       verified: boolean;
+      /** Estimated from the standard weekly schedule, not from a source for this version. */
+      estimated?: boolean;
       source?: string;
+      note?: string;
     }
   | {
       kind: 'annual'; // holidays estimated from the standard yearly schedule
@@ -195,8 +208,8 @@ export interface Occurrence {
   location?: string; // from a monthly rotation or an explicit date
   source?: string;
   note?: string;
-  /** Estimated from the standard yearly schedule (shown as "Estimated", not just unconfirmed). */
-  estimated?: boolean;
+  /** Estimated from the standard yearly or weekly schedule (shown as "Estimated"). */
+  estimated?: 'yearly' | 'weekly';
 }
 
 /** Half-open instant range [start, end). */

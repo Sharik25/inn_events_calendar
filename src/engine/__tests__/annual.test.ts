@@ -59,7 +59,7 @@ describe('annual rule', () => {
       start: new Date('2026-12-15T09:00:00Z'),
       end: new Date('2027-01-02T09:00:00Z'),
       verified: false,
-      estimated: true,
+      estimated: 'yearly',
       source: 'https://example.com/standard',
       note: 'estimated',
     });

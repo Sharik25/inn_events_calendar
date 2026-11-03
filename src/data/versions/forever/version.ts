@@ -16,8 +16,9 @@ const scheduleFiles = scheduleFilesFromGlob(
  * Dated events live in `schedule-<year>.json` next to this file: editing one on GitHub redeploys
  * the site, no code change needed. As of Nov 3, 2026 Wowhead lists no world events for Forever:
  * the Darkmoon Faire visits come from the game client (unconfirmed, see the JSON notes), and every
- * yearly holiday is estimated from the standard schedule (shown as "Estimated") until Forever's own
- * dates are known. Weekly/monthly events go in `events` below as rules once a source confirms them.
+ * yearly holiday and the weekly fishing contest are estimated from the standard schedule (shown as
+ * "Estimated") until Forever's own dates are known. Weekly/monthly events go in `events` below as
+ * rules once a source confirms them.
  */
 /** Launch moment: drives the launch countdown and the switch from "upcoming" to live. */
 export const FOREVER_LAUNCH = '2026-11-04T15:00:00-08:00';
@@ -40,9 +41,10 @@ export const forever: VersionConfig = {
   // Same design, slightly more modern: tune it in src/styles/version-styles.css.
   uiStyle: 'modern',
   events: [
-    // Every yearly holiday, estimated from the standard schedule until Forever's own dates are
-    // known; a date added to schedule-<year>.json replaces the estimate for that year.
-    ...scheduleBindings(scheduleFiles, { events: eventDefinitions, estimateYearly: true }),
+    // Every yearly holiday and weekly event (the fishing contest), estimated from the standard
+    // schedule until Forever's own dates are known; a date added to schedule-<year>.json
+    // replaces a holiday's estimate for that year.
+    ...scheduleBindings(scheduleFiles, { events: eventDefinitions, estimateStandard: true }),
     ...weeklyResetBindings(WEEKLY_RESET),
   ],
 };

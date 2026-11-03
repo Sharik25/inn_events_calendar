@@ -93,7 +93,7 @@ export const expandAnnual: RuleExpander<'annual'> = (rule, { timeZone, range }) 
         start: wallTimeToInstant(`${day}T${rule.startTime}`, timeZone),
         end: wallTimeToInstant(`${addDays(day, rule.durationDays)}T${rule.startTime}`, timeZone),
         verified: rule.verified,
-        ...(rule.estimated && { estimated: true }),
+        ...(rule.estimated && { estimated: 'yearly' as const }),
         ...(rule.source && { source: rule.source }),
         ...(rule.note && { note: rule.note }),
       };

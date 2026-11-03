@@ -11,5 +11,6 @@ export function dateStatusLabel(o: Dated): string | null {
 
 /** Why the date isn't confirmed, for the tag's info tip. */
 export function dateStatusHint(o: Dated): string {
+  if (o.estimated === 'weekly') return strings.common.estimatedWeeklyHint;
   return o.estimated ? strings.common.estimatedHint : strings.common.unconfirmedHint;
 }

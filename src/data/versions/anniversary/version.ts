@@ -1,6 +1,7 @@
 import type { ScheduleFile, VersionConfig } from '@/domain/types';
 import { eventDefinitions } from '../../events';
-import { scheduleBindings, scheduleFilesFromGlob } from '../../schedules';
+import { stvFishing } from '../../events/stv-fishing';
+import { scheduleBindings, scheduleFilesFromGlob, standardWeeklyRule } from '../../schedules';
 import { weeklyResetBindings } from '../../weekly-reset';
 import { DARKMOON_ROTATION } from './darkmoon-rotation';
 import { WEEKLY_RESET } from './weekly-reset';
@@ -48,14 +49,11 @@ export const anniversary: VersionConfig = {
     },
     {
       eventId: 'stv-fishing',
-      rule: {
-        kind: 'weekly',
-        weekday: 0,
-        startTime: '14:00',
-        durationMinutes: 120,
+      // The standard Sunday slot (on the event), confirmed for Anniversary.
+      rule: standardWeeklyRule(stvFishing, {
         verified: true,
         source: 'https://warcraft.wiki.gg/wiki/School_of_Tastyfish',
-      },
+      }),
     },
     ...weeklyResetBindings(WEEKLY_RESET),
   ],
