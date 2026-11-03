@@ -18,9 +18,7 @@ afterEach(() => {
 describe('routing', () => {
   it('redirects / to Forever by default, and to the version picked in the switcher', async () => {
     const { router, unmount } = renderRoute('/');
-    expect(
-      await screen.findByRole('heading', { level: 1, name: 'WoW: Forever' }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'WoW: Forever' })).toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/forever/today');
     unmount();
 
@@ -33,7 +31,7 @@ describe('routing', () => {
 
   it('opens URLs without a version in the start version, keeping view, date and query', async () => {
     const month = renderRoute('/month/2026-11');
-    await screen.findByRole('heading', { level: 1, name: 'WoW: Forever' });
+    await screen.findByRole('heading', { name: 'WoW: Forever' });
     expect(month.router.state.location.pathname).toBe('/forever/month/2026-11');
     month.unmount();
 
@@ -46,13 +44,13 @@ describe('routing', () => {
     day.unmount();
 
     const today = renderRoute('/today');
-    await screen.findByRole('heading', { level: 1, name: 'WoW: Forever' });
+    await screen.findByRole('heading', { name: 'WoW: Forever' });
     expect(today.router.state.location.pathname).toBe('/forever/today');
   });
 
   it('ignores a picked version that no longer exists', async () => {
     const { router } = renderRoute('/', { chosenVersionId: 'retired-long-ago' });
-    await screen.findByRole('heading', { level: 1, name: 'WoW: Forever' });
+    await screen.findByRole('heading', { name: 'WoW: Forever' });
     expect(router.state.location.pathname).toBe('/forever/today');
   });
 

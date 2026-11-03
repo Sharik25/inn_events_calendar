@@ -141,11 +141,9 @@ export const en = {
     retired: 'Retired',
     launches: (date: string) => `Launches ${date}`,
     current: 'Current',
-    comingSoon: 'Coming soon',
     launchesIn: (d: string) => `Launches in ${d}`,
     launchTime: (when: string) => `${when} your time`,
     serverLaunch: (when: string, region: string) => `${when} (${region})`,
-    backTo: (name: string) => `Back to ${name}`,
   },
   topBar: {
     versionChip: (version: string, region: string) => `${version} · ${region}`,

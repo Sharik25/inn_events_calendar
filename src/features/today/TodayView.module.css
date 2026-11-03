@@ -139,6 +139,9 @@
 /* Coming soon: first in the flow, so it sits right under the version chip on phones and tablets;
    on desktop it moves into a left column under the chip while the day stays centered. */
 .soon {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
   min-width: 0;
 }
 

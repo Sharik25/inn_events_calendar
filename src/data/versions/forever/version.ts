@@ -19,12 +19,15 @@ const scheduleFiles = scheduleFilesFromGlob(
  * yearly holiday is estimated from the standard schedule (shown as "Estimated") until Forever's own
  * dates are known. Weekly/monthly events go in `events` below as rules once a source confirms them.
  */
+/** Launch moment: drives the launch countdown and the switch from "upcoming" to live. */
+export const FOREVER_LAUNCH = '2026-11-04T15:00:00-08:00';
+
 export const forever: VersionConfig = {
   id: 'forever',
   name: 'WoW: Forever',
   shortName: 'Forever',
   status: 'upcoming',
-  launchDate: '2026-11-04T15:00:00-08:00',
+  launchDate: FOREVER_LAUNCH,
   summary:
     'A new take on the level-60 world with fresh quests, dungeons and raids. Its calendar fills in as event dates are confirmed.',
   // Realmless: one event clock for everyone. Pacific is assumed until the live calendar is checked.

@@ -143,11 +143,9 @@ export const de: Strings = {
     retired: 'Eingestellt',
     launches: (date) => `Start: ${date}`,
     current: 'Aktuell',
-    comingSoon: 'Demnächst',
     launchesIn: (d) => `Start in ${d}`,
     launchTime: (when) => `${when} (deine Zeit)`,
     serverLaunch: (when, region) => `${when} (${region})`,
-    backTo: (name) => `Zurück zu ${name}`,
   },
   topBar: {
     versionChip: (version, region) => `${version} · ${region}`,

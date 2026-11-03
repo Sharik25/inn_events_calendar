@@ -10,11 +10,11 @@ import {
 import { startOfWeek } from '@/engine/calendar';
 import { findRegion } from '@/engine/expand';
 import { addDays, addMonths, localDateOf, monthOf, type LocalDate } from '@/engine/time';
-import { switchVersionPath, versionStatus } from '@/engine/version';
+import { switchVersionPath } from '@/engine/version';
 import { MoreSheet } from '@/features/settings/MoreSheet';
 import { takeReopenSettings } from '@/features/settings/reopen';
 import { SupportMenu } from '@/features/support/SupportMenu';
-import { LaunchScreen } from '@/features/version-switcher/LaunchScreen';
+import { LaunchCountdown } from '@/features/version-switcher/LaunchCountdown';
 import { VersionPicker } from '@/features/version-switcher/VersionPicker';
 import { dominantThemeId, monthThemeId } from '@/hooks/useDominantTheme';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
@@ -54,7 +54,6 @@ export function VersionLayout() {
   // Reopens after a language switch remounted the app (the picker lives in this sheet).
   const [moreOpen, setMoreOpen] = useState(takeReopenSettings);
   const [pickerOpen, setPickerOpen] = useState(false);
-  const status = versionStatus(version, now);
 
   const chooseVersion = useSettings((s) => s.chooseVersion);
   const hiddenCategories = useSettings((s) => s.hiddenCategories);
@@ -103,13 +102,10 @@ export function VersionLayout() {
     catalog,
     hiddenCategories,
   );
-  // Before launch the launch screen wears the version's own theme, never an event's.
   const themeId =
-    status === 'upcoming'
-      ? version.baseThemeId
-      : mode === 'month'
-        ? monthThemeId(themeOccurrences, viewMonth, userTz, catalog, version)
-        : dominantThemeId(themeOccurrences, viewDate, userTz, catalog, version);
+    mode === 'month'
+      ? monthThemeId(themeOccurrences, viewMonth, userTz, catalog, version)
+      : dominantThemeId(themeOccurrences, viewDate, userTz, catalog, version);
   const theme = useTheme(themeId);
   const reducedMotion = useReducedMotion();
 
@@ -187,9 +183,6 @@ export function VersionLayout() {
     if (versionId !== version.id)
       navigate(switchVersionPath(location.pathname, version.id, versionId));
   };
-  const liveFallback = versions.find(
-    (v) => v.id !== version.id && versionStatus(v, now) === 'live',
-  );
 
   return (
     <ThemeScope themeId={themeId} withBackground className={styles.shell}>
@@ -222,11 +215,9 @@ export function VersionLayout() {
       </header>
 
       <main className={styles.main} {...swipe}>
-        {status === 'upcoming' ? (
-          <LaunchScreen view={view} fallback={liveFallback} />
-        ) : (
-          <Outlet context={view} />
-        )}
+        {/* Week/Month: the launch countdown as one row; the Day view puts it in its sidebar. */}
+        {mode !== 'day' && <LaunchCountdown view={view} variant="row" />}
+        <Outlet context={view} />
       </main>
 
       <footer className={styles.footer}>

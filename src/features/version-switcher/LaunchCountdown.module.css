@@ -1,0 +1,108 @@
+/* Same chip look as "Coming soon": dark frame, soft gold rim. */
+.countdown {
+  min-width: 0;
+  color: var(--color-ink-on-dark);
+  background: color-mix(in srgb, var(--color-frame) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 60%, transparent);
+  border-radius: var(--radius-sm);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  letter-spacing: 0.06em;
+  color: var(--color-gold);
+}
+
+.left {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+.when {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-ink-on-dark-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.server {
+  display: block;
+}
+
+.summary {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-xs);
+  line-height: 1.45;
+  color: var(--color-ink-on-dark-muted);
+}
+
+/* One line: name · countdown · your time (ellipsis); server time and summary left to the card. */
+.row,
+.sidebar {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+}
+
+.row .when,
+.sidebar .when {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.row .server,
+.row .summary,
+.sidebar .server,
+.sidebar .summary {
+  display: none;
+}
+
+.row {
+  flex: none;
+  margin-bottom: var(--space-3);
+}
+
+/* Desktop Day view: a card in the left column, above "Coming soon". */
+@media (min-width: 1024px) {
+  .sidebar {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-3);
+  }
+
+  .sidebar .when {
+    white-space: normal;
+  }
+
+  .sidebar .server,
+  .sidebar .summary {
+    display: block;
+  }
+
+  .sidebar .server {
+    margin-top: 2px;
+  }
+}
+
+/* Phones: drop the version name if space runs out; the chip above already says it. */
+@media (max-width: 420px) {
+  .row .title,
+  .sidebar .title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

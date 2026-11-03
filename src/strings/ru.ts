@@ -146,11 +146,9 @@ export const ru: Strings = {
     retired: 'Закрыта',
     launches: (date) => `Запуск: ${date}`,
     current: 'Текущая',
-    comingSoon: 'Скоро',
     launchesIn: (d) => `Запуск через ${d}`,
     launchTime: (when) => `${when} по вашему времени`,
     serverLaunch: (when, region) => `${when} (${region})`,
-    backTo: (name) => `Вернуться к ${name}`,
   },
   topBar: {
     versionChip: (version, region) => `${version} · ${region}`,
