@@ -160,6 +160,8 @@ export interface VersionConfig {
   defaultRegionId: string;
   events: VersionEventBinding[];
   baseThemeId: ThemeId; // theme when no event is dominant
+  /** Theme of a day with no events (the quiet day at the inn); default `baseThemeId`. */
+  quietThemeId?: ThemeId;
   /** Shape/depth/motion tokens for this version (src/styles/version-styles.css); default classic. */
   uiStyle?: 'classic' | 'modern';
 }

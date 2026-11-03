@@ -52,7 +52,7 @@
   letter-spacing: 0.04em;
   color: var(--color-ink-on-dark);
   background: color-mix(in srgb, var(--color-frame) 85%, transparent);
-  border: 1px solid var(--color-gold);
+  border: 1px solid var(--color-rim, var(--color-gold));
   border-radius: 999px;
   cursor: pointer;
 }
@@ -71,7 +71,7 @@
 
 .iconButton:hover,
 .versionChip:hover {
-  border-color: var(--color-gold);
+  border-color: var(--color-rim, var(--color-gold));
 }
 
 .main {

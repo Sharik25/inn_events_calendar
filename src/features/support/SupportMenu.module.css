@@ -17,14 +17,14 @@
   letter-spacing: 0.04em;
   color: var(--color-ink-on-dark);
   background: color-mix(in srgb, var(--color-frame) 85%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-gold) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-rim, var(--color-gold)) 70%, transparent);
   border-radius: 999px;
   cursor: pointer;
 }
 
 .trigger:hover,
 .open {
-  border-color: var(--color-gold);
+  border-color: var(--color-rim, var(--color-gold));
 }
 
 .trigger:focus-visible {
@@ -34,7 +34,7 @@
 
 .icon {
   flex: none;
-  color: var(--color-gold);
+  color: var(--color-rim, var(--color-gold));
 }
 
 .trigger:hover .icon,

@@ -13,6 +13,9 @@ export type ThemeToken =
   | '--glow'
   | '--cell-tint'
   | '--particle-color'
+  | '--title-glow'
+  /** Rims of the date frame, chips, nav arrows and header buttons; falls back to --color-gold. */
+  | '--color-rim'
   | '--font-display';
 
 /** Theme particle kinds, plus `sparks` / `splinters` for the quiet-day hearth's side bands. */

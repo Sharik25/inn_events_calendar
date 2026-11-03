@@ -87,6 +87,9 @@ export function validateData({ events, versions, themeIds }: DataSet): string[] 
     if (!themes.has(version.baseThemeId)) {
       issues.push(`${where}: unknown baseThemeId "${version.baseThemeId}"`);
     }
+    if (version.quietThemeId && !themes.has(version.quietThemeId)) {
+      issues.push(`${where}: unknown quietThemeId "${version.quietThemeId}"`);
+    }
     const regionIds = version.regions.map((r) => r.id);
     for (const id of duplicates(regionIds)) issues.push(`${where}: duplicate region "${id}"`);
     if (!regionIds.includes(version.defaultRegionId)) {

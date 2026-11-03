@@ -13,6 +13,8 @@
   --glow: 0 0 12px rgb(232 130 58 / 0.45);
   --cell-tint: transparent;
   --particle-color: #e8823a;
+  /* Extra glow on big titles (none by default; a theme can tint it). */
+  --title-glow: 0 0 0 transparent;
 
   /* Type */
   /* Cinzel has no Cyrillic: Russian headings fall back glyph by glyph to Alegreya, not Times. */

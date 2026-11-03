@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ICAL from 'ical.js';
 import { ESTIMATED_NOTE } from '@/data/schedules';
@@ -55,5 +55,28 @@ describe('WoW: Forever holidays', () => {
     expect(event.summary).toBe('(tentative) Feast of Winter Veil');
     expect(event.description).toContain(ESTIMATED_NOTE);
     expect(event.uid).toMatch(/^forever:winter-veil:2026-12-15/);
+  });
+
+  it('a quiet day wears the Forever inn theme (brown base, sea-blue rims); Anniversary keeps its own', async () => {
+    vi.setSystemTime(new Date('2026-11-24T18:00:00Z')); // no events in either version
+    const forever = renderRoute('/forever/today');
+    await screen.findByRole('heading', { level: 1, name: 'A quiet day at the inn' });
+    await waitFor(() =>
+      expect(forever.container.querySelector('[data-theme="forever-inn"]')).toBeInTheDocument(),
+    );
+    forever.unmount();
+
+    const anniversary = renderRoute('/anniversary/today');
+    await screen.findByRole('heading', { level: 1, name: 'A quiet day at the inn' });
+    expect(anniversary.container.querySelector('[data-theme="base"]')).toBeInTheDocument();
+    expect(anniversary.container.querySelector('[data-theme="forever-inn"]')).toBeNull();
+  });
+
+  it('an event day in Forever still wears the event theme', async () => {
+    const { container } = renderRoute('/forever/today'); // Dec 20: Winter Veil
+    await screen.findByRole('heading', { level: 1, name: 'Feast of Winter Veil' });
+    await waitFor(() =>
+      expect(container.querySelector('[data-theme="winter-veil"]')).toBeInTheDocument(),
+    );
   });
 });

@@ -186,6 +186,7 @@ export const versionConfigSchema = z.strictObject({
   defaultRegionId: slug,
   events: z.array(versionEventBindingSchema),
   baseThemeId: slug,
+  quietThemeId: slug.optional(),
   uiStyle: z.enum(['classic', 'modern']).optional(),
 });
 

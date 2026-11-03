@@ -34,6 +34,8 @@ export const forever: VersionConfig = {
   regions: [{ id: 'global', label: 'All realms', timeZone: 'America/Los_Angeles' }],
   defaultRegionId: 'global',
   baseThemeId: 'forever',
+  // Quiet days: the Anniversary inn's brown with Forever's sea-blue accent (themes/forever-inn).
+  quietThemeId: 'forever-inn',
   // Same design, slightly more modern: tune it in src/styles/version-styles.css.
   uiStyle: 'modern',
   events: [

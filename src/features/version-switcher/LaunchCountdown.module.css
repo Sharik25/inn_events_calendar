@@ -3,7 +3,7 @@
   min-width: 0;
   color: var(--color-ink-on-dark);
   background: color-mix(in srgb, var(--color-frame) 85%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-gold) 60%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-rim, var(--color-gold)) 60%, transparent);
   border-radius: var(--radius-sm);
 }
 
