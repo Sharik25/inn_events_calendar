@@ -6,6 +6,7 @@ export { Checkbox } from './Checkbox/Checkbox';
 export { FestiveGarland } from './FestiveGarland/FestiveGarland';
 export { Fireplace } from './Fireplace/Fireplace';
 export { Frame } from './Frame/Frame';
+export { BeerIcon } from './Icon/BeerIcon';
 export { Icon } from './Icon/Icon';
 export { iconNames, type IconName } from './Icon/icons';
 export { ParchmentCard } from './ParchmentCard/ParchmentCard';

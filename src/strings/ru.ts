@@ -184,7 +184,7 @@ export const ru: Strings = {
     language: 'Язык',
   },
   support: {
-    beer: 'Угостите меня пивом 🍺',
+    beer: 'Угостите меня пивом',
     choose: 'Выберите, как угостить трактирщика:',
   },
   legal: {

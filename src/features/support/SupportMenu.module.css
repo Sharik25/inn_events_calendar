@@ -2,7 +2,7 @@
   position: relative;
 }
 
-/* Same family as the version chip: a gold-rimmed carved-wood pill. On phones just the mug. */
+/* Same family as the version chip: a gold-rimmed carved-wood pill. On phones just the tankard. */
 .trigger {
   display: inline-flex;
   align-items: center;
@@ -32,27 +32,27 @@
   box-shadow: var(--focus-ring);
 }
 
+.icon {
+  flex: none;
+  color: var(--color-gold);
+}
+
+.trigger:hover .icon,
+.open .icon {
+  color: var(--color-ink-on-dark);
+}
+
 .label {
   display: none;
 }
 
-.mug {
-  font-size: 1.25rem;
-  line-height: 1;
-}
-
 @media (min-width: 768px) {
   .trigger {
-    padding: 0 var(--space-4);
+    padding: 0 var(--space-4) 0 var(--space-3);
   }
 
-  /* The label already ends with the mug. */
   .label {
     display: inline;
-  }
-
-  .mug {
-    display: none;
   }
 }
 

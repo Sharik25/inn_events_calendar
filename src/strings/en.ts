@@ -179,7 +179,7 @@ export const en = {
     language: 'Language',
   },
   support: {
-    beer: 'Buy me a beer 🍺',
+    beer: 'Buy me a beer',
     choose: 'Pick a way to tip the innkeeper:',
   },
   legal: {

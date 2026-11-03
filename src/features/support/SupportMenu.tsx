@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { SUPPORT_LINKS } from '@/config';
 import { strings } from '@/strings';
-import { cx, Icon } from '@/ui';
+import { BeerIcon, cx, Icon } from '@/ui';
 import styles from './SupportMenu.module.css';
 
 /**
@@ -46,10 +46,8 @@ export function SupportMenu({ links = SUPPORT_LINKS }: { links?: typeof SUPPORT_
         aria-label={strings.support.beer}
         onClick={() => setOpen((o) => !o)}
       >
+        <BeerIcon size={22} className={styles.icon} />
         <span className={styles.label}>{strings.support.beer}</span>
-        <span className={styles.mug} aria-hidden="true">
-          🍺
-        </span>
       </button>
       {open && (
         <div id={menuId} className={styles.popover}>
