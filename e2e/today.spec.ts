@@ -130,3 +130,19 @@ test('"Coming soon" sits under the version chip: left column on desktop, on top 
   if (isMobile) expect(soon.y + soon.height).toBeLessThan(title.y);
   else expect(soon.x + soon.width).toBeLessThan(title.x); // its own column, left of the day
 });
+
+test('event highlights under the date are a plain list: no markers, no indent', async ({
+  page,
+}) => {
+  await page.goto('/anniversary/today');
+  const list = page.getByRole('list').filter({ hasText: 'Defeat the Headless Horseman' });
+  await expect(list.getByRole('listitem')).toHaveCount(3);
+  const first = list.getByRole('listitem').first();
+  expect(await first.evaluate((li) => getComputedStyle(li, '::marker').content || 'none')).toMatch(
+    /none|normal|""/,
+  );
+  expect(await list.evaluate((ul) => getComputedStyle(ul).paddingLeft)).toBe('0px');
+  // Aligned with the summary paragraph above it.
+  const summary = (await page.getByText(/^Trick-or-treat at the inns/).boundingBox())!;
+  expect(Math.abs((await first.boundingBox())!.x - summary.x)).toBeLessThanOrEqual(1);
+});
