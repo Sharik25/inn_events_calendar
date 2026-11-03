@@ -175,3 +175,27 @@ test('"Also on this day" sits in the sidebar above "Coming soon", and hides when
   await expect(page.getByRole('region', { name: 'Also on this day' })).toHaveCount(0);
   await expect(soon).toBeVisible();
 });
+
+test('a quiet day dresses "Coming soon" as inn cards that open the details', async ({ page }) => {
+  for (const version of ['anniversary', 'forever']) {
+    await page.goto(`/${version}/day/2026-11-24`);
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'A quiet day at the inn' }),
+    ).toBeVisible();
+    const soon = page.getByRole('region', { name: 'Coming soon' });
+    const card = soon.getByRole('link', {
+      name: /^Stranglethorn Fishing Extravaganza, Sun, Nov 29, in \dd$/,
+    });
+    await expect(card).toBeVisible();
+    const box = (await card.boundingBox())!;
+    expect(box.height).toBeGreaterThanOrEqual(48);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+    ).toBe(true);
+    await card.click();
+    await expect(
+      page.getByRole('dialog', { name: 'Stranglethorn Fishing Extravaganza' }),
+    ).toBeVisible();
+    await page.keyboard.press('Escape');
+  }
+});

@@ -1,10 +1,8 @@
-import { useId } from 'react';
 import { Link } from 'react-router';
 import type { EventDefinition, Occurrence } from '@/domain/types';
 import { ChecklistProgress } from '@/features/checklist/ChecklistProgress';
-import { useTheme } from '@/hooks/useTheme';
-import { uniqueSvgIds } from '@/themes/art/helpers';
-import { Icon, ThemeScope } from '@/ui';
+import { ThemeScope } from '@/ui';
+import { EventEmblem } from './EventEmblem';
 import styles from './EventRow.module.css';
 
 /**
@@ -21,22 +19,9 @@ export function EventRow({
   occurrence: Occurrence;
   href: { search: string };
 }) {
-  const theme = useTheme(def.themeId);
-  const instance = useId().replace(/[^a-zA-Z0-9]/g, '');
-
   return (
     <ThemeScope as="article" themeId={def.themeId} className={styles.row}>
-      <span className={styles.medallion} aria-hidden="true">
-        {theme.emblem ? (
-          <span
-            className={styles.emblem}
-            // Static, bundled art from theme files (never user input).
-            dangerouslySetInnerHTML={{ __html: uniqueSvgIds(theme.emblem, instance) }}
-          />
-        ) : (
-          <Icon name="flame" size={16} />
-        )}
-      </span>
+      <EventEmblem themeId={def.themeId} />
       {/* Short name like the "Coming soon" chips (the sidebar is narrow); full name for AT. */}
       <Link to={href} className={styles.link} aria-label={def.name} title={def.name}>
         {def.shortName ?? def.name}

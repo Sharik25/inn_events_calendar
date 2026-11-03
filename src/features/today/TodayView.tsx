@@ -11,10 +11,11 @@ import { UnconfirmedMarker } from '@/features/common/UnconfirmedMarker';
 import { RoutedEventSheet } from '@/features/event-sheet/RoutedEventSheet';
 import { useOccurrences } from '@/hooks/useOccurrences';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { formatDistance, formatRange } from '@/lib/format';
+import { formatRange } from '@/lib/format';
 import { strings } from '@/strings';
 import { AmbientParticles, Fireplace, Icon, ParchmentCard } from '@/ui';
 import { AddToCalendar } from '@/features/calendar-export/AddToCalendar';
+import { ComingSoonCard } from './ComingSoonCard';
 import { DateNumeral } from './DateNumeral';
 import { EventRow } from './EventRow';
 import styles from './TodayView.module.css';
@@ -49,6 +50,8 @@ export function TodayView() {
   const { dominant } = agenda;
   const dominantDef = dominant ? catalog[dominant.eventId] : undefined;
   const also = agenda.active.slice(1);
+  // A quiet day at the inn: nothing on, so "Coming soon" wears the inn cards.
+  const quiet = !dominant;
   // "Coming soon" distances count from now on Today, from the start of the viewed day otherwise.
   const soonFrom = isToday ? now.getTime() : dayRange(viewDate, userTimeZone).start.getTime();
 
@@ -82,18 +85,20 @@ export function TodayView() {
             {strings.today.comingSoon}
           </h2>
           {agenda.comingSoon.length > 0 ? (
-            <ul className={styles.chips}>
+            <ul className={quiet ? styles.innCards : styles.chips}>
               {agenda.comingSoon.map((o) => {
                 const def = catalog[o.eventId];
                 return (
                   def && (
                     <li key={o.key}>
-                      <Link to={eventHref(o.eventId)} className={styles.chip}>
-                        <span className={styles.chipName}>{def.shortName ?? def.name}</span>{' '}
-                        <time dateTime={o.start.toISOString()} className={styles.chipWhen}>
-                          {strings.today.inDistance(formatDistance(o.start.getTime() - soonFrom))}
-                        </time>
-                      </Link>
+                      <ComingSoonCard
+                        def={def}
+                        occurrence={o}
+                        href={eventHref(o.eventId)}
+                        from={soonFrom}
+                        timeZone={displayTimeZone}
+                        variant={quiet ? 'inn' : 'chip'}
+                      />
                     </li>
                   )
                 );

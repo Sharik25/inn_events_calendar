@@ -125,7 +125,24 @@ describe('Today view', () => {
     ).toBeInTheDocument();
     const soon = screen.getByRole('region', { name: 'Coming soon' });
     // Next fishing is Sun Nov 29 14:00 → 5 days after the start of Nov 24, not 33 days from now.
-    expect(within(soon).getByRole('link', { name: /Fishing in 5d/ })).toBeInTheDocument();
+    // On a quiet day the cards are the inn cards: emblem, name, date and distance.
+    const fishing = within(soon).getByRole('link', {
+      name: 'Stranglethorn Fishing Extravaganza, Sun, Nov 29, in 5d',
+    });
+    expect(fishing).toHaveClass('inn');
+    expect(fishing.querySelector('svg')).toBeInTheDocument();
+  });
+
+  it('keeps the small "Coming soon" chips on days with events', async () => {
+    renderRoute('/anniversary/day/2026-11-15'); // Darkmoon Faire
+    await screen.findByRole('heading', { level: 1, name: 'Darkmoon Faire' });
+    const soon = screen.getByRole('region', { name: 'Coming soon' });
+    const links = within(soon).getAllByRole('link');
+    expect(links.length).toBeGreaterThan(0);
+    for (const link of links) {
+      expect(link).toHaveClass('chip');
+      expect(link.querySelector('svg')).toBeNull();
+    }
   });
 
   it('shows countdowns only on Today', async () => {

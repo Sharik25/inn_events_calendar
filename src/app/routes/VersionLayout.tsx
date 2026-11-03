@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import {
   Outlet,
   useLoaderData,
@@ -107,6 +107,7 @@ export function VersionLayout() {
   // Another theme's particles and decorations only, on top (e.g. Forever's blue stars).
   const ambientTheme = useTheme(quietDay?.ambientThemeId ?? themeId);
   const ambient = quietDay?.ambientThemeId ? ambientTheme : undefined;
+  const quietAccent = ambient?.tokens['--color-accent'];
   const reducedMotion = useReducedMotion();
   const uiStyle = quietDay?.uiStyle ?? version.uiStyle ?? 'classic';
 
@@ -195,7 +196,13 @@ export function VersionLayout() {
   };
 
   return (
-    <ThemeScope themeId={themeId} withBackground className={styles.shell}>
+    <ThemeScope
+      themeId={themeId}
+      withBackground
+      className={styles.shell}
+      // The quiet day's ambient accent (Forever's blue) for the inn's own touches.
+      style={quietAccent ? ({ '--quiet-accent': quietAccent } as CSSProperties) : undefined}
+    >
       <ThemeDecorations decorations={theme.decorations} reducedMotion={reducedMotion} />
       {theme.particles && !reducedMotion && <AmbientParticles kind={theme.particles} />}
       {ambient && (
