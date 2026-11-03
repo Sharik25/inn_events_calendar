@@ -8,6 +8,7 @@ import { useSettings } from '@/state/settings';
 import { Badge, Checkbox, Icon, Segmented, Sheet } from '@/ui';
 import { useCalendarExport } from './useCalendarExport';
 import styles from './AddToCalendar.module.css';
+import { dateStatusLabel } from '@/features/common/dateStatus';
 
 /** Reminder choices for the .ics download, in minutes before the start. */
 const REMINDERS = [
@@ -30,7 +31,7 @@ function EventLine({ occurrence }: { occurrence: Occurrence }) {
       </time>
       {!occurrence.verified && (
         <Badge tone="unconfirmed" className={styles.tag}>
-          {strings.common.unconfirmed}
+          {dateStatusLabel(occurrence)}
         </Badge>
       )}
     </span>

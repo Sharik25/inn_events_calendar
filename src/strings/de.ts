@@ -24,6 +24,8 @@ export const de: Strings = {
     close: 'Schließen',
     unconfirmed: 'Unbestätigt',
     unconfirmedHint: 'Datum für diese Version noch nicht bestätigt. Prüfe den Ingame-Kalender.',
+    estimated: 'Geschätzt',
+    estimatedHint: 'Datum aus dem üblichen Jahreskalender geschätzt.',
   },
   actionBar: {
     label: 'Ansichten und Aktionen',

@@ -13,4 +13,11 @@ export const noblegarden: EventDefinition = {
     'Rabbit-themed fun',
   ],
   links: [{ label: 'Warcraft Wiki', url: 'https://warcraft.wiki.gg/wiki/Noblegarden' }],
+  // Standard yearly schedule (Classic/TBC holiday calendar): Monday after Easter, one week.
+  annual: {
+    anchor: { type: 'easter', offsetDays: 1 },
+    startTime: '10:00',
+    durationDays: 7,
+    source: 'https://www.darmory.com/events',
+  },
 };

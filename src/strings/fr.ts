@@ -25,6 +25,8 @@ export const fr: Strings = {
     unconfirmed: 'Non confirmé',
     unconfirmedHint:
       'Date pas encore confirmée pour cette version. Consultez le calendrier en jeu.',
+    estimated: 'Estimé',
+    estimatedHint: 'Date estimée d’après le calendrier annuel habituel.',
   },
   actionBar: {
     label: 'Vues et actions',

@@ -7,10 +7,10 @@ import { ChecklistProgress } from '@/features/checklist/ChecklistProgress';
 import { Countdown } from '@/features/common/Countdown';
 import { useTheme } from '@/hooks/useTheme';
 import { formatRange } from '@/lib/format';
-import { strings } from '@/strings';
 import { uniqueSvgIds } from '@/themes/art/helpers';
 import { Icon, ThemeScope } from '@/ui';
 import styles from './EventCard.module.css';
+import { dateStatusHint, dateStatusLabel } from '@/features/common/dateStatus';
 
 /**
  * A secondary event of the day, dressed in that event's own theme: accent stripe and tint,
@@ -69,7 +69,9 @@ export function EventCard({
               />
             )}
             {!occurrence.verified && (
-              <span className={styles.unconfirmed}>{strings.common.unconfirmed}</span>
+              <span className={styles.unconfirmed} title={dateStatusHint(occurrence)}>
+                {dateStatusLabel(occurrence)}
+              </span>
             )}
           </p>
         )}

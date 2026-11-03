@@ -52,7 +52,7 @@ export function EventSheet({
       <Sheet open onClose={onClose} title={def.name}>
         <div className={styles.badges}>
           <Badge>{strings.categories[def.category]}</Badge>
-          {occurrence && !occurrence.verified && <UnconfirmedMarker />}
+          {occurrence && <UnconfirmedMarker occurrence={occurrence} />}
         </div>
 
         {occurrence ? (

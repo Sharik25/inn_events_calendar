@@ -1,16 +1,28 @@
-import { strings } from '@/strings';
+import type { Occurrence } from '@/domain/types';
 import { Badge, cx, Icon, Tooltip } from '@/ui';
+import { dateStatusHint, dateStatusLabel } from './dateStatus';
 import styles from './UnconfirmedMarker.module.css';
 
-/** "Unconfirmed" badge + info tip, shown wherever an unverified date is displayed. */
-export function UnconfirmedMarker({ onDark = false }: { onDark?: boolean }) {
+/**
+ * "Unconfirmed" or "Estimated" badge + info tip, shown wherever a date that isn't confirmed is
+ * displayed. Renders nothing for a confirmed date.
+ */
+export function UnconfirmedMarker({
+  occurrence,
+  onDark = false,
+}: {
+  occurrence: Pick<Occurrence, 'verified' | 'estimated'>;
+  onDark?: boolean;
+}) {
+  const label = dateStatusLabel(occurrence);
+  if (!label) return null;
   return (
     <span className={cx(styles.marker, onDark && styles.onDark)}>
       <Badge tone="unconfirmed" className={styles.badge}>
-        {strings.common.unconfirmed}
+        {label}
       </Badge>
-      <Tooltip content={strings.common.unconfirmedHint}>
-        <button type="button" className={styles.info} aria-label={strings.common.unconfirmed}>
+      <Tooltip content={dateStatusHint(occurrence)}>
+        <button type="button" className={styles.info} aria-label={label}>
           <Icon name="info" size={20} />
         </button>
       </Tooltip>

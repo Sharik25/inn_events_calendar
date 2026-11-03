@@ -29,6 +29,26 @@ export interface EventDefinition {
    * added automatically; see engine/checklist.ts.
    */
   checklist?: Record<VersionId, ChecklistItem[]>;
+  /**
+   * Where this holiday falls in the standard (Classic/TBC) yearly schedule. Versions without
+   * confirmed dates can estimate from it (see data/schedules.ts).
+   */
+  annual?: AnnualSchedule;
+}
+
+/** How a holiday's start day is found each year. */
+export type AnnualAnchor =
+  | { type: 'date'; month: number; day: number } // Oct 18
+  | { type: 'weekday'; month: number; weekday: Weekday; nth: 1 | 2 | 3 | 4 | 'last' } // 2nd Mon of Feb
+  | { type: 'easter'; offsetDays: number } // Monday after Easter: 1
+  | { type: 'lunar-new-year'; offsetDays: number }; // day before: -1
+
+/** A holiday's slot in the standard yearly schedule (version-agnostic). */
+export interface AnnualSchedule {
+  anchor: AnnualAnchor;
+  startTime: string; // "10:00", server time
+  durationDays: number;
+  source: string; // URL of the standard schedule this follows
 }
 
 export type ChecklistItemKind = 'quest' | 'achievement' | 'task';
@@ -84,6 +104,19 @@ export type ScheduleRule =
       durationMinutes: number;
       verified: boolean;
       source?: string;
+    }
+  | {
+      kind: 'annual'; // holidays estimated from the standard yearly schedule
+      anchor: AnnualAnchor;
+      startTime: string; // "10:00" (server time)
+      durationDays: number;
+      verified: boolean;
+      /** Dates derived from the standard schedule, not from a source for this version. */
+      estimated?: boolean;
+      source?: string;
+      note?: string;
+      /** Real dates for specific years: each replaces the rule's date in the year it starts. */
+      overrides?: ExplicitOccurrence[];
     }
   | {
       kind: 'monthly'; // e.g. Darkmoon Faire
@@ -149,6 +182,8 @@ export interface Occurrence {
   location?: string; // from a monthly rotation or an explicit date
   source?: string;
   note?: string;
+  /** Estimated from the standard yearly schedule (shown as "Estimated", not just unconfirmed). */
+  estimated?: boolean;
 }
 
 /** Half-open instant range [start, end). */

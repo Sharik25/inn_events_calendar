@@ -29,6 +29,28 @@ const weekday = z.union(
 );
 const url = z.url();
 
+const nth = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal('last')]);
+const month = z.number().int().min(1).max(12);
+
+export const annualAnchorSchema = z.discriminatedUnion('type', [
+  z
+    .strictObject({ type: z.literal('date'), month, day: z.number().int().min(1).max(31) })
+    .refine(
+      ({ month: m, day }) => day <= new Date(Date.UTC(2001, m, 0)).getUTCDate(),
+      'no such day in that month',
+    ),
+  z.strictObject({ type: z.literal('weekday'), month, weekday, nth }),
+  z.strictObject({ type: z.literal('easter'), offsetDays: z.number().int() }),
+  z.strictObject({ type: z.literal('lunar-new-year'), offsetDays: z.number().int() }),
+]);
+
+export const annualScheduleSchema = z.strictObject({
+  anchor: annualAnchorSchema,
+  startTime: timeOfDay,
+  durationDays: z.number().int().positive(),
+  source: url,
+});
+
 export const rarities = ['weekly', 'monthly', 'seasonal', 'annual', 'once'] as const;
 export const eventCategories = [
   'holiday',
@@ -87,6 +109,7 @@ export const eventDefinitionSchema = z.strictObject({
   links: z.array(z.strictObject({ label: z.string().min(1), url })).optional(),
   experience: z.record(slug, eventExperienceSchema).optional(),
   checklist: z.record(slug, z.array(checklistItemSchema).min(1)).optional(),
+  annual: annualScheduleSchema.optional(),
 });
 
 export const explicitOccurrenceSchema = z.strictObject({
@@ -112,11 +135,19 @@ export const scheduleRuleSchema = z.discriminatedUnion('kind', [
     source: url.optional(),
   }),
   z.strictObject({
+    kind: z.literal('annual'),
+    anchor: annualAnchorSchema,
+    startTime: timeOfDay,
+    durationDays: z.number().int().positive(),
+    verified: z.boolean(),
+    estimated: z.boolean().optional(),
+    source: url.optional(),
+    note: z.string().min(1).optional(),
+    overrides: z.array(explicitOccurrenceSchema).optional(),
+  }),
+  z.strictObject({
     kind: z.literal('monthly'),
-    anchor: z.strictObject({
-      weekday,
-      nth: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal('last')]),
-    }),
+    anchor: z.strictObject({ weekday, nth }),
     offsetDays: z.number().int().optional(),
     startTime: timeOfDay,
     durationDays: z.number().int().positive(),

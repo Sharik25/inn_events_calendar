@@ -120,7 +120,7 @@ export function TodayView() {
                   className={styles.countdown}
                 />
               )}
-              {!dominant.verified && <UnconfirmedMarker onDark />}
+              <UnconfirmedMarker occurrence={dominant} onDark />
               <ChecklistProgress def={dominantDef} occurrence={dominant} />
             </p>
             <p className={styles.range}>

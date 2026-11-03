@@ -25,6 +25,8 @@ export const en = {
     close: 'Close',
     unconfirmed: 'Unconfirmed',
     unconfirmedHint: 'Date not yet confirmed for this version. Check the in-game calendar.',
+    estimated: 'Estimated',
+    estimatedHint: 'Date estimated from the standard yearly schedule.',
   },
   actionBar: {
     label: 'Views and actions',
