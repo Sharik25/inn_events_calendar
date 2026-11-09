@@ -25,11 +25,8 @@ export interface EventDefinition {
   links?: { label: string; url: string }[];
   /** Experience & rewards per version id (they differ between versions). Shown when present. */
   experience?: Record<VersionId, EventExperience>;
-  /**
-   * Extra checklist items per version id (achievements, tasks). Quests from `experience` are
-   * added automatically; see engine/checklist.ts.
-   */
-  checklist?: Record<VersionId, ChecklistItem[]>;
+  /** Where it takes place for each faction. Shown in the details, with its source. */
+  locations?: EventLocations;
   /**
    * Where this holiday falls in the standard (Classic/TBC) yearly schedule. Versions without
    * confirmed dates can estimate from it (see data/schedules.ts).
@@ -62,16 +59,6 @@ export interface AnnualSchedule {
   source: string; // URL of the standard schedule this follows
 }
 
-export type ChecklistItemKind = 'quest' | 'achievement' | 'task';
-
-/** One thing to tick off during an event. `id` must stay stable: saved progress refers to it. */
-export interface ChecklistItem {
-  id: string;
-  kind: ChecklistItemKind;
-  name: string;
-  source?: string; // URL
-}
-
 export interface LevelRange {
   min: number;
   max?: number;
@@ -84,9 +71,38 @@ export interface LevelRange {
 export interface EventExperience {
   xpBonus?: string; // as worded by the source, e.g. "+10% experience from kills"
   levelRange?: LevelRange;
-  quests?: { name: string; level?: LevelRange; rewards?: string[]; notes?: string }[];
+  quests?: {
+    name: string;
+    level?: LevelRange;
+    xp?: QuestExperience;
+    rewards?: string[];
+    notes?: string;
+    source?: string; // URL of this quest's page (required with `xp`)
+  }[];
   rewards?: string[];
   notes?: string;
+  source: string; // URL
+}
+
+/**
+ * Experience for completing a quest, exactly as the quest's source lists it (never estimated).
+ * Quests pay less once a character is far enough above them: `fullUpToLevel` is the highest level
+ * that still gets the full `amount`. Omit it when every level that can take the quest gets it all.
+ */
+export interface QuestExperience {
+  amount: number;
+  fullUpToLevel?: number;
+}
+
+/**
+ * Where an event takes place, per faction (at least one list), as `source` states it. English, like
+ * all event content. `what` names what the places are when that isn't obvious ("Egg hunts").
+ */
+export interface EventLocations {
+  what?: string;
+  alliance?: string[];
+  horde?: string[];
+  everyone?: string[];
   source: string; // URL
 }
 

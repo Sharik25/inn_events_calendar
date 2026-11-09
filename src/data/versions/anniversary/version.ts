@@ -12,7 +12,7 @@ const scheduleFiles = scheduleFilesFromGlob(
 
 export const anniversary: VersionConfig = {
   id: 'anniversary',
-  name: 'Anniversary (TBC Classic)',
+  name: 'Anniversary',
   shortName: 'Anniversary',
   status: 'live',
   regions: [

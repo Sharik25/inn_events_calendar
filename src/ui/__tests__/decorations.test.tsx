@@ -7,6 +7,7 @@ import { AmbientParticles, MAX_PARTICLES } from '../AmbientParticles/AmbientPart
 import { FestiveGarland } from '../FestiveGarland/FestiveGarland';
 import { Fireplace } from '../Fireplace/Fireplace';
 import { ThemeDecorations } from '../ThemeDecorations/ThemeDecorations';
+import { topStripHeight } from '../ThemeDecorations/sizes';
 
 const art =
   '<svg viewBox="0 0 10 10"><defs><linearGradient id="g"/></defs><rect fill="url(#g)"/></svg>';
@@ -147,5 +148,44 @@ describe('useReducedMotion', () => {
     act(() => useSettings.getState().setReducedMotion('off'));
     rerender();
     expect(result.current).toBe(false);
+  });
+});
+
+describe('topStripHeight', () => {
+  it('is the tallest full-width top strip, per layout; corner pieces and bottoms do not count', () => {
+    expect(topStripHeight(decorations)).toEqual({ desktop: 0, mobile: 0 });
+    expect(topStripHeight(undefined)).toEqual({ desktop: 0, mobile: 0 });
+    expect(
+      topStripHeight([
+        ...decorations,
+        { svg: art, anchor: 'top', size: 40, mobileSize: 28 },
+        { svg: art, anchor: 'top', size: 34 }, // phones: 55% → 19
+      ]),
+    ).toEqual({ desktop: 40, mobile: 28 });
+    expect(topStripHeight([{ svg: art, anchor: 'top', size: 40, mobileSize: null }])).toEqual({
+      desktop: 40,
+      mobile: 0,
+    });
+  });
+});
+
+describe('cast (fishing rods)', () => {
+  it('renders the rod with its animated parts, and mirrors it for the right corner', async () => {
+    const { fishingCast } = await import('@/themes/art/fishing');
+    const { container } = render(
+      <ThemeDecorations
+        decorations={[
+          { svg: fishingCast(), anchor: 'bottom-left', size: 120, motion: 'cast' },
+          { svg: fishingCast(true), anchor: 'bottom-right', size: 120, motion: 'cast' },
+        ]}
+      />,
+    );
+    const arts = container.querySelectorAll('[data-motion="cast"]');
+    expect(arts).toHaveLength(2);
+    for (const art of arts) {
+      for (const part of ['deco-cast-line', 'deco-cast-bobber', 'deco-cast-splash'])
+        expect(art.querySelector(`.${part}`)).not.toBeNull();
+    }
+    expect(arts[1]?.querySelector('g[transform^="matrix(-1"]')).not.toBeNull();
   });
 });

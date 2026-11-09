@@ -1,6 +1,4 @@
-import { screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { useChecklist } from '@/state/checklist';
+import { screen, waitFor, within } from '@testing-library/react';
 import { renderRoute } from '@/test/renderRoute';
 
 const NOW = new Date('2026-10-27T11:00:00Z'); // Tue Oct 27, 12:00 Paris
@@ -8,7 +6,6 @@ const NOW = new Date('2026-10-27T11:00:00Z'); // Tue Oct 27, 12:00 Paris
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'] });
   vi.setSystemTime(NOW);
-  useChecklist.setState({ done: {} });
 });
 
 afterEach(() => {
@@ -39,45 +36,100 @@ describe('event sheet: experience & rewards', () => {
       within(sheet).queryByRole('heading', { name: 'Experience & rewards' }),
     ).not.toBeInTheDocument();
   });
+
+  it("shows each quest's experience, and when it depends on the character's level", async () => {
+    renderRoute('/forever/day/2026-11-12?event=darkmoon-faire&on=2026-11-12');
+    const sheet = await screen.findByRole('dialog', { name: 'Darkmoon Faire' });
+    const quests = within(sheet).getByRole('list', { name: 'Quests' });
+    const quest = (name: string) => within(quests).getByText(name).closest('li')!;
+    expect(quest('The Darkmoon Faire')).toHaveTextContent('660 XP');
+    expect(quest('The Darkmoon Faire')).not.toHaveTextContent(/Full XP/); // the same at any level
+    expect(quest('Darkmoon Beast Deck')).toHaveTextContent('560 XP');
+    expect(quest('Darkmoon Beast Deck')).toHaveTextContent('Full XP through level 60');
+    expect(within(sheet).getByText(/six or more levels above them/)).toBeInTheDocument();
+  });
+
+  it('shows no experience block where a version has no quest data', async () => {
+    renderRoute('/anniversary/day/2026-11-12?event=darkmoon-faire&on=2026-11-12');
+    const faire = await screen.findByRole('dialog', { name: 'Darkmoon Faire' });
+    expect(within(faire).queryByText(/XP/)).not.toBeInTheDocument();
+    expect(within(faire).queryByRole('heading', { name: 'Experience & rewards' })).toBeNull();
+  });
 });
 
-describe('event sheet: checklist', () => {
-  it('ticks off a quest for this occurrence and shows progress on the cards', async () => {
-    const user = userEvent.setup();
-    // Sun Oct 25: Hallow's End leads, the fishing contest is an "Also on this day" card.
-    renderRoute('/anniversary/day/2026-10-25');
-    await screen.findByRole('heading', { level: 1, name: "Hallow's End" });
-    const card = screen.getByRole('link', { name: 'Stranglethorn Fishing Extravaganza' });
-    const article = card.closest('article')!;
-    expect(within(article).getByLabelText('0 of 1 done')).toHaveTextContent('✓ 0/1');
-    // Hallow's End has no checklist data: no pill on the hero.
-    expect(screen.queryByLabelText(/of \d+ done/, { selector: '[class*="timing"] *' })).toBeNull();
+describe('event sheet: battleground weeks', () => {
+  it('shows the week’s details and no experience block', async () => {
+    renderRoute('/forever/day/2026-11-12?event=call-to-arms-warsong-gulch&on=2026-11-12');
+    const sheet = await screen.findByRole('dialog', { name: 'Call to Arms: Warsong Gulch' });
+    expect(within(sheet).getByText('PvP')).toBeInTheDocument();
+    expect(
+      within(sheet).getByText('Increased Honor in Warsong Gulch all week'),
+    ).toBeInTheDocument();
+    expect(within(sheet).queryByRole('heading', { name: 'Experience & rewards' })).toBeNull();
+  });
+});
 
-    await user.click(card);
-    const sheet = await screen.findByRole('dialog', { name: 'Stranglethorn Fishing Extravaganza' });
-    const checklist = within(sheet).getByRole('region', { name: /Checklist/ });
-    const quest = within(checklist).getByRole('checkbox', { name: /Master Angler/ });
-    await user.click(quest);
-    expect(quest).toBeChecked();
-    expect(within(checklist).getByText('1 of 1 done')).toBeInTheDocument();
-    expect(within(article).getByLabelText('1 of 1 done')).toHaveTextContent('✓ 1/1');
-    expect(Object.keys(useChecklist.getState().done)).toEqual([
-      'anniversary:stv-fishing:2026-10-25T13:00:00.000Z',
-    ]);
+describe('event sheet: where (per faction)', () => {
+  it('lists the Alliance and Horde places with the note, in both versions', async () => {
+    for (const path of [
+      '/forever/day/2026-12-20?event=winter-veil&on=2026-12-20',
+      '/anniversary/day/2026-12-20?event=winter-veil&on=2026-12-20',
+    ]) {
+      const { unmount } = renderRoute(path);
+      const sheet = await screen.findByRole('dialog', { name: 'Feast of Winter Veil' });
+      expect(within(sheet).getByRole('heading', { name: 'Where' })).toBeInTheDocument();
+      expect(within(sheet).getByText('Greatfather Winter visits')).toBeInTheDocument();
+      expect(within(sheet).getByText('Alliance').nextElementSibling).toHaveTextContent('Ironforge');
+      expect(within(sheet).getByText('Horde').nextElementSibling).toHaveTextContent('Orgrimmar');
+      expect(within(sheet).getByText(/As the current game holds it/)).toBeInTheDocument();
+      // Same page as "Learn more": its source isn't listed twice.
+      expect(within(sheet).queryByRole('link', { name: /Location source/ })).toBeNull();
+      unmount();
+    }
   });
 
-  it('starts fresh for the next occurrence', async () => {
-    useChecklist.setState({
-      done: { 'anniversary:stv-fishing:2026-10-25T13:00:00.000Z': ['quest-master-angler'] },
-    });
-    renderRoute('/anniversary/day/2026-11-22');
-    await screen.findByRole('heading', { level: 1, name: 'Stranglethorn Fishing Extravaganza' });
-    expect(screen.getByLabelText('0 of 1 done')).toBeInTheDocument();
+  it('shows every town for the egg hunt, and nothing for an event without places', async () => {
+    const { unmount } = renderRoute('/anniversary/today?event=noblegarden');
+    const sheet = await screen.findByRole('dialog', { name: 'Noblegarden' });
+    expect(within(sheet).getByText('Horde').nextElementSibling).toHaveTextContent(
+      'Razor Hill, Bloodhoof Village, Brill, Falconwing Square',
+    );
+    unmount();
+    renderRoute('/anniversary/today?event=new-year');
+    const newYear = await screen.findByRole('dialog', { name: /New Year/ });
+    expect(within(newYear).queryByRole('heading', { name: 'Where' })).toBeNull();
+  });
+});
+
+describe('event sheet: dressed in its event', () => {
+  // Nov 12, 2026 in Forever: the page wears the Darkmoon Faire (Warsong Gulch week also on).
+  it('keeps the page’s main event plain and dresses every other event', async () => {
+    const faire = renderRoute('/forever/day/2026-11-12?event=darkmoon-faire&on=2026-11-12');
+    const plain = await screen.findByRole('dialog', { name: 'Darkmoon Faire' });
+    expect(plain).not.toHaveAttribute('data-themed');
+    expect(screen.queryByTestId('sheet-banner')).toBeNull();
+    faire.unmount();
+
+    renderRoute('/forever/day/2026-11-12?event=call-to-arms-warsong-gulch&on=2026-11-12');
+    const pvp = await screen.findByRole('dialog', { name: 'Call to Arms: Warsong Gulch' });
+    expect(pvp).toHaveAttribute('data-themed');
+    expect(screen.getByTestId('sheet-banner').style.backgroundImage).toContain('svg');
+    expect(pvp.closest('[data-theme]')).toHaveAttribute('data-theme', 'pvp');
   });
 
-  it('has no checklist for events without checklist data', async () => {
-    renderRoute('/anniversary/today?event=hallows-end');
+  it('uses a theme’s own sheet banner when it has one (fishing: rods and bobbers)', async () => {
+    renderRoute('/forever/day/2026-11-12?event=stv-fishing&on=2026-11-15');
+    await screen.findByRole('dialog', { name: 'Stranglethorn Fishing Extravaganza' });
+    const banner = await screen.findByTestId('sheet-banner');
+    await waitFor(() =>
+      expect(decodeURIComponent(banner.style.backgroundImage)).toContain('fb-rod'),
+    );
+  });
+
+  it('dresses an event without strip art with its accent and emblem only', async () => {
+    renderRoute('/anniversary/day/2026-11-26?event=hallows-end');
     const sheet = await screen.findByRole('dialog', { name: "Hallow's End" });
-    expect(within(sheet).queryByRole('region', { name: /Checklist/ })).toBeNull();
+    expect(sheet).toHaveAttribute('data-themed');
+    expect(screen.queryByTestId('sheet-banner')).toBeNull();
   });
 });

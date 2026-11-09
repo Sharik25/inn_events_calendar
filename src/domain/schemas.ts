@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import type {
   CalendarExportConfig,
-  ChecklistItem,
   WeeklySchedule,
   EventDefinition,
   EventExperience,
+  EventLocations,
   ExplicitOccurrence,
   Region,
   ScheduleFile,
@@ -83,12 +83,21 @@ export const eventExperienceSchema = z
     levelRange: levelRange.optional(),
     quests: z
       .array(
-        z.strictObject({
-          name: z.string().min(1),
-          level: levelRange.optional(),
-          rewards: z.array(z.string().min(1)).min(1).optional(),
-          notes: z.string().min(1).optional(),
-        }),
+        z
+          .strictObject({
+            name: z.string().min(1),
+            level: levelRange.optional(),
+            xp: z
+              .strictObject({
+                amount: z.number().int().positive(),
+                fullUpToLevel: z.number().int().min(1).optional(),
+              })
+              .optional(),
+            rewards: z.array(z.string().min(1)).min(1).optional(),
+            notes: z.string().min(1).optional(),
+            source: url.optional(),
+          })
+          .refine((q) => !q.xp || q.source, 'a quest with xp needs its own source'),
       )
       .min(1)
       .optional(),
@@ -101,12 +110,17 @@ export const eventExperienceSchema = z
     'needs at least one fact besides source',
   );
 
-export const checklistItemSchema = z.strictObject({
-  id: slug,
-  kind: z.enum(['quest', 'achievement', 'task']),
-  name: z.string().min(1),
-  source: url.optional(),
-});
+const places = z.array(z.string().min(1)).min(1).optional();
+
+export const eventLocationsSchema = z
+  .strictObject({
+    what: z.string().min(1).optional(),
+    alliance: places,
+    horde: places,
+    everyone: places,
+    source: url,
+  })
+  .refine((l) => l.alliance || l.horde || l.everyone, 'needs at least one list of places');
 
 export const eventDefinitionSchema = z.strictObject({
   id: slug,
@@ -120,7 +134,7 @@ export const eventDefinitionSchema = z.strictObject({
   highlights: z.array(z.string().min(1)).optional(),
   links: z.array(z.strictObject({ label: z.string().min(1), url })).optional(),
   experience: z.record(slug, eventExperienceSchema).optional(),
-  checklist: z.record(slug, z.array(checklistItemSchema).min(1)).optional(),
+  locations: eventLocationsSchema.optional(),
   annual: annualScheduleSchema.optional(),
   weekly: weeklyScheduleSchema.optional(),
 });
@@ -248,7 +262,7 @@ type Assert<T extends true> = T;
 export type SchemaTypeChecks = [
   Assert<Equals<z.infer<typeof eventDefinitionSchema>, EventDefinition>>,
   Assert<Equals<z.infer<typeof eventExperienceSchema>, EventExperience>>,
-  Assert<Equals<z.infer<typeof checklistItemSchema>, ChecklistItem>>,
+  Assert<Equals<z.infer<typeof eventLocationsSchema>, EventLocations>>,
   Assert<Equals<z.infer<typeof weeklyScheduleSchema>, WeeklySchedule>>,
   Assert<Equals<z.infer<typeof explicitOccurrenceSchema>, ExplicitOccurrence>>,
   Assert<Equals<z.infer<typeof scheduleRuleSchema>, ScheduleRule>>,

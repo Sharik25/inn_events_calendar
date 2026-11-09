@@ -4,7 +4,6 @@ import { paths, withEvent } from '@/app/paths';
 import { useVersionView } from '@/app/versionView';
 import { buildDayAgenda } from '@/engine/agenda';
 import { addDays, dayRange } from '@/engine/time';
-import { ChecklistProgress } from '@/features/checklist/ChecklistProgress';
 import { Countdown } from '@/features/common/Countdown';
 import { LaunchCountdown } from '@/features/version-switcher/LaunchCountdown';
 import { UnconfirmedMarker } from '@/features/common/UnconfirmedMarker';
@@ -72,7 +71,7 @@ export function TodayView() {
                 return (
                   def && (
                     <li key={o.key}>
-                      <EventRow def={def} occurrence={o} href={eventHref(o.eventId)} />
+                      <EventRow def={def} href={eventHref(o.eventId)} />
                     </li>
                   )
                 );
@@ -150,7 +149,6 @@ export function TodayView() {
                 />
               )}
               <UnconfirmedMarker occurrence={dominant} onDark />
-              <ChecklistProgress def={dominantDef} occurrence={dominant} />
             </p>
             <p className={styles.range}>
               <time dateTime={dominant.start.toISOString()}>

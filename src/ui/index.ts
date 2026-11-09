@@ -4,6 +4,7 @@ export { AmbientParticles } from './AmbientParticles/AmbientParticles';
 export { Badge } from './Badge/Badge';
 export { Checkbox } from './Checkbox/Checkbox';
 export { FestiveGarland } from './FestiveGarland/FestiveGarland';
+export { GARLAND_HEIGHT } from './FestiveGarland/garlandHeight';
 export { Fireplace } from './Fireplace/Fireplace';
 export { Frame } from './Frame/Frame';
 export { BeerIcon } from './Icon/BeerIcon';

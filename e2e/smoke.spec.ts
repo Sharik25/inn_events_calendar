@@ -49,7 +49,7 @@ test('header beer button opens Wise and PayPal without breaking the layout', asy
   for (const path of ['/forever/today', '/anniversary/today', '/anniversary/month/2026-10']) {
     await page.goto(path);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-    const beer = page.getByRole('button', { name: 'Buy me a beer' });
+    const beer = page.getByRole('button', { name: 'Gift a beer' });
     const settings = page.getByRole('button', { name: 'Settings' });
     const b = (await beer.boundingBox())!;
     const s = (await settings.boundingBox())!;

@@ -24,7 +24,9 @@ import { useOccurrences } from '@/hooks/useOccurrences';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useSwipeNav } from '@/hooks/useSwipeNav';
 import { useTheme } from '@/hooks/useTheme';
-import { useRegionId, userTimeZone, useSettings } from '@/state/settings';
+import { topStripOf } from '@/themes';
+import { FEATURES } from '@/config';
+import { defaultSettings, useRegionId, userTimeZone, useSettings } from '@/state/settings';
 import { strings } from '@/strings';
 import {
   ActionBar,
@@ -32,6 +34,7 @@ import {
   ActionButton,
   AmbientParticles,
   FestiveGarland,
+  GARLAND_HEIGHT,
   Icon,
   ThemeDecorations,
   ThemeScope,
@@ -40,6 +43,8 @@ import { paths, type ViewMode } from '../paths';
 import type { VersionView } from '../versionView';
 import type { VersionLoaderData } from './loaders';
 import styles from './VersionLayout.module.css';
+
+const DEFAULT_HIDDEN = defaultSettings().hiddenCategories;
 
 /**
  * Shell for /:versionId/*: themed by the viewed date's dominant event (Month view: by the month's
@@ -57,7 +62,10 @@ export function VersionLayout() {
   const [pickerOpen, setPickerOpen] = useState(false);
 
   const chooseVersion = useSettings((s) => s.chooseVersion);
-  const hiddenCategories = useSettings((s) => s.hiddenCategories);
+  const savedHiddenCategories = useSettings((s) => s.hiddenCategories);
+  // With the "Events shown" filter hidden (FEATURES), the default applies: a saved choice the
+  // user can no longer see or undo would hide events for good.
+  const hiddenCategories = FEATURES.eventFilter ? savedHiddenCategories : DEFAULT_HIDDEN;
   const timeDisplay = useSettings((s) => s.timeDisplay);
   const weekStartsOn = useSettings((s) => s.weekStartsOn);
   const region = findRegion(version, useRegionId(version));
@@ -119,6 +127,25 @@ export function VersionLayout() {
       delete root.dataset.versionStyle;
     };
   }, [uiStyle]);
+
+  // The tallest decoration along the top edge (theme strips, the December garland): the interface
+  // starts below it (--top-decoration-offset in global.css). On <html> for the sheets as well.
+  const garland = themeId === 'winter-veil';
+  const strips = [themeId, quietDay?.ambientThemeId].map(topStripOf);
+  const topDesktop = Math.max(
+    ...strips.map((h) => h.desktop),
+    garland ? GARLAND_HEIGHT.desktop : 0,
+  );
+  const topMobile = Math.max(...strips.map((h) => h.mobile), garland ? GARLAND_HEIGHT.mobile : 0);
+  useEffect(() => {
+    const { style } = document.documentElement;
+    style.setProperty('--top-decoration-height', `${topDesktop}px`);
+    style.setProperty('--top-decoration-height-m', `${topMobile}px`);
+    return () => {
+      style.removeProperty('--top-decoration-height');
+      style.removeProperty('--top-decoration-height-m');
+    };
+  }, [topDesktop, topMobile]);
 
   const view: VersionView = useMemo(() => {
     const hrefFor = (target: ViewMode, date: LocalDate) => {
@@ -212,7 +239,7 @@ export function VersionLayout() {
           {ambient.particles && !reducedMotion && <AmbientParticles kind={ambient.particles} />}
         </ThemeScope>
       )}
-      {themeId === 'winter-veil' && <FestiveGarland reducedMotion={reducedMotion} />}
+      {garland && <FestiveGarland reducedMotion={reducedMotion} />}
 
       <header className={styles.topBar}>
         <button

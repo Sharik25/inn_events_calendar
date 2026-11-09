@@ -10,7 +10,7 @@ import {
 
 const forever: VersionConfig = {
   id: 'forever',
-  name: 'WoW: Forever',
+  name: 'Forever',
   shortName: 'Forever',
   status: 'upcoming',
   launches: [

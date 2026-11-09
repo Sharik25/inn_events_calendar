@@ -23,7 +23,7 @@ const scheduleFiles = scheduleFilesFromGlob(
  */
 export const forever: VersionConfig = {
   id: 'forever',
-  name: 'WoW: Forever',
+  name: 'Forever',
   shortName: 'Forever',
   status: 'upcoming',
   // Launch days, countdown lines and calendar entries per part of the world. The first launch

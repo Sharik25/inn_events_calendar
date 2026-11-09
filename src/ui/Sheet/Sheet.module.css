@@ -16,7 +16,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  max-height: 85dvh;
+  max-height: min(85dvh, calc(100dvh - var(--top-decoration-offset) - var(--space-2)));
   display: flex;
   flex-direction: column;
   color: var(--color-ink);
@@ -85,6 +85,45 @@
   background: rgb(255 255 255 / 0.3);
 }
 
+/*
+ * A sheet dressed in its theme (decoration): the accent on its edge and a light tint on the header,
+ * a strip of the theme's art across the top (below the drag handle on phones), and an icon before
+ * the title. Text stays ink on parchment.
+ */
+.panel[data-themed] {
+  border-top-color: var(--color-accent);
+}
+
+.panel[data-themed] .header {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-accent) 18%, transparent),
+    transparent 85%
+  );
+}
+
+.banner {
+  --banner-height: 26px;
+  position: absolute;
+  top: 28px; /* below the drag handle */
+  left: 0;
+  right: 0;
+  height: var(--banner-height);
+  pointer-events: none;
+  background-repeat: repeat-x;
+  background-position: top center;
+  background-size: auto 100%;
+}
+
+.panel[data-banner] .header {
+  padding-top: calc(var(--banner-height, 26px) + var(--space-1));
+}
+
+.titleIcon {
+  flex: none;
+  margin-top: var(--space-2);
+}
+
 .body {
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -94,7 +133,8 @@
 @media (min-width: 768px) {
   .panel {
     left: auto;
-    top: 0;
+    /* Below the top decorations, like the rest of the interface. */
+    top: var(--top-decoration-offset);
     width: min(440px, 100vw);
     max-height: none;
     border-top: 0;
@@ -106,6 +146,19 @@
 
   .handle {
     display: none;
+  }
+
+  .panel[data-themed] {
+    border-left-color: var(--color-accent);
+  }
+
+  .banner {
+    --banner-height: 34px;
+    top: 0;
+  }
+
+  .panel[data-banner] .header {
+    padding-top: calc(34px + var(--space-3));
   }
 
   .header {

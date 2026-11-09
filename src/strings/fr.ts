@@ -18,7 +18,7 @@ export const fr: Strings = {
   },
   app: {
     name: "Innkeeper's Almanac",
-    tagline: 'Ce qui se passe en Azeroth aujourd’hui — approchez une chaise du foyer.',
+    tagline: 'Ce qui se passe à l’auberge aujourd’hui — approchez une chaise du foyer.',
   },
   common: {
     close: 'Fermer',
@@ -80,22 +80,20 @@ export const fr: Strings = {
     levels: 'Niveaux',
     levelRange: (min, max) =>
       max === undefined ? `${min}+` : min === max ? `${min}` : `${min}–${max}`,
+    where: 'Où',
+    alliance: 'Alliance',
+    horde: 'Horde',
+    everyone: 'Tout le monde',
+    locationsNote:
+      'Comme dans le jeu actuel (Warcraft Wiki) ; pas encore confirmé pour cette version.',
+    locationsSource: 'Source des lieux',
     quests: 'Quêtes',
+    xp: (amount) => `${amount} PX`,
+    xpFullThrough: (level) => `PX complets jusqu’au niveau ${level}`,
     rewards: 'Récompenses',
     experienceSource: 'Source des récompenses',
     notFound: 'Cet évènement n’a pas de dates dans cette version.',
     opensInNewTab: '(s’ouvre dans un nouvel onglet)',
-  },
-  checklist: {
-    title: 'Liste de tâches',
-    progress: (done, total) => `${done}/${total}`,
-    progressLabel: (done, total) => `Terminé : ${done} sur ${total}`,
-    hint: 'Enregistré sur cet appareil. Repart de zéro à chaque retour de l’évènement.',
-    kinds: {
-      quest: 'Quête',
-      achievement: 'Haut fait',
-      task: 'Tâche',
-    },
   },
   categories: {
     holiday: 'Fête',
@@ -163,7 +161,7 @@ export const fr: Strings = {
     title: 'Paramètres et infos',
     about: 'À propos',
     aboutText:
-      'Un calendrier fait par des fans des évènements en jeu de World of Warcraft classique. Les dates viennent de sources communautaires et d’annonces officielles ; les dates non confirmées sont signalées.',
+      'Un calendrier fait par des fans des évènements en jeu des royaumes Forever et Anniversary. Les dates viennent de sources communautaires et d’annonces officielles ; les dates non confirmées sont signalées.',
   },
   notFound: {
     title: 'Perdu dans le Twisting Nether',
@@ -189,7 +187,7 @@ export const fr: Strings = {
     language: 'Langue',
   },
   support: {
-    beer: 'Offrez-moi une bière',
+    beer: 'Offrir une bière',
     choose: 'Choisissez comment laisser un pourboire à l’aubergiste :',
   },
   legal: {

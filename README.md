@@ -124,3 +124,9 @@ A version's launch is data: `launches` in its config, one entry per part of the 
 - the version turns live at the first launch, and events that ended before it are left out.
 
 Changing a launch date is editing `at` there.
+
+## Data sources
+
+WoW: Forever's event dates come from [Wowhead](https://www.wowhead.com/forever/events#holidays),
+exported by hand and committed as a snapshot (see [docs/wowhead-sync.md](docs/wowhead-sync.md)).
+Each event's details link to the page its dates come from. Thanks, Wowhead.

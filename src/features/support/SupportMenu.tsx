@@ -5,7 +5,7 @@ import { BeerIcon, cx, Icon } from '@/ui';
 import styles from './SupportMenu.module.css';
 
 /**
- * Header tip jar: a "Buy me a beer" button that opens a small menu of payment links
+ * Header tip jar: a "Gift a beer" button that opens a small menu of payment links
  * (SUPPORT_LINKS). Closes on outside click and Escape (focus returns to the button). Plain links,
  * no tracking.
  */

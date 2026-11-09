@@ -23,8 +23,13 @@ export type ParticleKind =
 export type DecorationAnchor =
   'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'top' | 'bottom';
 
-/** `burst`: a firework that opens, glows and fades, then rests for most of its loop. */
-export type DecorationMotion = 'sway' | 'bob' | 'float' | 'flicker' | 'pulse' | 'spin' | 'burst';
+/**
+ * `burst`: a firework that opens, glows and fades, then rests for most of its loop.
+ * `cast`: a fishing rod drops its bobber into the water and reels it back in (art with
+ * `deco-cast-*` parts, see art/fishing.ts `fishingCast`).
+ */
+export type DecorationMotion =
+  'sway' | 'bob' | 'float' | 'flicker' | 'pulse' | 'spin' | 'burst' | 'cast';
 
 /** One piece of original SVG art placed around the page. Pure data: no UI code per theme. */
 export interface Decoration {
@@ -64,6 +69,11 @@ export interface ThemeDefinition {
   numeral?: { ornament?: NumeralOrnament };
   /** Small square art that identifies the event (card medallions, markers). */
   emblem?: string;
+  /**
+   * Seamless strip art across the top of this theme's event details sheet. Default: its top strip
+   * decoration, else its bottom one.
+   */
+  sheetBanner?: string;
   /** Small art in the corner of week/month day cells this theme leads (e.g. a launch burst). */
   dayAccent?: string;
   /** Kept minimal: edge garlands/strips and small animated accents, no large corner objects. */

@@ -1,6 +1,5 @@
 import { Link } from 'react-router';
-import type { EventDefinition, Occurrence } from '@/domain/types';
-import { ChecklistProgress } from '@/features/checklist/ChecklistProgress';
+import type { EventDefinition } from '@/domain/types';
 import { ThemeScope } from '@/ui';
 import { EventEmblem } from './EventEmblem';
 import styles from './EventRow.module.css';
@@ -8,17 +7,9 @@ import styles from './EventRow.module.css';
 /**
  * Compact sidebar row for another event of the day: the event's emblem in a small medallion and
  * its (short) name, linking to its details (the whole row is the tap target), dressed in the event's own
- * theme accent. Shows checklist progress when the event has a checklist.
+ * theme accent.
  */
-export function EventRow({
-  def,
-  occurrence,
-  href,
-}: {
-  def: EventDefinition;
-  occurrence: Occurrence;
-  href: { search: string };
-}) {
+export function EventRow({ def, href }: { def: EventDefinition; href: { search: string } }) {
   return (
     <ThemeScope as="article" themeId={def.themeId} className={styles.row}>
       <EventEmblem themeId={def.themeId} />
@@ -26,7 +17,6 @@ export function EventRow({
       <Link to={href} className={styles.link} aria-label={def.name} title={def.name}>
         {def.shortName ?? def.name}
       </Link>
-      <ChecklistProgress def={def} occurrence={occurrence} className={styles.progress} />
     </ThemeScope>
   );
 }

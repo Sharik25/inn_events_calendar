@@ -122,3 +122,8 @@ export function formatDistance(ms: number): string {
   if (ms >= HOUR_MS) return u().h(Math.floor(ms / HOUR_MS));
   return u().lessThanHour;
 }
+
+/** "2,900" in the active language ("2.900" in German). */
+export function formatNumber(n: number): string {
+  return new Intl.NumberFormat(strings.meta.locale).format(n);
+}

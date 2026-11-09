@@ -178,7 +178,7 @@ test('"Also on this day" sits in the sidebar above "Coming soon", and hides when
 
 test('a quiet day dresses "Coming soon" as inn cards that open the details', async ({ page }) => {
   for (const version of ['anniversary', 'forever']) {
-    await page.goto(`/${version}/day/2026-11-24`);
+    await page.goto(`/${version}/day/2026-11-26`); // after Forever's battleground weeks
     await expect(
       page.getByRole('heading', { level: 1, name: 'A quiet day at the inn' }),
     ).toBeVisible();

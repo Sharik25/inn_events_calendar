@@ -18,7 +18,7 @@ export const de: Strings = {
   },
   app: {
     name: "Innkeeper's Almanac",
-    tagline: 'Was heute in Azeroth los ist – rück einen Stuhl ans Feuer.',
+    tagline: 'Was heute im Gasthaus los ist – rück einen Stuhl ans Feuer.',
   },
   common: {
     close: 'Schließen',
@@ -79,22 +79,20 @@ export const de: Strings = {
     levels: 'Stufen',
     levelRange: (min, max) =>
       max === undefined ? `${min}+` : min === max ? `${min}` : `${min}–${max}`,
+    where: 'Wo',
+    alliance: 'Allianz',
+    horde: 'Horde',
+    everyone: 'Alle',
+    locationsNote:
+      'So wie im aktuellen Spiel (Warcraft Wiki); für diese Version noch nicht bestätigt.',
+    locationsSource: 'Quelle der Orte',
     quests: 'Quests',
+    xp: (amount) => `${amount} EP`,
+    xpFullThrough: (level) => `Volle EP bis Stufe ${level}`,
     rewards: 'Belohnungen',
     experienceSource: 'Quelle der Belohnungen',
     notFound: 'Für dieses Event gibt es in dieser Version keine Termine.',
     opensInNewTab: '(öffnet in neuem Tab)',
-  },
-  checklist: {
-    title: 'Checkliste',
-    progress: (done, total) => `${done}/${total}`,
-    progressLabel: (done, total) => `${done} von ${total} erledigt`,
-    hint: 'Auf diesem Gerät gespeichert. Beginnt jedes Mal neu, wenn das Event wiederkehrt.',
-    kinds: {
-      quest: 'Quest',
-      achievement: 'Erfolg',
-      task: 'Aufgabe',
-    },
   },
   categories: {
     holiday: 'Feiertag',
@@ -162,7 +160,7 @@ export const de: Strings = {
     title: 'Einstellungen & Infos',
     about: 'Über',
     aboutText:
-      'Ein von Fans gemachter Kalender der Ingame-Events für klassisches World of Warcraft. Die Termine stammen aus Community-Quellen und offiziellen News; unbestätigte Termine sind gekennzeichnet.',
+      'Ein von Fans gemachter Kalender der Ingame-Events für die Realms Forever und Anniversary. Die Termine stammen aus Community-Quellen und offiziellen News; unbestätigte Termine sind gekennzeichnet.',
   },
   notFound: {
     title: 'Verloren im Twisting Nether',
@@ -188,7 +186,7 @@ export const de: Strings = {
     language: 'Sprache',
   },
   support: {
-    beer: 'Spendier mir ein Bier',
+    beer: 'Ein Bier spendieren',
     choose: 'Wähle, wie du dem Wirt Trinkgeld gibst:',
   },
   legal: {

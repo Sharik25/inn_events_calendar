@@ -26,7 +26,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe('WoW: Forever holidays', () => {
+describe('Forever holidays', () => {
   it('shows an estimated holiday with the same card, an "Estimated" tag and the reason', async () => {
     renderRoute('/forever/today');
     expect(
@@ -58,7 +58,7 @@ describe('WoW: Forever holidays', () => {
   });
 
   it("a quiet day is the Anniversary inn with Forever's blue stars on top", async () => {
-    vi.setSystemTime(new Date('2026-11-24T18:00:00Z')); // no events in either version
+    vi.setSystemTime(new Date('2026-11-26T18:00:00Z')); // no events in either version
     const forever = renderRoute('/forever/today');
     await screen.findByRole('heading', { level: 1, name: 'A quiet day at the inn' });
     const shell = forever.container.querySelector('[data-theme]')!;
@@ -90,22 +90,27 @@ describe('WoW: Forever holidays', () => {
   });
 });
 
-describe('WoW: Forever launch day', () => {
+describe('Forever launch day', () => {
   // Tests run in Paris: the worldwide launch (Nov 4, 15:00 PT) is midnight going into Nov 5 here.
   it('dresses the launch day, with Europe and America on one card', async () => {
     vi.setSystemTime(new Date('2026-11-04T22:30:00Z'));
     const { container } = renderRoute('/forever/day/2026-11-05');
     await screen.findByRole('heading', {
       level: 1,
-      name: 'WoW: Forever launch (Europe & America)',
+      name: 'Forever launch (Europe & America)',
     });
     await waitFor(() =>
       expect(container.querySelector('[data-theme="forever-launch"]')).toBeInTheDocument(),
     );
     expect(screen.getByText('Thu, Nov 5, 00:00')).toBeInTheDocument();
     expect(screen.getByText(/Servers open at the same moment in Europe/)).toBeInTheDocument();
-    // One card: nothing else on the day, so no "Also on this day".
-    expect(screen.queryByRole('region', { name: 'Also on this day' })).not.toBeInTheDocument();
+    // One launch card: "Also on this day" holds only the battleground week, no second launch.
+    const also = screen.getByRole('region', { name: 'Also on this day' });
+    expect(
+      within(also)
+        .getAllByRole('link')
+        .map((l) => l.textContent),
+    ).toEqual([expect.stringContaining('Arathi Basin')]);
     // The countdown is still up: launch is 30 minutes away.
     expect(screen.getByTestId('launch-countdown')).toHaveTextContent('Launches in 30m');
   });
@@ -127,7 +132,7 @@ describe('WoW: Forever launch day', () => {
     renderRoute('/forever/day/2026-11-05');
     await screen.findByRole('heading', {
       level: 1,
-      name: 'WoW: Forever launch (Europe & America)',
+      name: 'Forever launch (Europe & America)',
     });
     expect(screen.queryByTestId('launch-countdown')).not.toBeInTheDocument();
   });
@@ -178,7 +183,7 @@ describe('Add to calendar: the whole event or one day of it', () => {
     renderRoute('/forever/day/2026-11-05');
     await screen.findByRole('heading', {
       level: 1,
-      name: 'WoW: Forever launch (Europe & America)',
+      name: 'Forever launch (Europe & America)',
     });
     await user.click(screen.getByRole('button', { name: 'Add to calendar' }));
     const sheet = await screen.findByRole('dialog', { name: 'Add to calendar' });

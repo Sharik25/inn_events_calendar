@@ -20,6 +20,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npx prettier --check .
+      # The committed Wowhead snapshot must match the committed export (docs/wowhead-sync.md).
+      - run: npm run sync:wowhead -- --check
       - run: npm run coverage
       - run: npm run build
       - run: npx playwright install --with-deps chromium webkit

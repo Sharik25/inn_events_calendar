@@ -12,7 +12,7 @@ const ofEvent = (id: string) => occurrences.filter((o) => o.eventId === id);
 const wall = (d: Date) =>
   d.toLocaleString('sv-SE', { timeZone: 'America/Los_Angeles' }).slice(0, 16).replace(' ', 'T');
 
-describe('WoW: Forever data', () => {
+describe('Forever data', () => {
   it('has the four Darkmoon Faire visits from the game client, with their sites', () => {
     expect(
       ofEvent('darkmoon-faire').map((o) => [o.start.toISOString(), o.location, o.verified]),
@@ -132,7 +132,7 @@ describe('launch', () => {
       ['forever-launch-eu-na', '2026-11-04T23:00:00.000Z', '2026-11-04T23:01:00.000Z', true],
     ]);
     expect(catalog['forever-launch-eu-na']).toMatchObject({
-      name: 'WoW: Forever launch (Europe & America)',
+      name: 'Forever launch (Europe & America)',
       shortName: 'Europe & America launch',
       themeId: 'forever-launch',
       summary:
@@ -180,10 +180,52 @@ describe('launch', () => {
       locationLabel: 'Location',
     });
     const vevents = (feed?.content ?? '').split('BEGIN:VEVENT').slice(1);
-    const launch = vevents.filter((v) => v.includes('SUMMARY:WoW: Forever launch'));
+    const launch = vevents.filter((v) => v.includes('SUMMARY:Forever launch'));
     expect(launch).toHaveLength(1);
-    expect(launch[0]).toContain('SUMMARY:WoW: Forever launch (Europe & America)');
+    expect(launch[0]).toContain('SUMMARY:Forever launch (Europe & America)');
     expect(launch[0]).toContain('DTSTART:20261104T230000Z');
     expect(launch[0]).toContain('UID:forever:forever-launch-eu-na:2026-11-04T23:00:00.000Z');
+  });
+});
+
+describe('battleground holiday weeks (Call to Arms)', () => {
+  const catalog = Object.fromEntries(eventDefinitions.map((d) => [d.id, d]));
+  const pvp = occurrences.filter((o) => catalog[o.eventId]?.category === 'pvp');
+
+  it("Forever has the three weeks from Wowhead's Forever calendar, Tuesday 07:00 to Tuesday", () => {
+    expect(pvp.map((o) => [o.eventId, wall(o.start), wall(o.end)])).toEqual([
+      ['call-to-arms-arathi-basin', '2026-11-03T07:00', '2026-11-10T07:00'],
+      ['call-to-arms-warsong-gulch', '2026-11-10T07:00', '2026-11-17T07:00'],
+      ['call-to-arms-darkspear-islands', '2026-11-17T07:00', '2026-11-24T07:00'],
+    ]);
+    for (const o of pvp) {
+      expect(o.verified).toBe(false); // Wowhead gives no time zone for 07:00
+      expect(o.estimated).toBeUndefined();
+      expect(o.source).toMatch(/^https:\/\/www\.wowhead\.com\/forever\/event=\d+\//);
+      expect(o.note).toMatch(/Wowhead.*without a time zone/);
+    }
+  });
+
+  it('Anniversary has no PvP events', () => {
+    const all = expandOccurrences(anniversary, 'eu', span).concat(
+      expandOccurrences(anniversary, 'us', span),
+    );
+    expect(all.filter((o) => catalog[o.eventId]?.category === 'pvp')).toEqual([]);
+    expect(anniversary.events.some((b) => b.eventId.startsWith('call-to-arms'))).toBe(false);
+  });
+
+  it('are exported to calendars like every other event, marked tentative', () => {
+    const [feed] = buildFeeds([forever], catalog, span, {
+      appName: 'Test',
+      appUrl: 'https://example.test/app',
+      tentativeLabel: 'tentative',
+      locationLabel: 'Location',
+    });
+    const vevents = (feed?.content ?? '').split('BEGIN:VEVENT').slice(1);
+    const ab = vevents.filter((v) => v.includes('Call to Arms: Arathi Basin'));
+    expect(ab).toHaveLength(1);
+    expect(ab[0]).toContain('SUMMARY:(tentative) Call to Arms: Arathi Basin');
+    expect(ab[0]).toContain('DTSTART:20261103T150000Z'); // 07:00 PST
+    expect(ab[0]).toContain('CATEGORIES:pvp');
   });
 });

@@ -22,7 +22,7 @@ export const ru: Strings = {
   },
   app: {
     name: "Innkeeper's Almanac",
-    tagline: 'Что сегодня происходит в Азероте — придвиньте стул к очагу.',
+    tagline: 'Что сегодня происходит в таверне — придвиньте стул к очагу.',
   },
   common: {
     close: 'Закрыть',
@@ -83,22 +83,20 @@ export const ru: Strings = {
     levels: 'Уровни',
     levelRange: (min, max) =>
       max === undefined ? `${min}+` : min === max ? `${min}` : `${min}–${max}`,
+    where: 'Где',
+    alliance: 'Альянс',
+    horde: 'Орда',
+    everyone: 'Все',
+    locationsNote:
+      'Как в текущей версии игры (Warcraft Wiki); для этой версии ещё не подтверждено.',
+    locationsSource: 'Источник мест',
     quests: 'Задания',
+    xp: (amount) => `${amount} опыта`,
+    xpFullThrough: (level) => `Полный опыт до ${level} уровня включительно`,
     rewards: 'Награды',
     experienceSource: 'Источник наград',
     notFound: 'У этого события нет дат в этой версии.',
     opensInNewTab: '(откроется в новой вкладке)',
-  },
-  checklist: {
-    title: 'Чек-лист',
-    progress: (done, total) => `${done}/${total}`,
-    progressLabel: (done, total) => `Выполнено ${done} из ${total}`,
-    hint: 'Сохраняется на этом устройстве. Начинается заново каждый раз, когда событие возвращается.',
-    kinds: {
-      quest: 'Задание',
-      achievement: 'Достижение',
-      task: 'Дело',
-    },
   },
   categories: {
     holiday: 'Праздник',
@@ -165,7 +163,7 @@ export const ru: Strings = {
     title: 'Настройки и информация',
     about: 'О проекте',
     aboutText:
-      'Фанатский календарь внутриигровых событий классического World of Warcraft. Даты взяты из источников сообщества и официальных новостей; неподтверждённые даты отмечены.',
+      'Фанатский календарь внутриигровых событий миров Forever и Anniversary. Даты взяты из источников сообщества и официальных новостей; неподтверждённые даты отмечены.',
   },
   notFound: {
     title: 'Затерян в Twisting Nether',
@@ -191,7 +189,7 @@ export const ru: Strings = {
     language: 'Язык',
   },
   support: {
-    beer: 'Угостите меня пивом',
+    beer: 'Угостить пивом',
     choose: 'Выберите, как угостить трактирщика:',
   },
   legal: {

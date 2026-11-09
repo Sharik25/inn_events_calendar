@@ -4,6 +4,22 @@
   box-sizing: border-box;
 }
 
+/*
+ * Room at the top for decorations along the top edge (a garland, bunting) or the iOS notch,
+ * whichever is taller. The layout sets --top-decoration-height(-m) on <html> from the active theme
+ * (0 when there is none), so portals (sheets) can use it too. The top bar adds its own padding on top
+ * as the buffer.
+ */
+:root {
+  --top-decoration-offset: max(env(safe-area-inset-top, 0px), var(--top-decoration-height-m, 0px));
+}
+
+@media (min-width: 768px) {
+  :root {
+    --top-decoration-offset: max(env(safe-area-inset-top, 0px), var(--top-decoration-height, 0px));
+  }
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;

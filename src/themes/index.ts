@@ -35,9 +35,41 @@ const themeLoaders: Record<ThemeId, ThemeLoader> = {
   'harvest-festival': () => import('./harvest-festival/theme'),
   forever: () => import('./forever/theme'),
   'forever-launch': () => import('./forever-launch/theme'),
+  pvp: () => import('./pvp/theme'),
 };
 
 export const themeIds: readonly ThemeId[] = Object.keys(themeLoaders);
+
+export interface TopStripHeight {
+  desktop: number;
+  mobile: number;
+}
+
+const BUNTING: TopStripHeight = { desktop: 40, mobile: 28 };
+const NO_STRIP: TopStripHeight = { desktop: 0, mobile: 0 };
+
+/**
+ * Height (px) of each theme's strip along the top edge (its `anchor: 'top'` decoration), known
+ * before the theme's lazy chunk loads: the layout makes room for it on the first paint instead of
+ * jumping when the theme arrives. Add a line when a theme gets a top strip; a test checks these
+ * against the themes' decorations.
+ */
+const topStrips: Partial<Record<ThemeId, TopStripHeight>> = {
+  'winter-veil': { desktop: 34, mobile: 24 },
+  fireworks: BUNTING,
+  'darkmoon-faire': BUNTING,
+  'love-is-in-the-air': BUNTING,
+  'childrens-week': BUNTING,
+  midsummer: BUNTING,
+  brewfest: BUNTING,
+  'harvest-festival': BUNTING,
+  'forever-launch': BUNTING,
+  pvp: { desktop: 56, mobile: 38 },
+};
+
+export function topStripOf(id: ThemeId | undefined): TopStripHeight {
+  return (id && topStrips[id]) || NO_STRIP;
+}
 
 const cache = new Map<ThemeId, ThemeDefinition>([['base', baseTheme]]);
 

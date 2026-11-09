@@ -19,7 +19,7 @@ export const en = {
   },
   app: {
     name: "Innkeeper's Almanac",
-    tagline: 'What is happening in Azeroth today — pull up a chair by the hearth.',
+    tagline: 'What’s on at the inn today — pull up a chair by the hearth.',
   },
   common: {
     close: 'Close',
@@ -80,22 +80,21 @@ export const en = {
     levels: 'Levels',
     levelRange: (min: number, max?: number) =>
       max === undefined ? `${min}+` : min === max ? `${min}` : `${min}–${max}`,
+    where: 'Where',
+    alliance: 'Alliance',
+    horde: 'Horde',
+    everyone: 'Everyone',
+    locationsNote:
+      'As the current game holds it (Warcraft Wiki); not confirmed for this version yet.',
+    locationsSource: 'Location source',
     quests: 'Quests',
+    /** Experience from one quest; `amount` is already formatted. */
+    xp: (amount: string) => `${amount} XP`,
+    xpFullThrough: (level: number) => `Full XP through level ${level}`,
     rewards: 'Rewards',
     experienceSource: 'Rewards source',
     notFound: 'This event has no dates in this version.',
     opensInNewTab: '(opens in a new tab)',
-  },
-  checklist: {
-    title: 'Checklist',
-    progress: (done: number, total: number) => `${done}/${total}`,
-    progressLabel: (done: number, total: number) => `${done} of ${total} done`,
-    hint: 'Saved on this device. Starts fresh each time the event comes around.',
-    kinds: {
-      quest: 'Quest',
-      achievement: 'Achievement',
-      task: 'Task',
-    },
   },
   categories: {
     holiday: 'Holiday',
@@ -160,7 +159,7 @@ export const en = {
     title: 'Settings & info',
     about: 'About',
     aboutText:
-      'A fan-made calendar of in-game events for classic World of Warcraft. Dates come from community sources and official news; unconfirmed dates are marked.',
+      'A fan-made calendar of in-game events for the Forever and Anniversary realms. Dates come from community sources and official news; unconfirmed dates are marked.',
   },
   notFound: {
     title: 'Lost in the Twisting Nether',
@@ -186,7 +185,7 @@ export const en = {
     language: 'Language',
   },
   support: {
-    beer: 'Buy me a beer',
+    beer: 'Gift a beer',
     choose: 'Pick a way to tip the innkeeper:',
   },
   legal: {

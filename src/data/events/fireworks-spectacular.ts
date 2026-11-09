@@ -14,6 +14,14 @@ export const fireworksSpectacular: EventDefinition = {
     'A one-day celebration during Midsummer',
   ],
   links: [{ label: 'Warcraft Wiki', url: 'https://warcraft.wiki.gg/wiki/Fireworks_Spectacular' }],
+  // Per faction, as Warcraft Wiki describes the current game: not confirmed for a version yet.
+  locations: {
+    what: 'Fireworks vendors',
+    alliance: ['Ironforge', 'Stormwind City'],
+    horde: ['Orgrimmar'],
+    everyone: ['Ratchet', 'Booty Bay'],
+    source: 'https://warcraft.wiki.gg/wiki/Fireworks_Spectacular',
+  },
   // Standard yearly schedule (Classic/TBC holiday calendar): July 4, one day.
   annual: {
     anchor: { type: 'date', month: 7, day: 4 },
