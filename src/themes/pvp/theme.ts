@@ -1,5 +1,4 @@
-import { crossedSwords } from '../art/pvp';
-import { bunting } from '../art/shared';
+import { crossedSwords, warGarland } from '../art/pvp';
 import type { ThemeDefinition } from '../types';
 
 /** Battleground holiday weeks: Forever's midnight slate with a crimson battle accent. */
@@ -30,8 +29,6 @@ export const theme: ThemeDefinition = {
   particles: 'embers',
   numeral: { ornament: { svg: crossedSwords, placement: 'corner', size: 44 } },
   emblem: crossedSwords,
-  // Two banners facing off (crimson and blue) with gold between, along the top edge.
-  decorations: [
-    { svg: bunting(['#b8333a', '#e6c06a', '#2f5d9e']), anchor: 'top', size: 40, mobileSize: 28 },
-  ],
+  // A war garland along the top edge: helmet, shield and crossed swords hung on a rope.
+  decorations: [{ svg: warGarland, anchor: 'top', size: 56, mobileSize: 38 }],
 };

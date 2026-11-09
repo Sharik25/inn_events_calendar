@@ -64,7 +64,7 @@ const topStrips: Partial<Record<ThemeId, TopStripHeight>> = {
   brewfest: BUNTING,
   'harvest-festival': BUNTING,
   'forever-launch': BUNTING,
-  pvp: BUNTING,
+  pvp: { desktop: 56, mobile: 38 },
 };
 
 export function topStripOf(id: ThemeId | undefined): TopStripHeight {
