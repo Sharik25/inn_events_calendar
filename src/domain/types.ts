@@ -26,11 +26,6 @@ export interface EventDefinition {
   /** Experience & rewards per version id (they differ between versions). Shown when present. */
   experience?: Record<VersionId, EventExperience>;
   /**
-   * Extra checklist items per version id (achievements, tasks). Quests from `experience` are
-   * added automatically; see engine/checklist.ts.
-   */
-  checklist?: Record<VersionId, ChecklistItem[]>;
-  /**
    * Where this holiday falls in the standard (Classic/TBC) yearly schedule. Versions without
    * confirmed dates can estimate from it (see data/schedules.ts).
    */
@@ -60,16 +55,6 @@ export interface AnnualSchedule {
   startTime: string; // "10:00", server time
   durationDays: number;
   source: string; // URL of the standard schedule this follows
-}
-
-export type ChecklistItemKind = 'quest' | 'achievement' | 'task';
-
-/** One thing to tick off during an event. `id` must stay stable: saved progress refers to it. */
-export interface ChecklistItem {
-  id: string;
-  kind: ChecklistItemKind;
-  name: string;
-  source?: string; // URL
 }
 
 export interface LevelRange {

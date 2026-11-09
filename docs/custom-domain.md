@@ -33,7 +33,7 @@ No `CNAME` file is needed: Pages ignores it for workflow deployments.
 - Calendar subscriptions keep working through that redirect, but tell subscribers the
   new feed address (Settings → Subscribe) so they don't depend on it.
 - The installed PWA and saved settings belong to the old origin: visitors start fresh
-  once (default language, Forever, no checklist ticks).
+  once (default language, Forever).
 
 To go back, delete the `CUSTOM_DOMAIN` variable, remove the domain under Settings → Pages,
 and re-run the deploy.

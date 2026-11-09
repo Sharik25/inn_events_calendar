@@ -86,17 +86,6 @@ export const fr: Strings = {
     notFound: 'Cet évènement n’a pas de dates dans cette version.',
     opensInNewTab: '(s’ouvre dans un nouvel onglet)',
   },
-  checklist: {
-    title: 'Liste de tâches',
-    progress: (done, total) => `${done}/${total}`,
-    progressLabel: (done, total) => `Terminé : ${done} sur ${total}`,
-    hint: 'Enregistré sur cet appareil. Repart de zéro à chaque retour de l’évènement.',
-    kinds: {
-      quest: 'Quête',
-      achievement: 'Haut fait',
-      task: 'Tâche',
-    },
-  },
   categories: {
     holiday: 'Fête',
     faire: 'Foire',

@@ -45,7 +45,3 @@
 .row:has(.link:focus-visible) {
   box-shadow: var(--focus-ring);
 }
-
-.progress {
-  flex: none;
-}

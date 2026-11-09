@@ -1,7 +1,6 @@
 import type { z } from 'zod';
 import { eventDefinitionSchema, versionConfigSchema } from '@/domain/schemas';
 import type { EventDefinition, ScheduleRule, VersionConfig } from '@/domain/types';
-import { checklistItems } from '@/engine/checklist';
 import { isValidTimeZone, wallTimeToInstant } from '@/engine/time';
 
 export interface DataSet {
@@ -68,12 +67,6 @@ export function validateData({ events, versions, themeIds }: DataSet): string[] 
     for (const versionId of Object.keys(event.experience ?? {})) {
       if (!versionIds.has(versionId))
         issues.push(`event "${event.id}": experience for unknown version "${versionId}"`);
-    }
-    for (const versionId of Object.keys(event.checklist ?? {})) {
-      if (!versionIds.has(versionId))
-        issues.push(`event "${event.id}": checklist for unknown version "${versionId}"`);
-      for (const id of duplicates(checklistItems(event, versionId).map((i) => i.id)))
-        issues.push(`event "${event.id}": checklist item id "${id}" is used twice`);
     }
   }
 

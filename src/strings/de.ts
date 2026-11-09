@@ -85,17 +85,6 @@ export const de: Strings = {
     notFound: 'Für dieses Event gibt es in dieser Version keine Termine.',
     opensInNewTab: '(öffnet in neuem Tab)',
   },
-  checklist: {
-    title: 'Checkliste',
-    progress: (done, total) => `${done}/${total}`,
-    progressLabel: (done, total) => `${done} von ${total} erledigt`,
-    hint: 'Auf diesem Gerät gespeichert. Beginnt jedes Mal neu, wenn das Event wiederkehrt.',
-    kinds: {
-      quest: 'Quest',
-      achievement: 'Erfolg',
-      task: 'Aufgabe',
-    },
-  },
   categories: {
     holiday: 'Feiertag',
     faire: 'Jahrmarkt',

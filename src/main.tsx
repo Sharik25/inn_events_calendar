@@ -8,6 +8,9 @@ import './styles/tokens.css';
 import './styles/version-styles.css';
 import './styles/global.css';
 import { App } from './app/App';
+import { removeLegacyStorage } from './state/legacyStorage';
+
+removeLegacyStorage();
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Root element #root not found');

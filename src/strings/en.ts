@@ -86,17 +86,6 @@ export const en = {
     notFound: 'This event has no dates in this version.',
     opensInNewTab: '(opens in a new tab)',
   },
-  checklist: {
-    title: 'Checklist',
-    progress: (done: number, total: number) => `${done}/${total}`,
-    progressLabel: (done: number, total: number) => `${done} of ${total} done`,
-    hint: 'Saved on this device. Starts fresh each time the event comes around.',
-    kinds: {
-      quest: 'Quest',
-      achievement: 'Achievement',
-      task: 'Task',
-    },
-  },
   categories: {
     holiday: 'Holiday',
     faire: 'Faire',

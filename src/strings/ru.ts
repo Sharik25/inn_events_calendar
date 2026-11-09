@@ -89,17 +89,6 @@ export const ru: Strings = {
     notFound: 'У этого события нет дат в этой версии.',
     opensInNewTab: '(откроется в новой вкладке)',
   },
-  checklist: {
-    title: 'Чек-лист',
-    progress: (done, total) => `${done}/${total}`,
-    progressLabel: (done, total) => `Выполнено ${done} из ${total}`,
-    hint: 'Сохраняется на этом устройстве. Начинается заново каждый раз, когда событие возвращается.',
-    kinds: {
-      quest: 'Задание',
-      achievement: 'Достижение',
-      task: 'Дело',
-    },
-  },
   categories: {
     holiday: 'Праздник',
     faire: 'Ярмарка',
