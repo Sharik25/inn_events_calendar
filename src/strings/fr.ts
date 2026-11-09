@@ -18,7 +18,7 @@ export const fr: Strings = {
   },
   app: {
     name: "Innkeeper's Almanac",
-    tagline: 'Ce qui se passe en Azeroth aujourd’hui — approchez une chaise du foyer.',
+    tagline: 'Ce qui se passe à l’auberge aujourd’hui — approchez une chaise du foyer.',
   },
   common: {
     close: 'Fermer',
@@ -154,7 +154,7 @@ export const fr: Strings = {
     title: 'Paramètres et infos',
     about: 'À propos',
     aboutText:
-      'Un calendrier fait par des fans des évènements en jeu de World of Warcraft classique. Les dates viennent de sources communautaires et d’annonces officielles ; les dates non confirmées sont signalées.',
+      'Un calendrier fait par des fans des évènements en jeu des royaumes Forever et Anniversary. Les dates viennent de sources communautaires et d’annonces officielles ; les dates non confirmées sont signalées.',
   },
   notFound: {
     title: 'Perdu dans le Twisting Nether',

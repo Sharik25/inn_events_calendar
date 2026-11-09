@@ -19,7 +19,7 @@ export const en = {
   },
   app: {
     name: "Innkeeper's Almanac",
-    tagline: 'What is happening in Azeroth today — pull up a chair by the hearth.',
+    tagline: 'What’s on at the inn today — pull up a chair by the hearth.',
   },
   common: {
     close: 'Close',
@@ -152,7 +152,7 @@ export const en = {
     title: 'Settings & info',
     about: 'About',
     aboutText:
-      'A fan-made calendar of in-game events for classic World of Warcraft. Dates come from community sources and official news; unconfirmed dates are marked.',
+      'A fan-made calendar of in-game events for the Forever and Anniversary realms. Dates come from community sources and official news; unconfirmed dates are marked.',
   },
   notFound: {
     title: 'Lost in the Twisting Nether',

@@ -27,12 +27,12 @@ describe('version picker', () => {
     expect(slot).toHaveAttribute('aria-expanded', 'true');
 
     const picker = screen.getByRole('dialog', { name: 'Choose version' });
-    const anniversary = within(picker).getByRole('button', { name: /Anniversary \(TBC Classic\)/ });
+    const anniversary = within(picker).getByRole('button', { name: /Anniversary/ });
     expect(anniversary).toHaveAttribute('aria-current', 'true');
     expect(anniversary).toHaveFocus();
     expect(anniversary).toHaveTextContent('Live');
     // 3:00 pm PT on Nov 4 = 00:00 on Nov 5 for a Paris user.
-    const forever = within(picker).getByRole('button', { name: /WoW: Forever/ });
+    const forever = within(picker).getByRole('button', { name: /Forever/ });
     expect(forever).toHaveTextContent('Launches Thu, Nov 5, 00:00');
 
     await user.click(forever);
@@ -49,7 +49,11 @@ describe('version picker', () => {
     await user.click(screen.getByRole('button', { name: 'Anniversary · Europe' }));
     expect(screen.getByRole('dialog', { name: 'Choose version' })).toBeInTheDocument();
     await user.keyboard('{ArrowDown}');
-    expect(screen.getByRole('button', { name: /WoW: Forever/ })).toHaveFocus();
+    expect(
+      within(screen.getByRole('dialog', { name: 'Choose version' })).getByRole('button', {
+        name: /Forever/,
+      }),
+    ).toHaveFocus();
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('dialog', { name: 'Choose version' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Anniversary · Europe' })).toHaveFocus();
@@ -61,13 +65,13 @@ describe('version picker', () => {
   });
 });
 
-describe('WoW: Forever before and after launch', () => {
+describe('Forever before and after launch', () => {
   it('shows the calendar with a compact launch countdown under the switcher', async () => {
     renderRoute('/forever/month/2026-11');
     expect(
       await screen.findByRole('heading', { level: 1, name: 'November 2026' }),
     ).toBeInTheDocument();
-    const countdown = screen.getByRole('region', { name: 'WoW: Forever' });
+    const countdown = screen.getByRole('region', { name: 'Forever' });
     expect(within(countdown).getByText('Launches in 8d 12h')).toBeInTheDocument();
     // One worldwide moment: one line for Europe and America, with each one's announced time.
     expect(within(countdown).getAllByTestId('launch-line')).toHaveLength(1);
@@ -85,7 +89,7 @@ describe('WoW: Forever before and after launch', () => {
 
   it('puts the countdown above "Coming soon" in the Day view', async () => {
     renderRoute('/forever/today');
-    const countdown = await screen.findByRole('region', { name: 'WoW: Forever' });
+    const countdown = await screen.findByRole('region', { name: 'Forever' });
     const soon = screen.getByRole('region', { name: 'Coming soon' });
     expect(countdown.compareDocumentPosition(soon) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(countdown.parentElement).toBe(soon.parentElement);
@@ -101,13 +105,17 @@ describe('WoW: Forever before and after launch', () => {
     expect(screen.queryByText(/Launches in/)).not.toBeInTheDocument();
     expect(screen.queryByTestId('launch-countdown')).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Version' }));
-    expect(screen.getByRole('button', { name: /WoW: Forever/ })).toHaveTextContent('Live');
+    expect(
+      within(screen.getByRole('dialog', { name: 'Choose version' })).getByRole('button', {
+        name: /Forever/,
+      }),
+    ).toHaveTextContent('Live');
   });
 
   it('settings for a realmless version hide the region switcher and offer its one feed', async () => {
     const user = userEvent.setup();
     renderRoute('/forever/today');
-    await screen.findByRole('heading', { name: 'WoW: Forever' });
+    await screen.findByRole('heading', { name: 'Forever' });
     await user.click(screen.getByRole('button', { name: 'Settings' }));
     const sheet = await screen.findByRole('dialog', { name: 'Settings & info' });
     expect(within(sheet).queryByRole('group', { name: 'Server region' })).not.toBeInTheDocument();
@@ -126,7 +134,11 @@ describe('WoW: Forever before and after launch', () => {
     expect(useSettings.getState().chosenVersionId).toBeNull();
 
     await user.click(screen.getByRole('button', { name: 'Version' }));
-    await user.click(screen.getByRole('button', { name: /Anniversary \(TBC Classic\)/ }));
+    await user.click(
+      within(screen.getByRole('dialog', { name: 'Choose version' })).getByRole('button', {
+        name: /Anniversary/,
+      }),
+    );
     expect(useSettings.getState().chosenVersionId).toBe('anniversary');
   });
 });

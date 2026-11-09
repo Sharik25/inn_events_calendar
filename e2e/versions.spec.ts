@@ -9,7 +9,7 @@ test('version picker switches to Forever keeping view and date, and back', async
   await page.getByRole('button', { name: 'Version' }).click();
   const picker = page.getByRole('dialog', { name: 'Choose version' });
   await expect(picker).toBeVisible();
-  await picker.getByRole('button', { name: /WoW: Forever/ }).click();
+  await picker.getByRole('button', { name: /Forever/ }).click();
 
   await expect(page).toHaveURL(/\/forever\/month\/2026-11$/);
   // Before launch: Forever's calendar, with a compact countdown row instead of a launch screen.

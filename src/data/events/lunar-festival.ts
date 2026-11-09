@@ -6,7 +6,7 @@ export const lunarFestival: EventDefinition = {
   category: 'holiday',
   rarity: 'annual',
   themeId: 'lunar-festival',
-  summary: 'Honor the Elders scattered across Azeroth and celebrate the new year in Moonglade.',
+  summary: 'Honor the Elders scattered across the world and celebrate the new year in Moonglade.',
   highlights: [
     'Seek out the Elders for Coins of Ancestry',
     'Fireworks and lanterns in Moonglade',

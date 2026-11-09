@@ -44,7 +44,7 @@ p { margin: 24px 0 0; font-size: 34px; line-height: 1.3; color: #e9d8b6; }
 .emblem { width: 64px; height: 64px; border-radius: 50%; border: 3px solid #d4a64a; background: #2e1c10; display: grid; place-items: center; }
 .emblem svg { width: 40px; height: 40px; }
 </style></head><body><div class="icon">${appIcon()}</div>
-<div><h1>Innkeeper's Almanac</h1><p>What's happening in Azeroth today: in-game events for classic WoW, with your calendar.</p>
+<div><h1>Innkeeper's Almanac</h1><p>What's on at the inn today: in-game events for the Forever and Anniversary realms, with your calendar.</p>
 <div class="emblems">${emblems}</div></div></body></html>`;
 }
 

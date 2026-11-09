@@ -26,7 +26,8 @@ export default defineConfig({
       manifest: {
         name: APP_NAME,
         short_name: 'Almanac',
-        description: 'A cozy fan-made calendar of in-game events for classic World of Warcraft.',
+        description:
+          'A cozy fan-made calendar of in-game events for the Forever and Anniversary realms.',
         // Relative to the manifest, so the app installs correctly under any base path.
         start_url: '.',
         scope: '.',

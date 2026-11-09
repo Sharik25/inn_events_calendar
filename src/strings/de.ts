@@ -18,7 +18,7 @@ export const de: Strings = {
   },
   app: {
     name: "Innkeeper's Almanac",
-    tagline: 'Was heute in Azeroth los ist – rück einen Stuhl ans Feuer.',
+    tagline: 'Was heute im Gasthaus los ist – rück einen Stuhl ans Feuer.',
   },
   common: {
     close: 'Schließen',
@@ -153,7 +153,7 @@ export const de: Strings = {
     title: 'Einstellungen & Infos',
     about: 'Über',
     aboutText:
-      'Ein von Fans gemachter Kalender der Ingame-Events für klassisches World of Warcraft. Die Termine stammen aus Community-Quellen und offiziellen News; unbestätigte Termine sind gekennzeichnet.',
+      'Ein von Fans gemachter Kalender der Ingame-Events für die Realms Forever und Anniversary. Die Termine stammen aus Community-Quellen und offiziellen News; unbestätigte Termine sind gekennzeichnet.',
   },
   notFound: {
     title: 'Verloren im Twisting Nether',

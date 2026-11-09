@@ -97,7 +97,7 @@ test('settings offer the feed for the selected region', async ({ page }) => {
   );
 });
 
-test('WoW: Forever after launch: Faire day, location, .ics export and its own feed', async ({
+test('Forever after launch: Faire day, location, .ics export and its own feed', async ({
   page,
   request,
 }) => {
@@ -125,9 +125,7 @@ test('WoW: Forever after launch: Faire day, location, .ics export and its own fe
   );
 });
 
-test('WoW: Forever fishing Sunday: estimated contest, details and .ics export', async ({
-  page,
-}) => {
+test('Forever fishing Sunday: estimated contest, details and .ics export', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-11-08T18:00:00Z')); // Sun Nov 8, after launch
   await page.goto('/forever/today');
   await expect(
@@ -152,11 +150,11 @@ test('WoW: Forever fishing Sunday: estimated contest, details and .ics export', 
   );
 });
 
-test('WoW: Forever launch: Europe and America export as one entry', async ({ page }) => {
+test('Forever launch: Europe and America export as one entry', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-11-04T22:30:00Z')); // 23:30 in Paris
   await page.goto('/forever/day/2026-11-05'); // the launch is midnight in Paris
   await expect(
-    page.getByRole('heading', { level: 1, name: 'WoW: Forever launch (Europe & America)' }),
+    page.getByRole('heading', { level: 1, name: 'Forever launch (Europe & America)' }),
   ).toBeVisible();
   await expect(page.getByRole('region', { name: 'Also on this day' })).toHaveCount(0);
 
@@ -167,7 +165,7 @@ test('WoW: Forever launch: Europe and America export as one entry', async ({ pag
       .getByRole('link', { name: 'Google Calendar', exact: true })
       .getAttribute('href')) ?? '',
   );
-  expect(google.searchParams.get('text')).toBe('WoW: Forever launch (Europe & America)');
+  expect(google.searchParams.get('text')).toBe('Forever launch (Europe & America)');
   expect(google.searchParams.get('dates')).toBe('20261104T230000Z/20261104T230100Z');
   expect(google.searchParams.get('details')).toContain(
     'Servers open at the same moment in Europe (Thu, Nov 5, 2026, 00:00 GMT+1) and America (Wed, Nov 4, 2026, 15:00 GMT-8).',
@@ -183,6 +181,6 @@ test('WoW: Forever launch: Europe and America export as one entry', async ({ pag
   expect(launch?.uid).toBe(
     'forever:forever-launch-eu-na:2026-11-04T23:00:00.000Z@innkeepers-almanac',
   );
-  expect(launch?.summary).toBe('WoW: Forever launch (Europe & America)');
+  expect(launch?.summary).toBe('Forever launch (Europe & America)');
   expect(launch?.startDate.toJSDate().toISOString()).toBe('2026-11-04T23:00:00.000Z');
 });

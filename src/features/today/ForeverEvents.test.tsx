@@ -26,7 +26,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe('WoW: Forever holidays', () => {
+describe('Forever holidays', () => {
   it('shows an estimated holiday with the same card, an "Estimated" tag and the reason', async () => {
     renderRoute('/forever/today');
     expect(
@@ -90,14 +90,14 @@ describe('WoW: Forever holidays', () => {
   });
 });
 
-describe('WoW: Forever launch day', () => {
+describe('Forever launch day', () => {
   // Tests run in Paris: the worldwide launch (Nov 4, 15:00 PT) is midnight going into Nov 5 here.
   it('dresses the launch day, with Europe and America on one card', async () => {
     vi.setSystemTime(new Date('2026-11-04T22:30:00Z'));
     const { container } = renderRoute('/forever/day/2026-11-05');
     await screen.findByRole('heading', {
       level: 1,
-      name: 'WoW: Forever launch (Europe & America)',
+      name: 'Forever launch (Europe & America)',
     });
     await waitFor(() =>
       expect(container.querySelector('[data-theme="forever-launch"]')).toBeInTheDocument(),
@@ -127,7 +127,7 @@ describe('WoW: Forever launch day', () => {
     renderRoute('/forever/day/2026-11-05');
     await screen.findByRole('heading', {
       level: 1,
-      name: 'WoW: Forever launch (Europe & America)',
+      name: 'Forever launch (Europe & America)',
     });
     expect(screen.queryByTestId('launch-countdown')).not.toBeInTheDocument();
   });
@@ -178,7 +178,7 @@ describe('Add to calendar: the whole event or one day of it', () => {
     renderRoute('/forever/day/2026-11-05');
     await screen.findByRole('heading', {
       level: 1,
-      name: 'WoW: Forever launch (Europe & America)',
+      name: 'Forever launch (Europe & America)',
     });
     await user.click(screen.getByRole('button', { name: 'Add to calendar' }));
     const sheet = await screen.findByRole('dialog', { name: 'Add to calendar' });
