@@ -35,6 +35,7 @@ const themeLoaders: Record<ThemeId, ThemeLoader> = {
   'harvest-festival': () => import('./harvest-festival/theme'),
   forever: () => import('./forever/theme'),
   'forever-launch': () => import('./forever-launch/theme'),
+  pvp: () => import('./pvp/theme'),
 };
 
 export const themeIds: readonly ThemeId[] = Object.keys(themeLoaders);
@@ -63,6 +64,7 @@ const topStrips: Partial<Record<ThemeId, TopStripHeight>> = {
   brewfest: BUNTING,
   'harvest-festival': BUNTING,
   'forever-launch': BUNTING,
+  pvp: BUNTING,
 };
 
 export function topStripOf(id: ThemeId | undefined): TopStripHeight {

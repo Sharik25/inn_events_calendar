@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "notes": "Server-time dates (America/Los_Angeles) for WoW: Forever. Wowhead lists no world events for Forever (Nov 3, 2026); only the Darkmoon Faire has dates, read from the game client by Bind on Forever. Add other events only with a source, each with verified, source and (if unverified) a note.",
+  "notes": "Server-time dates (America/Los_Angeles) for WoW: Forever. The Darkmoon Faire dates were read from the game client by Bind on Forever; the battleground holiday weeks (Call to Arms) come from Wowhead's Forever calendar (Nov 9, 2026). Wowhead lists no other dated world events for Forever yet. Add other events only with a source, each with verified, source and (if unverified) a note.",
   "events": {
     "darkmoon-faire": [
       {
@@ -18,6 +18,33 @@
         "source": "https://bindonforever.com/articles/build-70707",
         "note": "Client data from build 1.60.1.70707 (Oct 30, 2026), not announced by Blizzard and may change. Each visit lasts a week; time of day is assumed (00:00 server time, as on Anniversary).",
         "location": "Mulgore (below Thunder Bluff)"
+      }
+    ],
+    "call-to-arms-arathi-basin": [
+      {
+        "start": "2026-11-03T07:00",
+        "end": "2026-11-10T07:00",
+        "verified": false,
+        "source": "https://www.wowhead.com/forever/event=1841/call-to-arms-arathi-basin",
+        "note": "From Wowhead's Forever calendar (client data, patch 1.60.1), not announced by Blizzard. Wowhead gives 7:00 AM without a time zone; read as Pacific server time, like Forever's other events."
+      }
+    ],
+    "call-to-arms-warsong-gulch": [
+      {
+        "start": "2026-11-10T07:00",
+        "end": "2026-11-17T07:00",
+        "verified": false,
+        "source": "https://www.wowhead.com/forever/event=1842/call-to-arms-warsong-gulch",
+        "note": "From Wowhead's Forever calendar (client data, patch 1.60.1), not announced by Blizzard. Wowhead gives 7:00 AM without a time zone; read as Pacific server time, like Forever's other events."
+      }
+    ],
+    "call-to-arms-darkspear-islands": [
+      {
+        "start": "2026-11-17T07:00",
+        "end": "2026-11-24T07:00",
+        "verified": false,
+        "source": "https://www.wowhead.com/forever/event=1840/call-to-arms-darkspear-islands",
+        "note": "From Wowhead's Forever calendar (client data, patch 1.60.1), not announced by Blizzard. Wowhead gives 7:00 AM without a time zone; read as Pacific server time, like Forever's other events."
       }
     ]
   }

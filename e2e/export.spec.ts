@@ -156,7 +156,10 @@ test('Forever launch: Europe and America export as one entry', async ({ page }) 
   await expect(
     page.getByRole('heading', { level: 1, name: 'Forever launch (Europe & America)' }),
   ).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Also on this day' })).toHaveCount(0);
+  // No second launch entry: the only other event that day is the battleground week.
+  await expect(page.getByRole('region', { name: 'Also on this day' }).getByRole('link')).toHaveText(
+    [/Arathi Basin/],
+  );
 
   await page.getByRole('button', { name: 'Add to calendar' }).click();
   const sheet = page.getByRole('dialog', { name: 'Add to calendar' });

@@ -96,7 +96,8 @@ describe('Forever before and after launch', () => {
   });
 
   it('becomes a normal calendar once the launch time has passed', async () => {
-    vi.setSystemTime(new Date('2026-11-06T12:00:00Z'));
+    // After the first battleground holiday weeks (Nov 3–24), so the day is quiet again.
+    vi.setSystemTime(new Date('2026-11-26T12:00:00Z'));
     const user = userEvent.setup();
     renderRoute('/forever/today');
     expect(

@@ -14,6 +14,7 @@ import { darkmoonFaire } from './darkmoon-faire';
 import { stvFishing } from './stv-fishing';
 import { weeklyReset } from './weekly-reset';
 import { foreverLaunch } from './forever-launch';
+import { callToArmsEvents } from './call-to-arms';
 
 /** All known events. Add a new event: create its file, then add it to this list. */
 export const eventDefinitions: EventDefinition[] = [
@@ -32,6 +33,7 @@ export const eventDefinitions: EventDefinition[] = [
   stvFishing,
   weeklyReset,
   ...foreverLaunch,
+  ...callToArmsEvents,
 ];
 
 export const eventCatalog: EventCatalog = Object.fromEntries(

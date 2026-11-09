@@ -187,3 +187,45 @@ describe('launch', () => {
     expect(launch[0]).toContain('UID:forever:forever-launch-eu-na:2026-11-04T23:00:00.000Z');
   });
 });
+
+describe('battleground holiday weeks (Call to Arms)', () => {
+  const catalog = Object.fromEntries(eventDefinitions.map((d) => [d.id, d]));
+  const pvp = occurrences.filter((o) => catalog[o.eventId]?.category === 'pvp');
+
+  it("Forever has the three weeks from Wowhead's Forever calendar, Tuesday 07:00 to Tuesday", () => {
+    expect(pvp.map((o) => [o.eventId, wall(o.start), wall(o.end)])).toEqual([
+      ['call-to-arms-arathi-basin', '2026-11-03T07:00', '2026-11-10T07:00'],
+      ['call-to-arms-warsong-gulch', '2026-11-10T07:00', '2026-11-17T07:00'],
+      ['call-to-arms-darkspear-islands', '2026-11-17T07:00', '2026-11-24T07:00'],
+    ]);
+    for (const o of pvp) {
+      expect(o.verified).toBe(false); // Wowhead gives no time zone for 07:00
+      expect(o.estimated).toBeUndefined();
+      expect(o.source).toMatch(/^https:\/\/www\.wowhead\.com\/forever\/event=\d+\//);
+      expect(o.note).toMatch(/Wowhead.*without a time zone/);
+    }
+  });
+
+  it('Anniversary has no PvP events', () => {
+    const all = expandOccurrences(anniversary, 'eu', span).concat(
+      expandOccurrences(anniversary, 'us', span),
+    );
+    expect(all.filter((o) => catalog[o.eventId]?.category === 'pvp')).toEqual([]);
+    expect(anniversary.events.some((b) => b.eventId.startsWith('call-to-arms'))).toBe(false);
+  });
+
+  it('are exported to calendars like every other event, marked tentative', () => {
+    const [feed] = buildFeeds([forever], catalog, span, {
+      appName: 'Test',
+      appUrl: 'https://example.test/app',
+      tentativeLabel: 'tentative',
+      locationLabel: 'Location',
+    });
+    const vevents = (feed?.content ?? '').split('BEGIN:VEVENT').slice(1);
+    const ab = vevents.filter((v) => v.includes('Call to Arms: Arathi Basin'));
+    expect(ab).toHaveLength(1);
+    expect(ab[0]).toContain('SUMMARY:(tentative) Call to Arms: Arathi Basin');
+    expect(ab[0]).toContain('DTSTART:20261103T150000Z'); // 07:00 PST
+    expect(ab[0]).toContain('CATEGORIES:pvp');
+  });
+});

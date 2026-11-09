@@ -56,3 +56,15 @@ describe('event sheet: experience & rewards', () => {
     expect(within(faire).queryByRole('heading', { name: 'Experience & rewards' })).toBeNull();
   });
 });
+
+describe('event sheet: battleground weeks', () => {
+  it('shows the week’s details and no experience block', async () => {
+    renderRoute('/forever/day/2026-11-12?event=call-to-arms-warsong-gulch&on=2026-11-12');
+    const sheet = await screen.findByRole('dialog', { name: 'Call to Arms: Warsong Gulch' });
+    expect(within(sheet).getByText('PvP')).toBeInTheDocument();
+    expect(
+      within(sheet).getByText('Increased Honor in Warsong Gulch all week'),
+    ).toBeInTheDocument();
+    expect(within(sheet).queryByRole('heading', { name: 'Experience & rewards' })).toBeNull();
+  });
+});
