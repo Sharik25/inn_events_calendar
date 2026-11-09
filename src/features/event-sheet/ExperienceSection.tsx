@@ -1,4 +1,5 @@
 import type { EventExperience, LevelRange } from '@/domain/types';
+import { formatNumber } from '@/lib/format';
 import { strings } from '@/strings';
 import { Icon } from '@/ui';
 import styles from './EventSheet.module.css';
@@ -32,10 +33,22 @@ export function ExperienceSection({ experience }: { experience: EventExperience 
         <ul className={styles.quests} aria-label={strings.eventSheet.quests}>
           {quests.map((q) => (
             <li key={q.name} className={styles.quest}>
-              <p className={styles.questName}>
-                {q.name}
-                {q.level && <span className={styles.questLevel}> ({levels(q.level)})</span>}
-              </p>
+              <div className={styles.questHead}>
+                <p className={styles.questName}>
+                  {q.name}
+                  {q.level && <span className={styles.questLevel}> ({levels(q.level)})</span>}
+                </p>
+                {q.xp && (
+                  <p className={styles.questXp}>
+                    {strings.eventSheet.xp(formatNumber(q.xp.amount))}
+                  </p>
+                )}
+              </div>
+              {q.xp?.fullUpToLevel && (
+                <p className={styles.note}>
+                  {strings.eventSheet.xpFullThrough(q.xp.fullUpToLevel)}
+                </p>
+              )}
               {q.notes && <p className={styles.note}>{q.notes}</p>}
               {q.rewards && (
                 <>

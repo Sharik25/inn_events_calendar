@@ -81,6 +81,9 @@ export const en = {
     levelRange: (min: number, max?: number) =>
       max === undefined ? `${min}+` : min === max ? `${min}` : `${min}–${max}`,
     quests: 'Quests',
+    /** Experience from one quest; `amount` is already formatted. */
+    xp: (amount: string) => `${amount} XP`,
+    xpFullThrough: (level: number) => `Full XP through level ${level}`,
     rewards: 'Rewards',
     experienceSource: 'Rewards source',
     notFound: 'This event has no dates in this version.',

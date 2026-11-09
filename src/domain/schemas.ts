@@ -82,12 +82,21 @@ export const eventExperienceSchema = z
     levelRange: levelRange.optional(),
     quests: z
       .array(
-        z.strictObject({
-          name: z.string().min(1),
-          level: levelRange.optional(),
-          rewards: z.array(z.string().min(1)).min(1).optional(),
-          notes: z.string().min(1).optional(),
-        }),
+        z
+          .strictObject({
+            name: z.string().min(1),
+            level: levelRange.optional(),
+            xp: z
+              .strictObject({
+                amount: z.number().int().positive(),
+                fullUpToLevel: z.number().int().min(1).optional(),
+              })
+              .optional(),
+            rewards: z.array(z.string().min(1)).min(1).optional(),
+            notes: z.string().min(1).optional(),
+            source: url.optional(),
+          })
+          .refine((q) => !q.xp || q.source, 'a quest with xp needs its own source'),
       )
       .min(1)
       .optional(),

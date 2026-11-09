@@ -81,6 +81,8 @@ export const fr: Strings = {
     levelRange: (min, max) =>
       max === undefined ? `${min}+` : min === max ? `${min}` : `${min}–${max}`,
     quests: 'Quêtes',
+    xp: (amount) => `${amount} PX`,
+    xpFullThrough: (level) => `PX complets jusqu’au niveau ${level}`,
     rewards: 'Récompenses',
     experienceSource: 'Source des récompenses',
     notFound: 'Cet évènement n’a pas de dates dans cette version.',

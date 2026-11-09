@@ -84,6 +84,8 @@ export const ru: Strings = {
     levelRange: (min, max) =>
       max === undefined ? `${min}+` : min === max ? `${min}` : `${min}–${max}`,
     quests: 'Задания',
+    xp: (amount) => `${amount} опыта`,
+    xpFullThrough: (level) => `Полный опыт до ${level} уровня включительно`,
     rewards: 'Награды',
     experienceSource: 'Источник наград',
     notFound: 'У этого события нет дат в этой версии.',

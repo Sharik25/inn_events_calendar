@@ -36,4 +36,23 @@ describe('event sheet: experience & rewards', () => {
       within(sheet).queryByRole('heading', { name: 'Experience & rewards' }),
     ).not.toBeInTheDocument();
   });
+
+  it("shows each quest's experience, and when it depends on the character's level", async () => {
+    renderRoute('/forever/day/2026-11-12?event=darkmoon-faire&on=2026-11-12');
+    const sheet = await screen.findByRole('dialog', { name: 'Darkmoon Faire' });
+    const quests = within(sheet).getByRole('list', { name: 'Quests' });
+    const quest = (name: string) => within(quests).getByText(name).closest('li')!;
+    expect(quest('The Darkmoon Faire')).toHaveTextContent('660 XP');
+    expect(quest('The Darkmoon Faire')).not.toHaveTextContent(/Full XP/); // the same at any level
+    expect(quest('Darkmoon Beast Deck')).toHaveTextContent('560 XP');
+    expect(quest('Darkmoon Beast Deck')).toHaveTextContent('Full XP through level 60');
+    expect(within(sheet).getByText(/six or more levels above them/)).toBeInTheDocument();
+  });
+
+  it('shows no experience block where a version has no quest data', async () => {
+    renderRoute('/anniversary/day/2026-11-12?event=darkmoon-faire&on=2026-11-12');
+    const faire = await screen.findByRole('dialog', { name: 'Darkmoon Faire' });
+    expect(within(faire).queryByText(/XP/)).not.toBeInTheDocument();
+    expect(within(faire).queryByRole('heading', { name: 'Experience & rewards' })).toBeNull();
+  });
 });

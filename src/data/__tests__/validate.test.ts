@@ -1,4 +1,4 @@
-import type { EventDefinition, VersionConfig } from '@/domain/types';
+import type { EventDefinition, EventExperience, VersionConfig } from '@/domain/types';
 import { eventDefinitions } from '../events';
 import { versions } from '../versions';
 import { themeIds } from '@/themes';
@@ -94,6 +94,30 @@ describe('validateData', () => {
         expect.stringMatching(/"levels".*max must be ≥ min/),
       ]),
     );
+  });
+
+  it('requires a source on every quest that lists experience', () => {
+    const quest = { name: 'Q', xp: { amount: 560, fullUpToLevel: 60 } };
+    type Quest = NonNullable<EventExperience['quests']>[number];
+    const withQuest = (q: Quest) => ({
+      ...event,
+      experience: { test: { quests: [q], source: 'https://example.com/xp' } },
+    });
+    expect(
+      validateData({
+        ...valid,
+        events: [withQuest({ ...quest, source: 'https://example.com/quest=1' })],
+      }),
+    ).toEqual([]);
+    expect(validateData({ ...valid, events: [withQuest(quest)] })).toEqual([
+      expect.stringMatching(/a quest with xp needs its own source/),
+    ]);
+    expect(
+      validateData({
+        ...valid,
+        events: [withQuest({ ...quest, xp: { amount: 0 }, source: 'https://example.com/q' })],
+      }),
+    ).toEqual([expect.stringMatching(/xp/)]);
   });
 
   it('reports version-level reference errors', () => {

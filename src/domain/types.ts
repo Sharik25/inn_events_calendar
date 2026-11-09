@@ -69,10 +69,27 @@ export interface LevelRange {
 export interface EventExperience {
   xpBonus?: string; // as worded by the source, e.g. "+10% experience from kills"
   levelRange?: LevelRange;
-  quests?: { name: string; level?: LevelRange; rewards?: string[]; notes?: string }[];
+  quests?: {
+    name: string;
+    level?: LevelRange;
+    xp?: QuestExperience;
+    rewards?: string[];
+    notes?: string;
+    source?: string; // URL of this quest's page (required with `xp`)
+  }[];
   rewards?: string[];
   notes?: string;
   source: string; // URL
+}
+
+/**
+ * Experience for completing a quest, exactly as the quest's source lists it (never estimated).
+ * Quests pay less once a character is far enough above them: `fullUpToLevel` is the highest level
+ * that still gets the full `amount`. Omit it when every level that can take the quest gets it all.
+ */
+export interface QuestExperience {
+  amount: number;
+  fullUpToLevel?: number;
 }
 
 export type EventCatalog = Record<EventId, EventDefinition>;

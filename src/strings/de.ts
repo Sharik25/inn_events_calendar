@@ -80,6 +80,8 @@ export const de: Strings = {
     levelRange: (min, max) =>
       max === undefined ? `${min}+` : min === max ? `${min}` : `${min}–${max}`,
     quests: 'Quests',
+    xp: (amount) => `${amount} EP`,
+    xpFullThrough: (level) => `Volle EP bis Stufe ${level}`,
     rewards: 'Belohnungen',
     experienceSource: 'Quelle der Belohnungen',
     notFound: 'Für dieses Event gibt es in dieser Version keine Termine.',
