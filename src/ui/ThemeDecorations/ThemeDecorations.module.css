@@ -164,7 +164,35 @@
   animation-delay: var(--motion-delay, 0s);
 }
 
-.layer[data-motion='reduce'] .art {
+/*
+ * A fishing rod casts: the line grows from the rod tip, the bobber falls into the water (gravity),
+ * splashes, bobs, and is reeled back in. The art names its parts (deco-cast-*); --cast-drop is how
+ * far the bobber falls, in the art's own units. 8s loop, staggered per rod with --motion-delay.
+ */
+.art[data-motion='cast'] :global(:is(.deco-cast-line, .deco-cast-bobber, .deco-cast-splash)) {
+  transform-box: fill-box;
+  animation-duration: 8s;
+  animation-iteration-count: infinite;
+  animation-delay: var(--motion-delay, 0s);
+}
+
+.art[data-motion='cast'] :global(.deco-cast-line) {
+  transform-origin: top center;
+  animation-name: cast-line;
+}
+
+.art[data-motion='cast'] :global(.deco-cast-bobber) {
+  animation-name: cast-bobber;
+}
+
+.art[data-motion='cast'] :global(.deco-cast-splash) {
+  transform-origin: center;
+  animation-name: cast-splash;
+}
+
+/* Reduced motion (app setting or OS, folded into data-motion), in the layer and the mobile scene. */
+[data-motion='reduce'] .art,
+[data-motion='reduce'] .art :global(:is(.deco-cast-line, .deco-cast-bobber, .deco-cast-splash)) {
   animation: none;
 }
 
@@ -234,6 +262,75 @@
   40%,
   100% {
     transform: scale(1.06);
+    opacity: 0;
+  }
+}
+
+/* Falls with gravity from 10% to 30%, floats, is reeled in from 76% to 90%, waits at the tip. */
+@keyframes cast-bobber {
+  0%,
+  10% {
+    transform: translateY(var(--cast-drop));
+    animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+  }
+  30% {
+    transform: translateY(0);
+    animation-timing-function: ease-in-out;
+  }
+  38% {
+    transform: translateY(3px);
+  }
+  46% {
+    transform: translateY(-1px);
+  }
+  54% {
+    transform: translateY(2px);
+  }
+  62% {
+    transform: translateY(0);
+  }
+  70% {
+    transform: translateY(2px);
+  }
+  76% {
+    transform: translateY(0);
+    animation-timing-function: ease-in;
+  }
+  90%,
+  100% {
+    transform: translateY(var(--cast-drop));
+  }
+}
+
+@keyframes cast-line {
+  0%,
+  10% {
+    transform: scaleY(0);
+    animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+  }
+  30%,
+  76% {
+    transform: scaleY(1);
+    animation-timing-function: ease-in;
+  }
+  90%,
+  100% {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes cast-splash {
+  0%,
+  29% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  31% {
+    opacity: 0.9;
+  }
+  48%,
+  100% {
+    transform: scale(1.6);
     opacity: 0;
   }
 }

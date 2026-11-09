@@ -168,3 +168,24 @@ describe('topStripHeight', () => {
     });
   });
 });
+
+describe('cast (fishing rods)', () => {
+  it('renders the rod with its animated parts, and mirrors it for the right corner', async () => {
+    const { fishingCast } = await import('@/themes/art/fishing');
+    const { container } = render(
+      <ThemeDecorations
+        decorations={[
+          { svg: fishingCast(), anchor: 'bottom-left', size: 120, motion: 'cast' },
+          { svg: fishingCast(true), anchor: 'bottom-right', size: 120, motion: 'cast' },
+        ]}
+      />,
+    );
+    const arts = container.querySelectorAll('[data-motion="cast"]');
+    expect(arts).toHaveLength(2);
+    for (const art of arts) {
+      for (const part of ['deco-cast-line', 'deco-cast-bobber', 'deco-cast-splash'])
+        expect(art.querySelector(`.${part}`)).not.toBeNull();
+    }
+    expect(arts[1]?.querySelector('g[transform^="matrix(-1"]')).not.toBeNull();
+  });
+});

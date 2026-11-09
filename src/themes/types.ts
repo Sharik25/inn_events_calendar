@@ -23,8 +23,13 @@ export type ParticleKind =
 export type DecorationAnchor =
   'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'top' | 'bottom';
 
-/** `burst`: a firework that opens, glows and fades, then rests for most of its loop. */
-export type DecorationMotion = 'sway' | 'bob' | 'float' | 'flicker' | 'pulse' | 'spin' | 'burst';
+/**
+ * `burst`: a firework that opens, glows and fades, then rests for most of its loop.
+ * `cast`: a fishing rod drops its bobber into the water and reels it back in (art with
+ * `deco-cast-*` parts, see art/fishing.ts `fishingCast`).
+ */
+export type DecorationMotion =
+  'sway' | 'bob' | 'float' | 'flicker' | 'pulse' | 'spin' | 'burst' | 'cast';
 
 /** One piece of original SVG art placed around the page. Pure data: no UI code per theme. */
 export interface Decoration {
