@@ -1,7 +1,6 @@
-# Innkeeper's Almanac
+# InnEvents Calendar
 
-A cozy, fan-made calendar of in-game events for classic World of Warcraft versions
-(Anniversary, WoW: Forever): day, week and month views, event details, and Apple/Google
+A cozy, fan-made calendar of in-game events: day, week and month views, event details, and Apple/Google
 calendar export. Live at https://sharik25.github.io/world_of_warcraft_event_calendar/.
 
 Not affiliated with or endorsed by Blizzard Entertainment.
