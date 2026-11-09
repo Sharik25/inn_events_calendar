@@ -68,6 +68,19 @@ describe('validateData', () => {
     );
   });
 
+  it('requires at least one list of places in `locations`', () => {
+    const source = 'https://example.com/wiki';
+    expect(
+      validateData({
+        ...valid,
+        events: [{ ...event, locations: { horde: ['Orgrimmar'], source } }],
+      }),
+    ).toEqual([]);
+    expect(validateData({ ...valid, events: [{ ...event, locations: { source } }] })).toEqual([
+      expect.stringMatching(/at least one list of places/),
+    ]);
+  });
+
   it('checks experience data: known version, at least one fact, sane levels', () => {
     const source = 'https://example.com/quest';
     const withXp = (experience: EventDefinition['experience']) => ({ ...event, experience });

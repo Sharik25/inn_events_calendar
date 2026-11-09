@@ -80,6 +80,13 @@ export const en = {
     levels: 'Levels',
     levelRange: (min: number, max?: number) =>
       max === undefined ? `${min}+` : min === max ? `${min}` : `${min}–${max}`,
+    where: 'Where',
+    alliance: 'Alliance',
+    horde: 'Horde',
+    everyone: 'Everyone',
+    locationsNote:
+      'As the current game holds it (Warcraft Wiki); not confirmed for this version yet.',
+    locationsSource: 'Location source',
     quests: 'Quests',
     /** Experience from one quest; `amount` is already formatted. */
     xp: (amount: string) => `${amount} XP`,

@@ -13,6 +13,13 @@ export const childrensWeek: EventDefinition = {
     'Choose a companion pet reward',
   ],
   links: [{ label: 'Warcraft Wiki', url: "https://warcraft.wiki.gg/wiki/Children's_Week" }],
+  // Per faction, as Warcraft Wiki describes the current game: not confirmed for a version yet.
+  locations: {
+    what: 'Orphan matrons',
+    alliance: ['Stormwind City (Cathedral Square)'],
+    horde: ['Orgrimmar (the Drag)'],
+    source: 'https://warcraft.wiki.gg/wiki/Children%27s_Week',
+  },
   // Standard yearly schedule (Classic/TBC holiday calendar): Last Monday of April, one week.
   annual: {
     anchor: { type: 'weekday', month: 4, weekday: 1, nth: 'last' },

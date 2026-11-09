@@ -13,6 +13,12 @@ export const brewfest: EventDefinition = {
     'Seasonal boss and themed rewards',
   ],
   links: [{ label: 'Warcraft Wiki', url: 'https://warcraft.wiki.gg/wiki/Brewfest' }],
+  // Per faction, as Warcraft Wiki describes the current game: not confirmed for a version yet.
+  locations: {
+    alliance: ['Outside Ironforge'],
+    horde: ['Outside Orgrimmar'],
+    source: 'https://warcraft.wiki.gg/wiki/Brewfest',
+  },
   // Standard yearly schedule (Classic/TBC holiday calendar): September 20 to October 6.
   annual: {
     anchor: { type: 'date', month: 9, day: 20 },

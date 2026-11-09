@@ -93,6 +93,16 @@
   margin: 0 0 var(--space-2);
 }
 
+.facts .factRow {
+  display: contents;
+}
+
+/* "Where": what the places are (e.g. "Egg hunts in the starting towns"). */
+.whereWhat {
+  margin: 0 0 var(--space-2);
+  color: var(--color-ink-muted);
+}
+
 .facts dt {
   font-weight: 700;
 }

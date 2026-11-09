@@ -68,3 +68,35 @@ describe('event sheet: battleground weeks', () => {
     expect(within(sheet).queryByRole('heading', { name: 'Experience & rewards' })).toBeNull();
   });
 });
+
+describe('event sheet: where (per faction)', () => {
+  it('lists the Alliance and Horde places with the note, in both versions', async () => {
+    for (const path of [
+      '/forever/day/2026-12-20?event=winter-veil&on=2026-12-20',
+      '/anniversary/day/2026-12-20?event=winter-veil&on=2026-12-20',
+    ]) {
+      const { unmount } = renderRoute(path);
+      const sheet = await screen.findByRole('dialog', { name: 'Feast of Winter Veil' });
+      expect(within(sheet).getByRole('heading', { name: 'Where' })).toBeInTheDocument();
+      expect(within(sheet).getByText('Greatfather Winter visits')).toBeInTheDocument();
+      expect(within(sheet).getByText('Alliance').nextElementSibling).toHaveTextContent('Ironforge');
+      expect(within(sheet).getByText('Horde').nextElementSibling).toHaveTextContent('Orgrimmar');
+      expect(within(sheet).getByText(/As the current game holds it/)).toBeInTheDocument();
+      // Same page as "Learn more": its source isn't listed twice.
+      expect(within(sheet).queryByRole('link', { name: /Location source/ })).toBeNull();
+      unmount();
+    }
+  });
+
+  it('shows every town for the egg hunt, and nothing for an event without places', async () => {
+    const { unmount } = renderRoute('/anniversary/today?event=noblegarden');
+    const sheet = await screen.findByRole('dialog', { name: 'Noblegarden' });
+    expect(within(sheet).getByText('Horde').nextElementSibling).toHaveTextContent(
+      'Razor Hill, Bloodhoof Village, Brill, Falconwing Square',
+    );
+    unmount();
+    renderRoute('/anniversary/today?event=new-year');
+    const newYear = await screen.findByRole('dialog', { name: /New Year/ });
+    expect(within(newYear).queryByRole('heading', { name: 'Where' })).toBeNull();
+  });
+});

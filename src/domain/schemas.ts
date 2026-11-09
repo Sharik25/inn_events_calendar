@@ -4,6 +4,7 @@ import type {
   WeeklySchedule,
   EventDefinition,
   EventExperience,
+  EventLocations,
   ExplicitOccurrence,
   Region,
   ScheduleFile,
@@ -109,6 +110,18 @@ export const eventExperienceSchema = z
     'needs at least one fact besides source',
   );
 
+const places = z.array(z.string().min(1)).min(1).optional();
+
+export const eventLocationsSchema = z
+  .strictObject({
+    what: z.string().min(1).optional(),
+    alliance: places,
+    horde: places,
+    everyone: places,
+    source: url,
+  })
+  .refine((l) => l.alliance || l.horde || l.everyone, 'needs at least one list of places');
+
 export const eventDefinitionSchema = z.strictObject({
   id: slug,
   name: z.string().min(1),
@@ -121,6 +134,7 @@ export const eventDefinitionSchema = z.strictObject({
   highlights: z.array(z.string().min(1)).optional(),
   links: z.array(z.strictObject({ label: z.string().min(1), url })).optional(),
   experience: z.record(slug, eventExperienceSchema).optional(),
+  locations: eventLocationsSchema.optional(),
   annual: annualScheduleSchema.optional(),
   weekly: weeklyScheduleSchema.optional(),
 });
@@ -248,6 +262,7 @@ type Assert<T extends true> = T;
 export type SchemaTypeChecks = [
   Assert<Equals<z.infer<typeof eventDefinitionSchema>, EventDefinition>>,
   Assert<Equals<z.infer<typeof eventExperienceSchema>, EventExperience>>,
+  Assert<Equals<z.infer<typeof eventLocationsSchema>, EventLocations>>,
   Assert<Equals<z.infer<typeof weeklyScheduleSchema>, WeeklySchedule>>,
   Assert<Equals<z.infer<typeof explicitOccurrenceSchema>, ExplicitOccurrence>>,
   Assert<Equals<z.infer<typeof scheduleRuleSchema>, ScheduleRule>>,

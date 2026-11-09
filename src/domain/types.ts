@@ -25,6 +25,8 @@ export interface EventDefinition {
   links?: { label: string; url: string }[];
   /** Experience & rewards per version id (they differ between versions). Shown when present. */
   experience?: Record<VersionId, EventExperience>;
+  /** Where it takes place for each faction. Shown in the details, with its source. */
+  locations?: EventLocations;
   /**
    * Where this holiday falls in the standard (Classic/TBC) yearly schedule. Versions without
    * confirmed dates can estimate from it (see data/schedules.ts).
@@ -90,6 +92,18 @@ export interface EventExperience {
 export interface QuestExperience {
   amount: number;
   fullUpToLevel?: number;
+}
+
+/**
+ * Where an event takes place, per faction (at least one list), as `source` states it. English, like
+ * all event content. `what` names what the places are when that isn't obvious ("Egg hunts").
+ */
+export interface EventLocations {
+  what?: string;
+  alliance?: string[];
+  horde?: string[];
+  everyone?: string[];
+  source: string; // URL
 }
 
 export type EventCatalog = Record<EventId, EventDefinition>;

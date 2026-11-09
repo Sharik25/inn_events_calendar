@@ -83,6 +83,13 @@ export const ru: Strings = {
     levels: 'Уровни',
     levelRange: (min, max) =>
       max === undefined ? `${min}+` : min === max ? `${min}` : `${min}–${max}`,
+    where: 'Где',
+    alliance: 'Альянс',
+    horde: 'Орда',
+    everyone: 'Все',
+    locationsNote:
+      'Как в текущей версии игры (Warcraft Wiki); для этой версии ещё не подтверждено.',
+    locationsSource: 'Источник мест',
     quests: 'Задания',
     xp: (amount) => `${amount} опыта`,
     xpFullThrough: (level) => `Полный опыт до ${level} уровня включительно`,

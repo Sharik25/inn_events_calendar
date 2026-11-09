@@ -13,6 +13,12 @@ export const hallowsEnd: EventDefinition = {
     'Wands, masks and costumes',
   ],
   links: [{ label: 'Warcraft Wiki', url: "https://warcraft.wiki.gg/wiki/Hallow's_End" }],
+  // Per faction, as Warcraft Wiki describes the current game: not confirmed for a version yet.
+  locations: {
+    horde: ['Ruins of Lordaeron: the Wickerman Festival, each evening'],
+    everyone: ['Candy buckets at innkeepers everywhere'],
+    source: 'https://warcraft.wiki.gg/wiki/Hallow%27s_End',
+  },
   // Standard yearly schedule (Classic/TBC holiday calendar): October 18 to November 1.
   annual: {
     anchor: { type: 'date', month: 10, day: 18 },

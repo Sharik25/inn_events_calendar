@@ -10,6 +10,7 @@ import { UnconfirmedMarker } from '@/features/common/UnconfirmedMarker';
 import { strings } from '@/strings';
 import { Badge, Icon, Sheet, ThemeScope } from '@/ui';
 import { ExperienceSection } from './ExperienceSection';
+import { LocationsSection } from './LocationsSection';
 import styles from './EventSheet.module.css';
 
 /** Event details for `?event=<id>`, styled with that event's theme. `date` picks the occurrence. */
@@ -89,6 +90,8 @@ export function EventSheet({
             </ul>
           </section>
         )}
+
+        {def.locations && <LocationsSection locations={def.locations} links={def.links} />}
 
         {experience && <ExperienceSection experience={experience} />}
 

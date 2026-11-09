@@ -80,6 +80,13 @@ export const fr: Strings = {
     levels: 'Niveaux',
     levelRange: (min, max) =>
       max === undefined ? `${min}+` : min === max ? `${min}` : `${min}–${max}`,
+    where: 'Où',
+    alliance: 'Alliance',
+    horde: 'Horde',
+    everyone: 'Tout le monde',
+    locationsNote:
+      'Comme dans le jeu actuel (Warcraft Wiki) ; pas encore confirmé pour cette version.',
+    locationsSource: 'Source des lieux',
     quests: 'Quêtes',
     xp: (amount) => `${amount} PX`,
     xpFullThrough: (level) => `PX complets jusqu’au niveau ${level}`,
