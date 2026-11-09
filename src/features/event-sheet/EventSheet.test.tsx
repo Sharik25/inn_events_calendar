@@ -100,3 +100,27 @@ describe('event sheet: where (per faction)', () => {
     expect(within(newYear).queryByRole('heading', { name: 'Where' })).toBeNull();
   });
 });
+
+describe('event sheet: dressed in its event', () => {
+  // Nov 12, 2026 in Forever: the page wears the Darkmoon Faire (Warsong Gulch week also on).
+  it('keeps the page’s main event plain and dresses every other event', async () => {
+    const faire = renderRoute('/forever/day/2026-11-12?event=darkmoon-faire&on=2026-11-12');
+    const plain = await screen.findByRole('dialog', { name: 'Darkmoon Faire' });
+    expect(plain).not.toHaveAttribute('data-themed');
+    expect(screen.queryByTestId('sheet-banner')).toBeNull();
+    faire.unmount();
+
+    renderRoute('/forever/day/2026-11-12?event=call-to-arms-warsong-gulch&on=2026-11-12');
+    const pvp = await screen.findByRole('dialog', { name: 'Call to Arms: Warsong Gulch' });
+    expect(pvp).toHaveAttribute('data-themed');
+    expect(screen.getByTestId('sheet-banner').style.backgroundImage).toContain('svg');
+    expect(pvp.closest('[data-theme]')).toHaveAttribute('data-theme', 'pvp');
+  });
+
+  it('dresses an event without strip art with its accent and emblem only', async () => {
+    renderRoute('/anniversary/day/2026-11-26?event=hallows-end');
+    const sheet = await screen.findByRole('dialog', { name: "Hallow's End" });
+    expect(sheet).toHaveAttribute('data-themed');
+    expect(screen.queryByTestId('sheet-banner')).toBeNull();
+  });
+});

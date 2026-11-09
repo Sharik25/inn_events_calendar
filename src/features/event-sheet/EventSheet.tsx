@@ -6,9 +6,11 @@ import { addDays, daysRange } from '@/engine/time';
 import { calendarExportOf } from '@/engine/version';
 import { AddToCalendar } from '@/features/calendar-export/AddToCalendar';
 import { Countdown } from '@/features/common/Countdown';
+import { EventEmblem } from '@/features/today/EventEmblem';
+import { useTheme } from '@/hooks/useTheme';
 import { UnconfirmedMarker } from '@/features/common/UnconfirmedMarker';
 import { strings } from '@/strings';
-import { Badge, Icon, Sheet, ThemeScope } from '@/ui';
+import { Badge, Icon, Sheet, ThemeScope, useScopeThemeId } from '@/ui';
 import { ExperienceSection } from './ExperienceSection';
 import { LocationsSection } from './LocationsSection';
 import styles from './EventSheet.module.css';
@@ -26,6 +28,9 @@ export function EventSheet({
   const { version, catalog, region, userTimeZone, viewDate: currentDate, now } = useVersionView();
   const viewDate = date ?? currentDate;
   const def = eventId ? catalog[eventId] : undefined;
+  // The page is dressed in its main event's theme; every other event's details wear their own.
+  const pageThemeId = useScopeThemeId();
+  const theme = useTheme(def?.themeId ?? pageThemeId);
 
   const occurrence = useMemo(() => {
     if (!def) return null;
@@ -39,6 +44,18 @@ export function EventSheet({
   }, [def, version, region.id, viewDate, userTimeZone]);
 
   if (!def) return null;
+  const decoration =
+    def.themeId === pageThemeId
+      ? undefined
+      : {
+          // The theme's own strip: along the top if it has one (bunting, garland), else its
+          // bottom one (e.g. the fishing ripples).
+          strip: (
+            theme.decorations?.find((d) => d.anchor === 'top') ??
+            theme.decorations?.find((d) => d.anchor === 'bottom')
+          )?.svg,
+          icon: <EventEmblem themeId={def.themeId} />,
+        };
   const binding = version.events.find((b) => b.eventId === def.id);
   const experience = def.experience?.[version.id];
   const notes = [binding?.notes, occurrence?.note].filter(Boolean);
@@ -51,7 +68,7 @@ export function EventSheet({
 
   return (
     <ThemeScope themeId={def.themeId} style={{ display: 'contents' }}>
-      <Sheet open onClose={onClose} title={def.name}>
+      <Sheet open onClose={onClose} title={def.name} decoration={decoration}>
         <div className={styles.badges}>
           <Badge>{strings.categories[def.category]}</Badge>
           {occurrence && <UnconfirmedMarker occurrence={occurrence} />}

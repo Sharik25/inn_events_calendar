@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, type PointerEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { strings } from '@/strings';
+import { svgDataUrl } from '@/themes/art/helpers';
 import { Icon } from '../Icon/Icon';
 import { ThemeScope } from '../ThemeScope/ThemeScope';
 import { useScopeThemeId } from '../ThemeScope/themeContext';
@@ -11,6 +12,11 @@ interface SheetProps {
   onClose: () => void;
   title: ReactNode;
   children: ReactNode;
+  /**
+   * Dresses the sheet in its theme: a strip of the theme's art along the top (repeating SVG), a
+   * small icon before the title, and the theme's accent on the edge and the header.
+   */
+  decoration?: { strip?: string; icon?: ReactNode };
 }
 
 const FOCUSABLE =
@@ -27,7 +33,7 @@ const openSheets: object[] = [];
  * desktop. Traps focus, closes on Escape / backdrop, restores focus on close, locks page scroll.
  * Sheets can stack (a sheet opened from a sheet): Escape and the focus trap belong to the top one.
  */
-export function Sheet({ open, onClose, title, children }: SheetProps) {
+export function Sheet({ open, onClose, title, children, decoration }: SheetProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
@@ -120,6 +126,8 @@ export function Sheet({ open, onClose, title, children }: SheetProps) {
         tabIndex={-1}
         className={styles.panel}
         data-dragging={dragY > 0 || undefined}
+        data-themed={decoration ? true : undefined}
+        data-banner={decoration?.strip ? true : undefined}
         style={dragY ? { transform: `translateY(${dragY}px)` } : undefined}
       >
         <div
@@ -132,7 +140,16 @@ export function Sheet({ open, onClose, title, children }: SheetProps) {
         >
           <span className={styles.grip} />
         </div>
+        {decoration?.strip && (
+          <div
+            className={styles.banner}
+            aria-hidden="true"
+            data-testid="sheet-banner"
+            style={{ backgroundImage: svgDataUrl(decoration.strip) }}
+          />
+        )}
         <header className={styles.header}>
+          {decoration?.icon && <span className={styles.titleIcon}>{decoration.icon}</span>}
           <h2 id={titleId} className={styles.title}>
             {title}
           </h2>
