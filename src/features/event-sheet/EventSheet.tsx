@@ -48,12 +48,14 @@ export function EventSheet({
     def.themeId === pageThemeId
       ? undefined
       : {
-          // The theme's own strip: along the top if it has one (bunting, garland), else its
-          // bottom one (e.g. the fishing ripples).
-          strip: (
-            theme.decorations?.find((d) => d.anchor === 'top') ??
-            theme.decorations?.find((d) => d.anchor === 'bottom')
-          )?.svg,
+          // The theme's banner for sheets if it has one (fishing rods), else its own strip: along
+          // the top (bunting, garland) or the bottom.
+          strip:
+            theme.sheetBanner ??
+            (
+              theme.decorations?.find((d) => d.anchor === 'top') ??
+              theme.decorations?.find((d) => d.anchor === 'bottom')
+            )?.svg,
           icon: <EventEmblem themeId={def.themeId} />,
         };
   const binding = version.events.find((b) => b.eventId === def.id);

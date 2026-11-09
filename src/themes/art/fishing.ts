@@ -53,3 +53,35 @@ const CAST = `<defs><linearGradient id="fc-rod" x1="0" y1="0" x2="1" y2="0"><sto
 export function fishingCast(mirror = false): string {
   return svg('0 0 120 170', mirror ? `<g transform="matrix(-1 0 0 1 120 0)">${CAST}</g>` : CAST);
 }
+
+/** A rod leaning in from `baseX` (on the bottom edge), its tip at `tipX`, the line down to a bobber. */
+function bannerRod(baseX: number, tipX: number): string {
+  const dir = tipX > baseX ? 1 : -1;
+  const grip = `x1="${baseX + dir * 5}" y1="35.5" x2="${baseX + dir * 13}" y2="29.8"`;
+  return `<line x1="${baseX}" y1="40" x2="${tipX}" y2="4" stroke="${INK}" stroke-width="4.4" stroke-linecap="round"/>
+<line x1="${baseX}" y1="40" x2="${tipX}" y2="4" stroke="url(#fb-rod)" stroke-width="2.6" stroke-linecap="round"/>
+<line ${grip} stroke="${INK}" stroke-width="5.8" stroke-linecap="round"/>
+<line ${grip} stroke="#c98a4b" stroke-width="3.8" stroke-linecap="round"/>
+<circle cx="${tipX}" cy="4" r="1.6" fill="#e0b85c" stroke="${INK}" stroke-width=".9"/>
+<line x1="${tipX}" y1="5" x2="${tipX}" y2="20" stroke="#e8f7f5" stroke-width="1" opacity=".9"/>
+<line x1="${tipX}" y1="18" x2="${tipX}" y2="22" stroke="${INK}" stroke-width="1.4" stroke-linecap="round"/>
+<path d="M${tipX - 5} 27 A5 5 0 0 1 ${tipX + 5} 27 Z" fill="#e04a3c"/>
+<path d="M${tipX - 5} 27 A5 5 0 0 0 ${tipX + 5} 27 Z" fill="#f4efe6"/>
+<circle cx="${tipX}" cy="27" r="5" fill="none" stroke="${INK}" stroke-width="1.6"/>
+<circle cx="${tipX - 1.9}" cy="25" r="1.2" fill="#fff" opacity=".8"/>`;
+}
+
+/**
+ * Details-sheet banner for the fishing contest; seamless 160-wide tile. Two rods lean in from the
+ * banks on either side, their red-and-white bobbers floating on calm water (the waves repeat every
+ * 40 units and the rods stay inside the tile, so copies join cleanly).
+ */
+export const fishingBanner = svg(
+  '0 0 160 40',
+  `<defs><linearGradient id="fb-rod" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#8a5226"/><stop offset="1" stop-color="#c58a4c"/></linearGradient></defs>
+${bannerRod(4, 56)}${bannerRod(156, 104)}
+<path d="M0 29.5 Q10 27.5 20 29.5 T40 29.5 T60 29.5 T80 29.5 T100 29.5 T120 29.5 T140 29.5 T160 29.5 V40 H0 Z" fill="#0f5664" opacity=".8"/>
+<path d="M0 29.5 Q10 27.5 20 29.5 T40 29.5 T60 29.5 T80 29.5 T100 29.5 T120 29.5 T140 29.5 T160 29.5" fill="none" stroke="#bff3f7" stroke-width="1.8"/>
+<path d="M0 35 Q10 33 20 35 T40 35 T60 35 T80 35 T100 35 T120 35 T140 35 T160 35" fill="none" stroke="#5fd3dd" stroke-width="1.2" opacity=".6"/>
+<g fill="none" stroke="#bff3f7" stroke-width="1" opacity=".8"><ellipse cx="56" cy="30" rx="9" ry="1.8"/><ellipse cx="104" cy="30" rx="9" ry="1.8"/></g>`,
+);

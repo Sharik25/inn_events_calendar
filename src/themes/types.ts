@@ -69,6 +69,11 @@ export interface ThemeDefinition {
   numeral?: { ornament?: NumeralOrnament };
   /** Small square art that identifies the event (card medallions, markers). */
   emblem?: string;
+  /**
+   * Seamless strip art across the top of this theme's event details sheet. Default: its top strip
+   * decoration, else its bottom one.
+   */
+  sheetBanner?: string;
   /** Small art in the corner of week/month day cells this theme leads (e.g. a launch burst). */
   dayAccent?: string;
   /** Kept minimal: edge garlands/strips and small animated accents, no large corner objects. */

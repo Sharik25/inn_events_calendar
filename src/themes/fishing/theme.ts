@@ -1,4 +1,4 @@
-import { fishingCast, leapingFish, ripples } from '../art/fishing';
+import { fishingBanner, fishingCast, leapingFish, ripples } from '../art/fishing';
 import type { ThemeDefinition } from '../types';
 
 /** Stranglethorn Fishing Extravaganza: teal water and ripples. */
@@ -28,6 +28,8 @@ export const theme: ThemeDefinition = {
   particles: 'bubbles',
   numeral: { ornament: { svg: leapingFish, placement: 'corner', size: 60 } },
   emblem: leapingFish,
+  // Details sheet: rods on both banks with their bobbers on the water.
+  sheetBanner: fishingBanner,
   decorations: [
     { svg: ripples, anchor: 'bottom', size: 46, mobileSize: 30 },
     // Rods on the shore drop their bobbers into the water, one after another.

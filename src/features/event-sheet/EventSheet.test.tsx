@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { renderRoute } from '@/test/renderRoute';
 
 const NOW = new Date('2026-10-27T11:00:00Z'); // Tue Oct 27, 12:00 Paris
@@ -115,6 +115,15 @@ describe('event sheet: dressed in its event', () => {
     expect(pvp).toHaveAttribute('data-themed');
     expect(screen.getByTestId('sheet-banner').style.backgroundImage).toContain('svg');
     expect(pvp.closest('[data-theme]')).toHaveAttribute('data-theme', 'pvp');
+  });
+
+  it('uses a theme’s own sheet banner when it has one (fishing: rods and bobbers)', async () => {
+    renderRoute('/forever/day/2026-11-12?event=stv-fishing&on=2026-11-15');
+    await screen.findByRole('dialog', { name: 'Stranglethorn Fishing Extravaganza' });
+    const banner = await screen.findByTestId('sheet-banner');
+    await waitFor(() =>
+      expect(decodeURIComponent(banner.style.backgroundImage)).toContain('fb-rod'),
+    );
   });
 
   it('dresses an event without strip art with its accent and emblem only', async () => {
