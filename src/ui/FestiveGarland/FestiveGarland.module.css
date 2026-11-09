@@ -5,7 +5,7 @@
   right: 0;
   /* Behind the top bar / content (z-index 1), with the theme decoration layer (z-index 0). */
   z-index: 0;
-  height: 48px;
+  height: var(--garland-height-m);
   pointer-events: none;
   background-repeat: repeat-x;
   background-position: top center;
@@ -16,7 +16,7 @@
 
 @media (min-width: 768px) {
   .garland {
-    height: 62px;
+    height: var(--garland-height);
   }
 }
 
@@ -31,11 +31,12 @@
   }
 }
 
+/* Bobs upward only, so it never hangs below its height (the interface starts right under it). */
 @keyframes garland-bob {
   from {
-    transform: translateY(-2px);
+    transform: translateY(-5px);
   }
   to {
-    transform: translateY(3px);
+    transform: translateY(0);
   }
 }

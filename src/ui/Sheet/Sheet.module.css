@@ -16,7 +16,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  max-height: 85dvh;
+  max-height: min(85dvh, calc(100dvh - var(--top-decoration-offset) - var(--space-2)));
   display: flex;
   flex-direction: column;
   color: var(--color-ink);
@@ -94,7 +94,8 @@
 @media (min-width: 768px) {
   .panel {
     left: auto;
-    top: 0;
+    /* Below the top decorations, like the rest of the interface. */
+    top: var(--top-decoration-offset);
     width: min(440px, 100vw);
     max-height: none;
     border-top: 0;

@@ -1,5 +1,7 @@
 import { INK, svg, svgDataUrl } from '@/themes/art/helpers';
+import type { CSSProperties } from 'react';
 import styles from './FestiveGarland.module.css';
+import { GARLAND_HEIGHT } from './garlandHeight';
 
 /**
  * One seamlessly tiling pine swag (original SVG, no game art): the band dips to the centre and
@@ -64,7 +66,13 @@ export function FestiveGarland({ reducedMotion = false }: { reducedMotion?: bool
       aria-hidden="true"
       data-testid="festive-garland"
       data-motion={reducedMotion ? 'reduce' : undefined}
-      style={{ backgroundImage: svgDataUrl(GARLAND) }}
+      style={
+        {
+          backgroundImage: svgDataUrl(GARLAND),
+          '--garland-height': `${GARLAND_HEIGHT.desktop}px`,
+          '--garland-height-m': `${GARLAND_HEIGHT.mobile}px`,
+        } as CSSProperties
+      }
     />
   );
 }

@@ -3,6 +3,8 @@
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  /* The whole interface starts below the top decorations (see --top-decoration-offset). */
+  padding-top: var(--top-decoration-offset);
   transition: background 400ms ease;
 }
 
@@ -40,7 +42,8 @@
   max-width: 1080px;
   margin: 0 auto;
   padding: var(--space-2) var(--space-4);
-  padding-top: calc(var(--space-2) + env(safe-area-inset-top));
+  /* The shell already starts below the notch and the top decorations; this is the buffer. */
+  padding-top: var(--space-2);
 }
 
 .versionChip {

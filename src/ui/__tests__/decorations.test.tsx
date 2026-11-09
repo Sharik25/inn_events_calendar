@@ -7,6 +7,7 @@ import { AmbientParticles, MAX_PARTICLES } from '../AmbientParticles/AmbientPart
 import { FestiveGarland } from '../FestiveGarland/FestiveGarland';
 import { Fireplace } from '../Fireplace/Fireplace';
 import { ThemeDecorations } from '../ThemeDecorations/ThemeDecorations';
+import { topStripHeight } from '../ThemeDecorations/sizes';
 
 const art =
   '<svg viewBox="0 0 10 10"><defs><linearGradient id="g"/></defs><rect fill="url(#g)"/></svg>';
@@ -147,5 +148,23 @@ describe('useReducedMotion', () => {
     act(() => useSettings.getState().setReducedMotion('off'));
     rerender();
     expect(result.current).toBe(false);
+  });
+});
+
+describe('topStripHeight', () => {
+  it('is the tallest full-width top strip, per layout; corner pieces and bottoms do not count', () => {
+    expect(topStripHeight(decorations)).toEqual({ desktop: 0, mobile: 0 });
+    expect(topStripHeight(undefined)).toEqual({ desktop: 0, mobile: 0 });
+    expect(
+      topStripHeight([
+        ...decorations,
+        { svg: art, anchor: 'top', size: 40, mobileSize: 28 },
+        { svg: art, anchor: 'top', size: 34 }, // phones: 55% → 19
+      ]),
+    ).toEqual({ desktop: 40, mobile: 28 });
+    expect(topStripHeight([{ svg: art, anchor: 'top', size: 40, mobileSize: null }])).toEqual({
+      desktop: 40,
+      mobile: 0,
+    });
   });
 });

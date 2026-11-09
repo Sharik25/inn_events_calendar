@@ -2,8 +2,7 @@ import { useId, type CSSProperties } from 'react';
 import { svgDataUrl, uniqueSvgIds } from '@/themes/art/helpers';
 import type { Decoration } from '@/themes';
 import styles from './ThemeDecorations.module.css';
-
-const DEFAULT_MOBILE_RATIO = 0.55;
+import { mobileSizeOf } from './sizes';
 
 function cssVars(d: Decoration): CSSProperties {
   const mobile = mobileSizeOf(d);
@@ -24,12 +23,6 @@ function cssVars(d: Decoration): CSSProperties {
 }
 
 const isBottom = (d: Decoration) => d.anchor.startsWith('bottom');
-
-function mobileSizeOf(d: Decoration): number {
-  return d.mobileSize === undefined
-    ? Math.round(d.size * DEFAULT_MOBILE_RATIO)
-    : (d.mobileSize ?? 0);
-}
 
 /** Scene height that fits the tallest piece (art is at most ~1.45× taller than wide). */
 function sceneHeight(items: Decoration[]): number {

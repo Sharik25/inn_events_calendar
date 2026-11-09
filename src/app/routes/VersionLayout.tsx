@@ -24,6 +24,7 @@ import { useOccurrences } from '@/hooks/useOccurrences';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useSwipeNav } from '@/hooks/useSwipeNav';
 import { useTheme } from '@/hooks/useTheme';
+import { topStripOf } from '@/themes';
 import { useRegionId, userTimeZone, useSettings } from '@/state/settings';
 import { strings } from '@/strings';
 import {
@@ -32,6 +33,7 @@ import {
   ActionButton,
   AmbientParticles,
   FestiveGarland,
+  GARLAND_HEIGHT,
   Icon,
   ThemeDecorations,
   ThemeScope,
@@ -119,6 +121,25 @@ export function VersionLayout() {
       delete root.dataset.versionStyle;
     };
   }, [uiStyle]);
+
+  // The tallest decoration along the top edge (theme strips, the December garland): the interface
+  // starts below it (--top-decoration-offset in global.css). On <html> for the sheets as well.
+  const garland = themeId === 'winter-veil';
+  const strips = [themeId, quietDay?.ambientThemeId].map(topStripOf);
+  const topDesktop = Math.max(
+    ...strips.map((h) => h.desktop),
+    garland ? GARLAND_HEIGHT.desktop : 0,
+  );
+  const topMobile = Math.max(...strips.map((h) => h.mobile), garland ? GARLAND_HEIGHT.mobile : 0);
+  useEffect(() => {
+    const { style } = document.documentElement;
+    style.setProperty('--top-decoration-height', `${topDesktop}px`);
+    style.setProperty('--top-decoration-height-m', `${topMobile}px`);
+    return () => {
+      style.removeProperty('--top-decoration-height');
+      style.removeProperty('--top-decoration-height-m');
+    };
+  }, [topDesktop, topMobile]);
 
   const view: VersionView = useMemo(() => {
     const hrefFor = (target: ViewMode, date: LocalDate) => {
@@ -212,7 +233,7 @@ export function VersionLayout() {
           {ambient.particles && !reducedMotion && <AmbientParticles kind={ambient.particles} />}
         </ThemeScope>
       )}
-      {themeId === 'winter-veil' && <FestiveGarland reducedMotion={reducedMotion} />}
+      {garland && <FestiveGarland reducedMotion={reducedMotion} />}
 
       <header className={styles.topBar}>
         <button

@@ -58,6 +58,7 @@ Node 22 is required (`nvm use`; see `.nvmrc`). The system default Node 18 is too
 
 - A theme is data: `src/themes/<id>/theme.ts` (tokens, background, particles, `numeral.ornament`, `decorations`) + one line in `src/themes/index.ts`. `ThemeDecorations` / `AmbientParticles` render it; no UI code per theme.
 - Keep decorations minimal (PLAN.md rev. 2): garlands/edge strips, background, particles and small animated accents only, never large corner objects. A theme's `emblem` is small art for card medallions.
+- The interface starts below the top decorations: `.shell` pads by `--top-decoration-offset` (global.css: the iOS safe area or the tallest top strip, whichever is taller; the December garland counts too). A theme with an `anchor: 'top'` strip adds its height to `topStrips` in `src/themes/index.ts`, so the room is there on the first paint (a test checks it). Corner pieces don't count.
 - Art lives in `src/themes/art/*.ts` as original SVG strings (chunky outlines, painted gradients). Never copy or trace game art.
 - Several copies of the same art can be on a page: always render through `uniqueSvgIds()`, or gradients break when the first copy is hidden.
 - Mobile: bottom-corner art moves from the fixed layer into the end-of-page scene so it never sits behind text.
