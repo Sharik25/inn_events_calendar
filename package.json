@@ -15,6 +15,7 @@
     "preview": "vite preview",
     "validate-data": "tsx scripts/validate-data.ts",
     "build-ics": "tsx scripts/build-ics.ts",
+    "sync:wowhead": "tsx scripts/sync-wowhead-forever.ts",
     "pretest": "node scripts/check-node.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
