@@ -79,22 +79,14 @@ test('subscription feeds are served as text/calendar and parse', async ({ reques
   }
 });
 
-test('settings offer the feed for the selected region', async ({ page }) => {
+test('settings hide the subscribe module for now; the region still switches', async ({ page }) => {
   await page.goto('/anniversary/today');
   await page.getByRole('button', { name: 'Settings' }).click();
   const sheet = page.getByRole('dialog', { name: 'Settings & info' });
-  await expect(sheet.getByRole('textbox', { name: 'Feed address' })).toHaveValue(
-    /\/calendars\/anniversary-eu\.ics$/,
-  );
+  // Hidden (src/config.ts FEATURES), not deleted: the feeds are still served (test above).
+  await expect(sheet.getByRole('textbox', { name: 'Feed address' })).toHaveCount(0);
   await sheet.getByRole('radio', { name: 'Americas' }).click();
-  await expect(sheet.getByRole('textbox', { name: 'Feed address' })).toHaveValue(
-    /\/calendars\/anniversary-us\.ics$/,
-  );
-  // The local preview runs on http, so it offers the file instead of webcal links.
-  await expect(sheet.getByRole('link', { name: 'Download .ics instead' })).toHaveAttribute(
-    'href',
-    '/calendars/anniversary-us.ics',
-  );
+  await expect(page.getByRole('button', { name: 'Anniversary · Americas' })).toBeVisible();
 });
 
 test('Forever after launch: Faire day, location, .ics export and its own feed', async ({

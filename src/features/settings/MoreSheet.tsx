@@ -1,5 +1,6 @@
 import type { EventCatalog, VersionConfig } from '@/domain/types';
 import { findRegion } from '@/engine/expand';
+import { FEATURES } from '@/config';
 import { SubscribeSection } from '@/features/calendar-export/SubscribeSection';
 import { useRegionId } from '@/state/settings';
 import { strings } from '@/strings';
@@ -36,10 +37,10 @@ export function MoreSheet({
         <h3 className={styles.heading}>{strings.settings.display}</h3>
         <LanguagePicker />
         <DisplaySettings />
-        <CategoryFilter version={version} catalog={catalog} />
+        {FEATURES.eventFilter && <CategoryFilter version={version} catalog={catalog} />}
       </section>
 
-      {version.events.length > 0 && (
+      {FEATURES.subscribe && version.events.length > 0 && (
         <section className={styles.section}>
           <h3 className={styles.heading}>{strings.calendarExport.subscribe}</h3>
           <SubscribeSection version={version} region={region} />

@@ -1,5 +1,6 @@
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { FEATURES } from '@/config';
 import { useSettings } from '@/state/settings';
 import { renderRoute } from '@/test/renderRoute';
 
@@ -13,6 +14,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.useRealTimers();
+  FEATURES.subscribe = false;
 });
 
 describe('version picker', () => {
@@ -114,6 +116,7 @@ describe('Forever before and after launch', () => {
   });
 
   it('settings for a realmless version hide the region switcher and offer its one feed', async () => {
+    FEATURES.subscribe = true;
     const user = userEvent.setup();
     renderRoute('/forever/today');
     await screen.findByRole('heading', { name: 'Forever' });

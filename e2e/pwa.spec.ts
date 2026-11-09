@@ -64,19 +64,17 @@ test('works offline once the service worker has cached the app', async ({
   await context.setOffline(false);
 });
 
-test('settings sheet: preferences apply immediately and fit a 360px screen', async ({ page }) => {
+test('settings sheet fits a 360px screen; the filter and subscribe modules are hidden', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 360, height: 740 });
   await page.goto('/anniversary/today');
   await page.getByRole('button', { name: 'Settings' }).click();
   const sheet = page.getByRole('dialog', { name: 'Settings & info' });
   await expect(sheet.getByRole('group', { name: 'Show times in' })).toBeVisible();
-
-  await sheet.getByRole('checkbox', { name: 'Fishing' }).click();
-  await expect(sheet.getByRole('checkbox', { name: 'Fishing' })).not.toBeChecked();
-  await page.keyboard.press('Escape');
-  await expect(
-    page.getByRole('region', { name: 'Coming soon' }).getByRole('link', { name: /Fishing/ }),
-  ).toHaveCount(0);
+  // Hidden for now (src/config.ts FEATURES), not deleted.
+  await expect(sheet.getByRole('group', { name: 'Events shown' })).toHaveCount(0);
+  await expect(sheet.getByRole('heading', { name: 'Subscribe to all events' })).toHaveCount(0);
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,

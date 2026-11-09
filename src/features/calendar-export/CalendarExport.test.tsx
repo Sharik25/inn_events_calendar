@@ -1,6 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ICAL from 'ical.js';
+import { FEATURES } from '@/config';
 import { useSettings } from '@/state/settings';
 import { renderRoute } from '@/test/renderRoute';
 import { feedUrls } from './feedUrls';
@@ -152,6 +153,10 @@ describe('Add to calendar', () => {
 });
 
 describe('Subscribe', () => {
+  afterEach(() => {
+    FEATURES.subscribe = false;
+  });
+
   it('builds feed URLs for the version and region', () => {
     const urls = feedUrls(
       { id: 'anniversary' } as never,
@@ -167,7 +172,18 @@ describe('Subscribe', () => {
     });
   });
 
+  it('is hidden from settings for now', async () => {
+    const user = userEvent.setup();
+    renderRoute('/anniversary/today');
+    await screen.findByRole('heading', { level: 1 });
+    await user.click(screen.getByRole('button', { name: 'Settings' }));
+    const sheet = await screen.findByRole('dialog', { name: 'Settings & info' });
+    expect(within(sheet).queryByRole('heading', { name: 'Subscribe to all events' })).toBeNull();
+    expect(within(sheet).queryByRole('textbox', { name: 'Feed address' })).toBeNull();
+  });
+
   it('settings show the feed with copy, and fall back to download without HTTPS', async () => {
+    FEATURES.subscribe = true;
     const user = userEvent.setup();
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });

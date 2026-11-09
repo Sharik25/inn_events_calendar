@@ -25,7 +25,8 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useSwipeNav } from '@/hooks/useSwipeNav';
 import { useTheme } from '@/hooks/useTheme';
 import { topStripOf } from '@/themes';
-import { useRegionId, userTimeZone, useSettings } from '@/state/settings';
+import { FEATURES } from '@/config';
+import { defaultSettings, useRegionId, userTimeZone, useSettings } from '@/state/settings';
 import { strings } from '@/strings';
 import {
   ActionBar,
@@ -43,6 +44,8 @@ import type { VersionView } from '../versionView';
 import type { VersionLoaderData } from './loaders';
 import styles from './VersionLayout.module.css';
 
+const DEFAULT_HIDDEN = defaultSettings().hiddenCategories;
+
 /**
  * Shell for /:versionId/*: themed by the viewed date's dominant event (Month view: by the month's
  * longest-running event), with top bar + action bar.
@@ -59,7 +62,10 @@ export function VersionLayout() {
   const [pickerOpen, setPickerOpen] = useState(false);
 
   const chooseVersion = useSettings((s) => s.chooseVersion);
-  const hiddenCategories = useSettings((s) => s.hiddenCategories);
+  const savedHiddenCategories = useSettings((s) => s.hiddenCategories);
+  // With the "Events shown" filter hidden (FEATURES), the default applies: a saved choice the
+  // user can no longer see or undo would hide events for good.
+  const hiddenCategories = FEATURES.eventFilter ? savedHiddenCategories : DEFAULT_HIDDEN;
   const timeDisplay = useSettings((s) => s.timeDisplay);
   const weekStartsOn = useSettings((s) => s.weekStartsOn);
   const region = findRegion(version, useRegionId(version));
