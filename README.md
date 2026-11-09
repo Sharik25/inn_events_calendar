@@ -1,7 +1,7 @@
 # InnEvents Calendar
 
 A cozy, fan-made calendar of in-game events: day, week and month views, event details, and Apple/Google
-calendar export. Live at https://sharik25.github.io/world_of_warcraft_event_calendar/.
+calendar export.
 
 Not affiliated with or endorsed by Blizzard Entertainment.
 
