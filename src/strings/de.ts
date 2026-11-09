@@ -179,7 +179,7 @@ export const de: Strings = {
     language: 'Sprache',
   },
   support: {
-    beer: 'Spendier mir ein Bier',
+    beer: 'Ein Bier spendieren',
     choose: 'Wähle, wie du dem Wirt Trinkgeld gibst:',
   },
   legal: {

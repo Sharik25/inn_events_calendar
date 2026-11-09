@@ -180,7 +180,7 @@ export const fr: Strings = {
     language: 'Langue',
   },
   support: {
-    beer: 'Offrez-moi une bière',
+    beer: 'Offrir une bière',
     choose: 'Choisissez comment laisser un pourboire à l’aubergiste :',
   },
   legal: {

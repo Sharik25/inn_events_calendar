@@ -1,5 +1,5 @@
 /**
- * "Buy me a beer" payment options, shown in the header's tip menu in this order. Each opens in a
+ * "Gift a beer" payment options, shown in the header's tip menu in this order. Each opens in a
  * new tab (rel="noopener noreferrer"). Add another option by adding one line; the label is the
  * provider's own name, so it isn't translated.
  */

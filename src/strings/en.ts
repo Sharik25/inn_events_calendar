@@ -178,7 +178,7 @@ export const en = {
     language: 'Language',
   },
   support: {
-    beer: 'Buy me a beer',
+    beer: 'Gift a beer',
     choose: 'Pick a way to tip the innkeeper:',
   },
   legal: {
